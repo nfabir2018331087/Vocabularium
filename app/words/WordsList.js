@@ -78,15 +78,15 @@ export default function WordsList({ words }) {
       </div>
 
       {/* Sort */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
         {SORT_OPTIONS.map((opt) => (
           <button
             key={opt.value}
             onClick={() => setSort(opt.value)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
               sort === opt.value
-                ? "bg-primary text-white"
-                : "bg-surface-alt border border-border text-text-secondary"
+                ? "bg-primary text-white shadow-sm shadow-primary/25"
+                : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
             }`}
           >
             {opt.label}
@@ -139,7 +139,7 @@ function WordCard({ word }) {
   return (
     <Link
       href={`/words/${word.id}`}
-      className="block p-4 rounded-xl bg-surface-alt border border-border hover:border-primary transition-colors"
+      className="block p-4 rounded-xl bg-surface-alt border border-border hover:border-primary card-hover"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">

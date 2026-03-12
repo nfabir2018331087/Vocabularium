@@ -82,7 +82,7 @@ export default function BottomNav() {
   const { theme, cycleTheme } = useTheme();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border z-50">
+    <nav className="fixed bottom-0 left-0 right-0 glass border-t border-border/50 z-50">
       <div className="max-w-lg mx-auto flex justify-around items-center h-16">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
@@ -90,12 +90,15 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors ${
+              className={`relative flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors ${
                 isActive
                   ? "text-primary"
                   : "text-text-secondary hover:text-text"
               }`}
             >
+              {isActive && (
+                <span className="absolute -top-2.5 w-5 h-0.5 rounded-full bg-primary" />
+              )}
               {item.icon}
               <span className="text-xs font-medium">{item.label}</span>
             </Link>
