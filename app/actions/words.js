@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import prisma from "../../lib/prisma";
 
 export async function addWord(formData) {
@@ -34,6 +35,8 @@ export async function addWord(formData) {
         tags,
       },
     });
+    revalidatePath("/");
+    revalidatePath("/words");
     return { success: true, id: created.id };
   } catch (err) {
     console.error("Failed to add word:", err);
@@ -89,6 +92,9 @@ export async function updateWord(id, formData) {
       where: { id },
       data: { word, meaningEn, meaningBn, partOfSpeech, explanation, examples, tags },
     });
+    revalidatePath("/");
+    revalidatePath("/words");
+    revalidatePath(`/words/${id}`);
     return { success: true, id: updated.id };
   } catch (err) {
     console.error("Failed to update word:", err);
@@ -99,6 +105,8 @@ export async function updateWord(id, formData) {
 export async function deleteWord(id) {
   try {
     await prisma.word.delete({ where: { id } });
+    revalidatePath("/");
+    revalidatePath("/words");
     return { success: true };
   } catch (err) {
     console.error("Failed to delete word:", err);

@@ -8,7 +8,7 @@ export default async function Words() {
   return (
     <div className="flex flex-col gap-4 pb-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Words</h1>
+        <h1 className="text-2xl font-bold text-primary">My Words</h1>
         <Link
           href="/add"
           className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm shadow-primary/20"

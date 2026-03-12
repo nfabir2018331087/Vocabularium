@@ -6,6 +6,10 @@ export default async function Home() {
   const wordCount = words?.length || 0;
   const recentWords = words?.slice(0, 3) || [];
   const tagCount = new Set(words?.flatMap((w) => w.tags) || []).size;
+  const now = Date.now();
+  const daysActive = wordCount > 0
+    ? Math.ceil((now - new Date(words[words.length - 1].createdAt)) / (1000 * 60 * 60 * 24))
+    : 0;
 
   return (
     <div className="flex flex-col gap-6 -mx-4 -mt-6">
@@ -29,14 +33,7 @@ export default async function Home() {
             <p className="text-xs text-white/70">Tags</p>
           </div>
           <div className="flex-1 bg-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm text-center">
-            <p className="text-2xl font-bold text-white">
-              {wordCount > 0
-                ? Math.ceil(
-                    (Date.now() - new Date(words[words.length - 1].createdAt)) /
-                      (1000 * 60 * 60 * 24)
-                  )
-                : 0}
-            </p>
+            <p className="text-2xl font-bold text-white">{daysActive}</p>
             <p className="text-xs text-white/70">Days active</p>
           </div>
         </div>
