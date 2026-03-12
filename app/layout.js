@@ -1,6 +1,7 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
 import BottomNav from "./components/BottomNav";
+import ThemeProvider from "./components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -10,6 +11,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const notoBangla = Noto_Sans_Bengali({
+  variable: "--font-bangla",
+  subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata = {
@@ -27,12 +34,29 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <main className="max-w-lg mx-auto px-4 py-6">
-          {children}
-        </main>
-        <BottomNav />
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var t = localStorage.getItem('theme');
+                var d = document.documentElement;
+                if (t === 'dark') d.classList.add('dark');
+                else if (t === 'light') d.classList.remove('dark');
+                else if (window.matchMedia('(prefers-color-scheme: dark)').matches) d.classList.add('dark');
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${notoBangla.variable} antialiased`}>
+        <ThemeProvider>
+          <main className="max-w-lg mx-auto px-4 py-6 animate-fade-in">
+            {children}
+          </main>
+          <BottomNav />
+        </ThemeProvider>
       </body>
     </html>
   );

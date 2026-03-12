@@ -1,28 +1,24 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Word {
-  id          String   @id @default(cuid())
-  word        String
-  language    Language
-  meaning     String
-  explanation String?
-  examples    String[]
-  tags        String[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  word         String
+  meaningEn    String
+  meaningBn    String?
+  partOfSpeech String?
+  explanation  String?
+  examples     String[]
+  tags         String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  @@index([language])
   @@index([createdAt])
-}
-
-enum Language {
-  BANGLA
-  ENGLISH
 }
