@@ -15,7 +15,8 @@ model User {
   avatarUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  words     Word[]
+  words       Word[]
+  quizResults QuizResult[]
 }
 
 model Word {
@@ -50,4 +51,20 @@ model GlobalWord {
   createdAt    DateTime @default(now())
 
   @@index([word])
+}
+
+model QuizResult {
+  id             String   @id @default(cuid())
+  mode           String
+  score          Int
+  total          Int
+  missed         String[]
+  testedWordIds  String[]
+  duration       Int?
+  createdAt      DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }

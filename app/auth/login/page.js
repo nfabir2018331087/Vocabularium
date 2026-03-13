@@ -1,16 +1,31 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "../../components/AuthProvider";
 import { getSupabaseBrowser } from "../../../lib/supabase/client";
+
+const urlErrors = {
+  auth_failed: "Authentication failed. Please try again.",
+  confirmation_failed: "Email confirmation failed or link expired. Please try signing up again.",
+};
 
 export default function Login() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user, isGuest } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && !isGuest) router.replace("/profile");
+  }, [user, isGuest, router]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+
+  const urlError = urlErrors[searchParams.get("error")];
+  const [error, setError] = useState(urlError || null);
 
   async function handleEmailLogin(e) {
     e.preventDefault();
@@ -24,7 +39,11 @@ export default function Login() {
     });
 
     if (error) {
-      setError(error.message);
+      setError(
+        error.message === "Invalid login credentials"
+          ? "Invalid email or password. Please try again."
+          : error.message
+      );
       setLoading(false);
     } else {
       router.push("/profile?migrating=true");

@@ -1,10 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "../../components/AuthProvider";
 import { getSupabaseBrowser } from "../../../lib/supabase/client";
 
 export default function SignUp() {
+  const router = useRouter();
+  const { user, isGuest } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && !isGuest) router.replace("/profile");
+  }, [user, isGuest, router]);
+
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,6 +33,9 @@ export default function SignUp() {
       password,
       options: {
         emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/confirm`,
+        data: {
+          full_name: fullName.trim(),
+        },
       },
     });
 
@@ -105,6 +119,19 @@ export default function SignUp() {
             {error}
           </p>
         )}
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="fullName" className="text-sm font-medium">Full Name</label>
+          <input
+            id="fullName"
+            type="text"
+            required
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Your full name"
+            className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
+          />
+        </div>
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="email" className="text-sm font-medium">Email</label>

@@ -47,7 +47,7 @@ export default function HomeContent({ words }) {
         {/* Theme toggle */}
         <button
           onClick={cycleTheme}
-          className="absolute top-10 right-6 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white/80 hover:text-white hover:bg-white/30 transition-colors"
+          className="absolute top-13 right-7 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white/80 hover:text-white hover:bg-white/30 transition-colors"
           title={`Theme: ${theme}`}
         >
           {themeIcons[theme]}
@@ -115,7 +115,7 @@ export default function HomeContent({ words }) {
         </Link>
 
         <Link
-          href="/words"
+          href="/progress"
           className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-surface-alt border border-border card-hover hover:border-primary"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7 text-success">

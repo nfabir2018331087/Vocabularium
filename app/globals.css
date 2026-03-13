@@ -145,3 +145,14 @@ input[type="reset"] {
 .animate-slide-down {
   animation: slide-down 0.3s ease-out;
 }
+
+/* Shake for wrong answer */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.3s ease-out;
+}

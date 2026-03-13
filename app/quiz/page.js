@@ -1,8 +1,16 @@
-export default function Quiz() {
-  return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">Quiz</h1>
-      <p className="text-text-secondary">Coming in Phase 2</p>
-    </div>
-  );
+import { getSupabaseServer } from "../../lib/supabase/server";
+import { getWords } from "../actions/words";
+import QuizPageContent from "./QuizPageContent";
+import GuestQuizPage from "./GuestQuizPage";
+
+export default async function QuizPage() {
+  const supabase = await getSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    const { words } = await getWords();
+    return <QuizPageContent words={words || []} isGuest={false} />;
+  }
+
+  return <GuestQuizPage />;
 }

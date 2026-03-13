@@ -7,6 +7,7 @@ import { useAuth } from "../components/AuthProvider";
 import { useTheme } from "../components/ThemeProvider";
 import { getLocalWords, clearLocalWords } from "../../lib/local-words";
 import { migrateLocalWords } from "../actions/words";
+import { uploadAvatar, updateProfile } from "../actions/profile";
 
 const themeLabels = { light: "Light", dark: "Dark", system: "System" };
 const themeIcons = {
@@ -48,6 +49,16 @@ export default function ProfilePage() {
   const [signingOut, setSigningOut] = useState(false);
   const migrationStarted = useRef(false);
 
+  // Avatar upload state
+  const [uploading, setUploading] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // Name edit state
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState("");
+  const [savingName, setSavingName] = useState(false);
+
   // Handle migration when user just signed up/logged in
   useEffect(() => {
     if (searchParams.get("migrating") === "true" && user && !isGuest && !migrationStarted.current) {
@@ -75,7 +86,6 @@ export default function ProfilePage() {
       setMigrationResult({ error: "Migration failed unexpectedly" });
     }
     setMigrating(false);
-    // Remove query param
     router.replace("/profile");
   }
 
@@ -83,6 +93,35 @@ export default function ProfilePage() {
     setSigningOut(true);
     await signOut();
     router.push("/");
+  }
+
+  async function handleAvatarChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Show preview immediately
+    setAvatarPreview(URL.createObjectURL(file));
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+    const result = await uploadAvatar(formData);
+
+    if (result.error) {
+      setAvatarPreview(null);
+      alert(result.error);
+    }
+    setUploading(false);
+  }
+
+  async function handleNameSave() {
+    if (!nameValue.trim()) return;
+    setSavingName(true);
+    const result = await updateProfile({ name: nameValue });
+    if (result.success) {
+      setEditingName(false);
+    }
+    setSavingName(false);
   }
 
   if (loading) {
@@ -167,7 +206,7 @@ export default function ProfilePage() {
 
   // Authenticated state
   const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0];
-  const avatarUrl = user.user_metadata?.avatar_url;
+  const currentAvatarUrl = avatarPreview || user.user_metadata?.avatar_url;
   const initials = displayName?.charAt(0)?.toUpperCase() || "?";
 
   return (
@@ -205,20 +244,88 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* User info */}
+      {/* User info + Avatar upload */}
       <div className="flex flex-col items-center gap-3 py-8">
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt=""
-            className="w-20 h-20 rounded-full object-cover border-2 border-primary/30"
-          />
-        ) : (
-          <div className="w-20 h-20 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center">
-            <span className="text-2xl font-bold text-primary">{initials}</span>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          className="relative group"
+        >
+          {currentAvatarUrl ? (
+            <img
+              src={currentAvatarUrl}
+              alt=""
+              className={`w-20 h-20 rounded-full object-cover border-2 border-primary/30 ${uploading ? "opacity-50" : ""}`}
+            />
+          ) : (
+            <div className={`w-20 h-20 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center ${uploading ? "opacity-50" : ""}`}>
+              <span className="text-2xl font-bold text-primary">{initials}</span>
+            </div>
+          )}
+          {/* Camera overlay */}
+          <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
           </div>
+          {uploading && (
+            <div className="absolute inset-0 rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          onChange={handleAvatarChange}
+          className="hidden"
+        />
+        {/* <p className="text-xs text-text-secondary -mt-1">Tap to change photo</p> */}
+
+        {/* Editable name */}
+        {editingName ? (
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={nameValue}
+              onChange={(e) => setNameValue(e.target.value)}
+              autoFocus
+              className="px-3 py-1.5 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none text-center text-lg font-bold w-48"
+              onKeyDown={(e) => e.key === "Enter" && handleNameSave()}
+            />
+            <button
+              onClick={handleNameSave}
+              disabled={savingName}
+              className="p-1.5 rounded-lg bg-primary text-white hover:opacity-90 disabled:opacity-50"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setEditingName(false)}
+              className="p-1.5 rounded-lg bg-surface-alt border border-border text-text-secondary hover:text-text"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => { setNameValue(displayName); setEditingName(true); }}
+            className="pl-5 flex items-center gap-1.5 group"
+          >
+            <h1 className="text-xl font-bold">{displayName}</h1>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+          </button>
         )}
-        <h1 className="text-xl font-bold">{displayName}</h1>
         <p className="text-sm text-text-secondary">{user.email}</p>
       </div>
 

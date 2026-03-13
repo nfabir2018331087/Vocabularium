@@ -1,175 +1,179 @@
-# Vocabularium - Project Plan
+# Vocabularium — Project Plan
 
 ## Tech Stack
-- **Frontend**: Next.js 14+ (App Router), TailwindCSS, shadcn/ui
-- **Backend**: Next.js API Routes / Server Actions
-- **Database**: PostgreSQL via Supabase
-- **ORM**: Prisma
-- **Auth**: Supabase Auth (for later phases)
-- **AI**: Claude API (for meaning/example generation + quiz grading)
+- **Framework**: Next.js 16 (App Router, Server Components, Server Actions)
+- **Styling**: TailwindCSS 4 with CSS custom properties for theming
+- **Database**: PostgreSQL via Supabase (pooled connections)
+- **ORM**: Prisma 6
+- **Auth**: Supabase Auth (email/password + Google OAuth)
+- **Storage**: Supabase Storage (avatar uploads)
+- **Guest Mode**: IndexedDB via `idb-keyval` (local-first for unauthenticated users)
 - **Deployment**: Vercel
 
 ---
 
-## Phase 1 — MVP (Manual Vocabulary CRUD + Deploy)
+## Phase 1 — MVP (COMPLETE)
 
-### Sprint 1: Project Scaffolding + Deploy Pipeline (Day 1-2)
-1. Initialize Next.js project with App Router, TypeScript, TailwindCSS
-2. Set up shadcn/ui component library
-3. Set up Supabase project, get connection string
-4. Configure Prisma with the Supabase PostgreSQL
-5. Design and create the Prisma schema:
-   - `Word` model: id, word, language (BANGLA | ENGLISH), meaning, explanation, examples (string[]), tags (string[]), createdAt, updatedAt
-6. Run initial migration
-7. **Deploy to Vercel** — get a live URL early for sharing/testing
-8. Set up environment variables on Vercel (DATABASE_URL, DIRECT_URL)
-
-### Sprint 2: Add Word Flow (Day 3-5)
-1. Build the "Add Word" page (`/add`)
-   - Input for the word itself
-   - Language toggle/selector: Bangla / English
-   - Textarea for meaning
-   - Textarea for explanation
-   - Dynamic list for examples (add/remove example fields)
-   - Tag input (comma-separated or chip-style)
-   - Submit button
-2. Create Server Action to save word to database
-3. Add form validation (word & meaning required at minimum)
-4. Toast notifications for success/error
-5. Mobile-first responsive design — app-like feel
-
-### Sprint 3: Word List & View (Day 6-9)
-1. Build the "Words" page (`/words`) — card-based list view
-2. Implement sorting options:
-   - **Alphabetical** (A-Z, Z-A)
-   - **Chronological** (newest first, oldest first)
-   - **By Tag/Group** — grouped sections with tag headers
-3. Filter by language (Bangla / English / All)
-4. Search bar for quick word lookup
-5. Individual word detail view (`/words/[id]`) — full details page
-6. Edit word functionality
-7. Delete word with confirmation
-
-### Sprint 4: Mobile-First UI Polish (Day 10-11)
-1. Bottom navigation bar (app-like): Home, Add, Words, Quiz
-2. Smooth page transitions
-3. Pull-to-refresh feel, loading skeletons
-4. PWA setup (manifest.json, service worker) — installable on phone
-5. Dark/light mode toggle
-6. Typography tuning for Bangla font support
-
-**Phase 1 Deliverable**: A fully functional, deployed web app where you can manually add, view, edit, delete words with tags and sorting. Shareable URL for feedback.
+- Project scaffolding with Next.js App Router + Prisma + Supabase PostgreSQL
+- Prisma schema: `Word` model (word, meaningEn, meaningBn, partOfSpeech, explanation, examples, tags)
+- Add Word page (`/add`) with full form + Server Action
+- Words list page (`/words`) with search, sort (alphabetical/chronological/by-tag), filter
+- Word detail page (`/words/[id]`) with edit and delete
+- Bottom navigation bar (Home, Add, Words, Quiz, Profile)
+- Dark/light/system theme toggle
+- Mobile-first responsive design with loading skeletons
+- Toast notifications, card hover effects, glass morphism
+- Deployed to Vercel
 
 ---
 
-## Phase 2 — Quiz System (Manual Grading)
+## Phase 2 — Auth + Guest Mode + Local-First Storage (COMPLETE)
 
-### Sprint 5: Basic Quiz (Day 12-15)
-1. Quiz page (`/quiz`) with vertical split layout:
-   - **Top half**: Shows the word (+ optional hint button)
-   - **Bottom half**: Text input for answer
-2. Quiz settings before start:
-   - Choose language (quiz Bangla words, English words, or mixed)
-   - Choose tags to filter (e.g., only quiz words from a specific book)
-   - Number of words per session
-3. Random word selection from the pool
-4. Hint system — progressive hints:
-   - Hint 1: First letter
-   - Hint 2: Show explanation
-   - Hint 3: Show one example
-5. Answer submission with **exact match grading**
-6. Result screen at end — score, list of correct/incorrect
-7. Option to review wrong answers
+### Sprint 1: Foundation
+- Updated schema with `User` model (Supabase Auth UUID), `userId` on Word
+- Supabase client helpers (browser + server + middleware)
+- IndexedDB layer (`lib/local-words.js`) for guest word storage
+- Auth middleware for route protection
 
-### Sprint 6: Quiz Polish (Day 16-17)
-1. Quiz progress bar
-2. Streak counter / session stats
-3. Animation on correct/incorrect answers
-4. "Show answer" option if stuck
-5. Quiz history page — track past sessions
+### Sprint 2: Auth Pages
+- Signup page with full name, email/password, Google OAuth
+- Login page with email/password, Google OAuth
+- Email confirmation flow (`/auth/confirm`, `/auth/callback`)
+- `NEXT_PUBLIC_SITE_URL` env var for environment-aware redirect URLs
 
-**Phase 2 Deliverable**: Working quiz mode with exact matching, hints, and session results.
+### Sprint 3: Server Actions + Migration
+- All Server Actions scoped by `userId` (words CRUD)
+- `ensureUserExists` upsert pattern to keep email synced
+- `migrateLocalWords` — moves IndexedDB words to DB on first login
+- `useRef` guard to prevent duplicate migration on multiple auth events
 
----
+### Sprint 4: Guest/Auth Page Branching
+- All pages branch: Server Component checks auth → renders auth or guest Client Component
+- Guest components load data from IndexedDB, show skeletons while loading
+- Pattern: `page.js` (server) → `PageContent.js` (shared UI) + `GuestPage.js` (IndexedDB loader)
 
-## Phase 3 — AI Integration
+### Sprint 5: Profile Page + BottomNav
+- Profile page with avatar upload (Supabase Storage), inline name editing, theme toggle, sign out
+- BottomNav shows user avatar for Profile tab
+- `app/actions/profile.js` — `uploadAvatar`, `updateProfile` (syncs Prisma + Supabase auth metadata)
 
-### Sprint 7: AI-Assisted Word Entry (Day 18-21)
-1. Add "Suggest with AI" button on the Add Word page
-2. User types the word + selects language → clicks suggest
-3. Call Claude API to generate:
-   - Meaning
-   - Explanation
-   - 3 example sentences
-4. Display AI suggestions in the form fields (editable)
-5. User can accept, edit, or discard each suggestion
-6. Loading states and error handling for API calls
-7. Rate limiting to control API costs
-
-### Sprint 8: AI Quiz Grading (Day 22-24)
-1. Replace exact matching with AI-powered grading
-2. Send word + expected meaning + user answer to Claude API
-3. Accept synonyms, paraphrases, close-enough answers
-4. Return a score (correct / partially correct / incorrect) with feedback
-5. Show AI explanation for why answer was accepted/rejected
-6. Keep fallback to exact match if AI is unavailable
-
-**Phase 3 Deliverable**: AI suggests word details and grades quiz answers intelligently.
+### Sprint 6: Polish + Edge Cases
+- Error handling on login page (`?error=auth_failed`, `?error=confirmation_failed`)
+- Better "Invalid login credentials" message
+- Redirect to profile if already logged in (login + signup pages)
+- `ensureUserExists` changed to `upsert` for reliability
 
 ---
 
-## Phase 4 — Auth & Multi-User + Enhancements
+## Phase 3 — Quiz Feature (COMPLETE)
 
-### Sprint 9: Authentication (Day 25-27)
-1. Supabase Auth integration (email/password, Google OAuth)
-2. User model linked to words (each user has their own vocabulary)
-3. Protected routes — redirect to login if unauthenticated
-4. Profile page with stats (total words, words per language, quiz scores)
+### Sprint 1: Data Layer + Utilities
+- `QuizResult` model in Prisma: mode, score, total, missed, testedWordIds, duration, userId
+- `app/actions/quiz.js` — `saveQuizResult`, `getQuizHistory`, `getWordProgress`
+- `lib/local-quiz.js` — IndexedDB storage for guest quiz results
+- `lib/quiz-utils.js` — shuffle, generateOptions, fuzzyMatch (Levenshtein), generateMatchPairs, QUIZ_MODES
 
-### Sprint 10: Advanced Features (Day 28-32)
-1. Spaced repetition logic — prioritize quizzing words you get wrong
-2. Word of the day (random from your collection)
-3. Export vocabulary as CSV/PDF
-4. Import words from CSV
-5. Tag management page (rename, merge, delete tags)
-6. Dashboard with charts — words added over time, quiz performance
+### Sprint 2: Quiz Page + Mode Selection
+- Quiz page (`/quiz`) with auth/guest branching (same pattern as words page)
+- `QuizPageContent.js` — state machine: mode_select → session → results
+- `ModeSelect.js` — grid of 4 mode cards with word count selector (5/10/All)
+- Modes requiring 4+ words disabled if insufficient, empty state if no words
 
-### Sprint 11: Final Polish (Day 33-35)
-1. Onboarding flow for new users
-2. Empty states with helpful prompts
-3. Offline support improvements (PWA caching)
-4. Performance optimization (pagination, infinite scroll)
-5. SEO and Open Graph meta for sharing
+### Sprint 3: Quiz Mode Components
+- **Flashcard** — CSS 3D flip card (word → meaning), "Got it" / "Missed it" buttons
+- **Multiple Choice** — 4 options (1 correct + 3 wrong), green/red feedback, auto-advance
+- **Type Answer** — text input with fuzzy matching (Levenshtein, threshold 0.75), shows correct answer
+- **Match Pairs** — two columns, tap word then meaning, 5 pairs, shake on wrong
+- **QuizResults** — score %, duration, missed words list, "Try Again" / "All Modes" / "View Progress"
+
+### Sprint 4: Progress Page
+- Progress page (`/progress`) with auth/guest branching
+- Per-word accuracy computed from `testedWordIds` + `missed` across all quiz results
+- Color-coded: green (>=70%), yellow (40-69%), red (<40%), gray (untested)
+- Overall accuracy card, tested/untested word sections with progress bars
+- Linked from home page Progress button, quiz ModeSelect, and QuizResults
 
 ---
 
-## Data Model (Prisma Schema Preview)
+## Phase 4 — AI Integration (PLANNED)
+
+### Sprint 1: AI-Assisted Word Entry
+- "Suggest with AI" button on Add Word page
+- Call Claude API to generate meaning, explanation, and example sentences
+- Display AI suggestions as editable prefills in the form
+- Loading states and error handling
+
+### Sprint 2: AI Quiz Grading
+- Replace/supplement fuzzy matching with AI-powered answer evaluation
+- Accept synonyms, paraphrases, and contextually correct answers
+- Show AI feedback on why an answer was accepted/rejected
+- Fallback to fuzzy match if AI is unavailable
+
+---
+
+## Phase 5 — Advanced Features (PLANNED)
+
+- Spaced repetition — prioritize quizzing words with low accuracy
+- Word of the day (random from collection)
+- Export vocabulary as CSV/PDF
+- Import words from CSV
+- Tag management page (rename, merge, delete tags)
+- Dashboard with charts (words added over time, quiz performance trends)
+- PWA setup (manifest.json, service worker) for installability
+- Offline support improvements
+- Quiz history page with past session details
+
+---
+
+## Current Data Model
 
 ```prisma
-model Word {
-  id          String   @id @default(cuid())
-  word        String
-  language    Language
-  meaning     String
-  explanation String?
-  examples    String[]
-  tags        String[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model User {
+  id        String   @id // Supabase Auth UUID
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  words       Word[]
+  quizResults QuizResult[]
 }
 
-enum Language {
-  BANGLA
-  ENGLISH
+model Word {
+  id           String   @id @default(cuid())
+  word         String
+  meaningEn    String
+  meaningBn    String?
+  partOfSpeech String?
+  explanation  String?
+  examples     String[]
+  tags         String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  userId       String?
+  user         User?    @relation(...)
+}
+
+model QuizResult {
+  id             String   @id @default(cuid())
+  mode           String
+  score          Int
+  total          Int
+  missed         String[]
+  testedWordIds  String[]
+  duration       Int?
+  createdAt      DateTime @default(now())
+  userId         String
+  user           User     @relation(...)
 }
 ```
-*Auth fields (userId, relation to User) added in Phase 4.*
 
 ---
 
 ## Key Architecture Decisions
-- **No auth in MVP** — ship fast, add auth later. Single-user initially.
-- **Server Actions** over API routes where possible — simpler, less boilerplate.
-- **shadcn/ui** — gives polished, accessible components without heavy bundle.
-- **Deploy early (Sprint 1)** — continuous deployment from day one.
-- **AI is additive** — the app works fully without AI; AI enhances it.
+- **Server/Client branching**: Server Components check auth → render auth Client Component or guest Client Component
+- **Local-first for guests**: IndexedDB stores words + quiz results, migrated to DB on signup
+- **Server Actions** over API routes — simpler, less boilerplate
+- **Deploy early** — continuous deployment from day one via Vercel
+- **AI is additive** — the app works fully without AI; AI enhances it
+- **No language enum** — words are English vocabulary with English meaning (meaningEn) and optional Bengali meaning (meaningBn)
