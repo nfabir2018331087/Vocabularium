@@ -2,6 +2,8 @@ import { Geist, Geist_Mono, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
 import BottomNav from "./components/BottomNav";
 import ThemeProvider from "./components/ThemeProvider";
+import AuthProvider from "./components/AuthProvider";
+import { getSupabaseServer } from "../lib/supabase/server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +34,10 @@ export const viewport = {
   themeColor: "#6366f1",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const supabase = await getSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -52,10 +57,12 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoBangla.variable} antialiased`}>
         <ThemeProvider>
-          <main className="max-w-lg mx-auto px-4 py-6 animate-fade-in">
-            {children}
-          </main>
-          <BottomNav />
+          <AuthProvider initialUser={user}>
+            <main className="max-w-lg mx-auto px-4 py-6 animate-fade-in">
+              {children}
+            </main>
+            <BottomNav />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

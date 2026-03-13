@@ -1,24 +1,39 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getSupabaseServer } from "../../../../lib/supabase/server";
-import { getWord } from "../../../actions/words";
+import { getLocalWord } from "../../../../lib/local-words";
 import EditForm from "./EditForm";
-import GuestEditPage from "./GuestEditPage";
 
-export default async function EditWord({ params }) {
-  const { id } = await params;
-  const supabase = await getSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
+export default function GuestEditPage({ id }) {
+  const [word, setWord] = useState(null);
+  const [loaded, setLoaded] = useState(false);
 
-  if (!user) {
-    return <GuestEditPage id={id} />;
+  useEffect(() => {
+    getLocalWord(id).then((w) => {
+      setWord(w);
+      setLoaded(true);
+    });
+  }, [id]);
+
+  if (!loaded) {
+    return (
+      <div className="flex flex-col gap-6 pb-8">
+        <div className="h-4 w-16 bg-surface-alt rounded skeleton" />
+        <div className="h-8 w-32 bg-surface-alt rounded-lg skeleton" />
+        <div className="flex flex-col gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-16 bg-surface-alt rounded-xl skeleton" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
-  const { word, error } = await getWord(id);
-
-  if (error) {
+  if (!word) {
     return (
       <div className="flex flex-col items-center gap-4 py-16">
-        <p className="text-red-400">{error}</p>
+        <p className="text-red-400">Word not found</p>
         <Link href="/words" className="text-primary font-medium text-sm">
           Back to words
         </Link>

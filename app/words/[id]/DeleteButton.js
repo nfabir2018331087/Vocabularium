@@ -2,15 +2,25 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../components/AuthProvider";
 import { deleteWord } from "../../actions/words";
+import { deleteLocalWord } from "../../../lib/local-words";
 
 export default function DeleteButton({ id }) {
   const router = useRouter();
+  const { isGuest } = useAuth();
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
     setDeleting(true);
+
+    if (isGuest) {
+      await deleteLocalWord(id);
+      router.push("/words");
+      return;
+    }
+
     const result = await deleteWord(id);
     if (result.success) {
       router.push("/words");
