@@ -1,11 +1,10 @@
-import { getSupabaseServer } from "../../lib/supabase/server";
+import { getSupabaseUser } from "../../lib/supabase/server";
 import { getWords } from "../actions/words";
 import WordsPageContent from "./WordsPageContent";
 import GuestWordsPage from "./GuestWordsPage";
 
 export default async function Words() {
-  const supabase = await getSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getSupabaseUser();
 
   if (user) {
     const { words, error } = await getWords();

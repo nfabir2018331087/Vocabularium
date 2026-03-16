@@ -52,7 +52,7 @@ export default function MultipleChoiceQuiz({ words, allWords, onFinish, onQuit }
       <div className="flex items-center justify-between">
         <button
           onClick={onQuit}
-          className="text-sm text-text-secondary hover:text-text transition-colors"
+          className="text-sm text-red-500 hover:text-red-700 transition-colors"
         >
           Quit
         </button>

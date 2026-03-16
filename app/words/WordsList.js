@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 
 const SORT_OPTIONS = [
@@ -12,8 +12,11 @@ const SORT_OPTIONS = [
 ];
 
 export default function WordsList({ words }) {
+  const PAGE_SIZES = [5, 10, 20];
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -45,10 +48,21 @@ export default function WordsList({ words }) {
     }
   }, [filtered, sort]);
 
-  const groupedByTag = useMemo(() => {
+  useEffect(() => {
+    setPage(1);
+  }, [search, sort, pageSize]);
+
+  const listForPaging = sort === "tags" ? filtered : sorted;
+  const totalPages = Math.max(1, Math.ceil(listForPaging.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const startIndex = (safePage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const pagedList = listForPaging.slice(startIndex, endIndex);
+
+  const pagedGroupedByTag = useMemo(() => {
     if (sort !== "tags") return null;
     const groups = {};
-    filtered.forEach((w) => {
+    pagedList.forEach((w) => {
       if (w.tags.length === 0) {
         (groups["Untagged"] ??= []).push(w);
       } else {
@@ -58,7 +72,7 @@ export default function WordsList({ words }) {
       }
     });
     return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
-  }, [filtered, sort]);
+  }, [pagedList, sort]);
 
   return (
     <>
@@ -101,9 +115,9 @@ export default function WordsList({ words }) {
       </p>
 
       {/* Word Cards */}
-      {sort === "tags" && groupedByTag ? (
+      {sort === "tags" && pagedGroupedByTag ? (
         <div className="flex flex-col gap-6">
-          {groupedByTag.map(([tag, tagWords]) => (
+          {pagedGroupedByTag.map(([tag, tagWords]) => (
             <div key={tag}>
               <h2 className="text-sm font-semibold text-primary mb-2 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-primary inline-block" />
@@ -120,7 +134,7 @@ export default function WordsList({ words }) {
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          {sorted.map((w) => (
+          {pagedList.map((w) => (
             <WordCard key={w.id} word={w} />
           ))}
         </div>
@@ -130,6 +144,45 @@ export default function WordsList({ words }) {
         <p className="text-center text-text-secondary text-sm py-8">
           No words found.
         </p>
+      )}
+
+      {filtered.length > 0 && (
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <div className="flex items-center gap-2">
+            {PAGE_SIZES.map((size) => (
+              <button
+                key={size}
+                onClick={() => setPageSize(size)}
+                className={`px-3 py-2 rounded-lg text-xs font-medium border ${
+                  pageSize === size
+                    ? "bg-primary text-white border-primary shadow-sm shadow-primary/25"
+                    : "bg-surface-alt border-border text-text-secondary hover:text-text hover:border-text-secondary"
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+          <span className="text-xs text-text-secondary">
+            Page {safePage} of {totalPages}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={safePage === 1}
+              className="px-3.5 py-2 rounded-lg text-xs font-medium bg-surface-alt border border-border text-text-secondary disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safePage === totalPages}
+              className="px-3.5 py-2 rounded-lg text-xs font-medium bg-surface-alt border border-border text-text-secondary disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       )}
     </>
   );

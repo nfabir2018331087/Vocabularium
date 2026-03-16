@@ -1,19 +1,10 @@
 "use server";
 
 import prisma from "../../lib/prisma";
-import { getSupabaseServer } from "../../lib/supabase/server";
-import { ensureUserExists } from "../../lib/auth-helpers";
-
-async function getAuthenticatedUser() {
-  const supabase = await getSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  await ensureUserExists(user);
-  return user.id;
-}
+import { getAuthenticatedUserId, getAuthenticatedUserIdWithSync } from "../../lib/auth-helpers";
 
 export async function saveQuizResult({ mode, score, total, missed, duration, testedWordIds }) {
-  const userId = await getAuthenticatedUser();
+  const userId = await getAuthenticatedUserIdWithSync();
   if (!userId) return { error: "Not authenticated" };
 
   try {
@@ -28,7 +19,7 @@ export async function saveQuizResult({ mode, score, total, missed, duration, tes
 }
 
 export async function getWordProgress() {
-  const userId = await getAuthenticatedUser();
+  const userId = await getAuthenticatedUserId();
   if (!userId) return { progress: {} };
 
   try {
@@ -53,7 +44,7 @@ export async function getWordProgress() {
 }
 
 export async function getQuizHistory() {
-  const userId = await getAuthenticatedUser();
+  const userId = await getAuthenticatedUserId();
   if (!userId) return { results: [] };
 
   try {

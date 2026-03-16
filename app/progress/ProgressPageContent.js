@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
 function getAccuracy(wordId, progress) {
   const stat = progress[wordId];
@@ -16,6 +17,10 @@ function getAccuracyStyle(accuracy) {
 }
 
 export default function ProgressPageContent({ words, progress }) {
+  const PAGE_SIZES = [5, 10, 20];
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const wordsWithAccuracy = words.map((w) => ({
     ...w,
     accuracy: getAccuracy(w.id, progress),
@@ -31,6 +36,19 @@ export default function ProgressPageContent({ words, progress }) {
 
   const tested = wordsWithAccuracy.filter((w) => w.accuracy !== null);
   const untested = wordsWithAccuracy.filter((w) => w.accuracy === null);
+  const ordered = useMemo(() => [...tested, ...untested], [tested, untested]);
+
+  const totalPages = Math.max(1, Math.ceil(ordered.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const startIndex = (safePage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paged = ordered.slice(startIndex, endIndex);
+  const pagedTested = paged.filter((w) => w.accuracy !== null);
+  const pagedUntested = paged.filter((w) => w.accuracy === null);
+
+  useEffect(() => {
+    setPage(1);
+  }, [words.length, Object.keys(progress).length, pageSize]);
 
   const overallCorrect = Object.values(progress).reduce((sum, s) => sum + (s.tested - s.missed), 0);
   const overallTotal = Object.values(progress).reduce((sum, s) => sum + s.tested, 0);
@@ -82,12 +100,12 @@ export default function ProgressPageContent({ words, progress }) {
       {wordsWithAccuracy.length > 0 && (
         <div className="flex flex-col gap-1.5">
           {/* Tested words */}
-          {tested.length > 0 && (
+          {pagedTested.length > 0 && (
             <>
               <h2 className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-1">
                 Tested words
               </h2>
-              {tested.map((w) => {
+              {pagedTested.map((w) => {
                 const style = getAccuracyStyle(w.accuracy);
                 const stat = progress[w.id];
                 return (
@@ -126,12 +144,12 @@ export default function ProgressPageContent({ words, progress }) {
           )}
 
           {/* Untested words */}
-          {untested.length > 0 && (
+          {pagedUntested.length > 0 && (
             <>
               <h2 className="text-xs font-semibold text-text-secondary uppercase tracking-wide mt-3 mb-1">
                 Not yet tested
               </h2>
-              {untested.map((w) => (
+              {pagedUntested.map((w) => (
                 <Link
                   key={w.id}
                   href={`/words/${w.id}`}
@@ -155,6 +173,45 @@ export default function ProgressPageContent({ words, progress }) {
               ))}
             </>
           )}
+        </div>
+      )}
+
+      {ordered.length > 0 && (
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <div className="flex items-center gap-2">
+            {PAGE_SIZES.map((size) => (
+              <button
+                key={size}
+                onClick={() => setPageSize(size)}
+                className={`px-3 py-2 rounded-lg text-xs font-medium border ${
+                  pageSize === size
+                    ? "bg-primary text-white border-primary shadow-sm shadow-primary/25"
+                    : "bg-surface-alt border-border text-text-secondary hover:text-text hover:border-text-secondary"
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+          <span className="text-xs text-text-secondary">
+            Page {safePage} of {totalPages}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={safePage === 1}
+              className="px-3.5 py-2 rounded-lg text-xs font-medium bg-surface-alt border border-border text-text-secondary disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safePage === totalPages}
+              className="px-3.5 py-2 rounded-lg text-xs font-medium bg-surface-alt border border-border text-text-secondary disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>

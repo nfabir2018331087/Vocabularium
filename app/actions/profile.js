@@ -1,12 +1,10 @@
 "use server";
 
 import prisma from "../../lib/prisma";
-import { getSupabaseServer } from "../../lib/supabase/server";
+import { getSupabaseServer, getSupabaseUser } from "../../lib/supabase/server";
 
 async function getAuthenticatedUser() {
-  const supabase = await getSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  return user || null;
+  return getSupabaseUser();
 }
 
 export async function uploadAvatar(formData) {

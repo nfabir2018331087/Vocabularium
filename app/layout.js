@@ -3,7 +3,7 @@ import "./globals.css";
 import BottomNav from "./components/BottomNav";
 import ThemeProvider from "./components/ThemeProvider";
 import AuthProvider from "./components/AuthProvider";
-import { getSupabaseServer } from "../lib/supabase/server";
+import { getSupabaseUser } from "../lib/supabase/server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,8 +35,7 @@ export const viewport = {
 };
 
 export default async function RootLayout({ children }) {
-  const supabase = await getSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getSupabaseUser();
 
   return (
     <html lang="en" suppressHydrationWarning>

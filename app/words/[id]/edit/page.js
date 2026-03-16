@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { getSupabaseServer } from "../../../../lib/supabase/server";
+import { getSupabaseUser } from "../../../../lib/supabase/server";
 import { getWord } from "../../../actions/words";
 import EditForm from "./EditForm";
 import GuestEditPage from "./GuestEditPage";
 
 export default async function EditWord({ params }) {
   const { id } = await params;
-  const supabase = await getSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getSupabaseUser();
 
   if (!user) {
     return <GuestEditPage id={id} />;

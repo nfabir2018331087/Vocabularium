@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { getSupabaseServer } from "../../../lib/supabase/server";
+import { getSupabaseUser } from "../../../lib/supabase/server";
 import { getWord } from "../../actions/words";
 import WordDetailContent from "./WordDetailContent";
 import GuestWordDetail from "./GuestWordDetail";
 
 export default async function WordDetail({ params }) {
   const { id } = await params;
-  const supabase = await getSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getSupabaseUser();
 
   if (!user) {
     return <GuestWordDetail id={id} />;

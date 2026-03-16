@@ -2,19 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "../../lib/prisma";
-import { getSupabaseServer } from "../../lib/supabase/server";
-import { ensureUserExists, claimOrphanWords } from "../../lib/auth-helpers";
-
-async function getAuthenticatedUser() {
-  const supabase = await getSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  await ensureUserExists(user);
-  return user.id;
-}
+import { claimOrphanWords, getAuthenticatedUserId, getAuthenticatedUserIdWithSync } from "../../lib/auth-helpers";
 
 export async function addWord(formData) {
-  const userId = await getAuthenticatedUser();
+  const userId = await getAuthenticatedUserIdWithSync();
   if (!userId) return { error: "Not authenticated" };
 
   const word = formData.get("word")?.trim();
@@ -74,13 +65,23 @@ export async function addWord(formData) {
 }
 
 export async function getWords() {
-  const userId = await getAuthenticatedUser();
+  const userId = await getAuthenticatedUserId();
   if (!userId) return { words: [], error: "Not authenticated" };
 
   try {
     const words = await prisma.word.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        word: true,
+        meaningEn: true,
+        meaningBn: true,
+        partOfSpeech: true,
+        explanation: true,
+        tags: true,
+        createdAt: true,
+      },
     });
     return { words };
   } catch (err) {
@@ -90,7 +91,7 @@ export async function getWords() {
 }
 
 export async function getWord(id) {
-  const userId = await getAuthenticatedUser();
+  const userId = await getAuthenticatedUserId();
   if (!userId) return { error: "Not authenticated" };
 
   try {
@@ -106,7 +107,7 @@ export async function getWord(id) {
 }
 
 export async function updateWord(id, formData) {
-  const userId = await getAuthenticatedUser();
+  const userId = await getAuthenticatedUserIdWithSync();
   if (!userId) return { error: "Not authenticated" };
 
   const word = formData.get("word")?.trim();
@@ -148,7 +149,7 @@ export async function updateWord(id, formData) {
 }
 
 export async function deleteWord(id) {
-  const userId = await getAuthenticatedUser();
+  const userId = await getAuthenticatedUserIdWithSync();
   if (!userId) return { error: "Not authenticated" };
 
   try {
@@ -167,7 +168,7 @@ export async function deleteWord(id) {
 }
 
 export async function migrateLocalWords(localWords) {
-  const userId = await getAuthenticatedUser();
+  const userId = await getAuthenticatedUserIdWithSync();
   if (!userId) return { error: "Not authenticated" };
 
   // First, claim any orphan words (existing DB words without userId)
