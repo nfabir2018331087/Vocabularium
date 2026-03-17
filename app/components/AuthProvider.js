@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { getSupabaseBrowser } from "../../lib/supabase/client";
+import { clearAllCache } from "../../lib/client-cache";
 
 const AuthContext = createContext({
   user: null,
@@ -17,6 +18,7 @@ export function useAuth() {
 export default function AuthProvider({ children, initialUser }) {
   const [user, setUser] = useState(initialUser || null);
   const [loading, setLoading] = useState(!initialUser);
+  const prevUserIdRef = useRef(initialUser?.id || null);
 
   useEffect(() => {
     const supabase = getSupabaseBrowser();
@@ -31,7 +33,14 @@ export default function AuthProvider({ children, initialUser }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+      const nextUser = session?.user || null;
+      const prevUserId = prevUserIdRef.current;
+      const nextUserId = nextUser?.id || null;
+      if (prevUserId !== nextUserId) {
+        clearAllCache();
+        prevUserIdRef.current = nextUserId;
+      }
+      setUser(nextUser);
       setLoading(false);
     });
 
@@ -42,6 +51,7 @@ export default function AuthProvider({ children, initialUser }) {
     const supabase = getSupabaseBrowser();
     await supabase.auth.signOut();
     setUser(null);
+    clearAllCache();
   }
 
   return (

@@ -25,14 +25,11 @@ export async function middleware(request) {
     }
   );
 
-  // Refresh session
-  await supabase.auth.getUser();
-
   return supabaseResponse;
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|icon-.*\\.png|manifest\\.json).*)",
+    "/auth/:path*",
   ],
 };

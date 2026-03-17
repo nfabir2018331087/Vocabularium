@@ -3,7 +3,6 @@ import "./globals.css";
 import BottomNav from "./components/BottomNav";
 import ThemeProvider from "./components/ThemeProvider";
 import AuthProvider from "./components/AuthProvider";
-import { getSupabaseUser } from "../lib/supabase/server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +33,7 @@ export const viewport = {
   themeColor: "#6366f1",
 };
 
-export default async function RootLayout({ children }) {
-  const user = await getSupabaseUser();
-
+export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -56,7 +53,7 @@ export default async function RootLayout({ children }) {
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoBangla.variable} antialiased`}>
         <ThemeProvider>
-          <AuthProvider initialUser={user}>
+          <AuthProvider initialUser={null}>
             <main className="max-w-lg mx-auto px-4 py-6 animate-fade-in">
               {children}
             </main>
