@@ -4,12 +4,17 @@ import Link from "next/link";
 
 export default function QuizResults({ result, words, onRestart, onRetry }) {
   const { score, total, missed, duration } = result;
-  const percentage = Math.round((score / total) * 100);
+  const safeTotal = total || 0;
+  const percentage = safeTotal > 0 ? Math.round((score / safeTotal) * 100) : 0;
 
   let color = "text-emerald-500";
   let bgColor = "bg-emerald-500/10 border-emerald-500/30";
   let label = "Excellent!";
-  if (percentage < 50) {
+  if (safeTotal === 0) {
+    color = "text-text-secondary";
+    bgColor = "bg-surface-alt border-border";
+    label = "No attempts";
+  } else if (percentage < 50) {
     color = "text-red-400";
     bgColor = "bg-red-500/10 border-red-500/30";
     label = "Keep practicing!";

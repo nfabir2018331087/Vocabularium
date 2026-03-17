@@ -38,21 +38,6 @@ model Word {
   @@index([createdAt])
 }
 
-model GlobalWord {
-  id           String   @id @default(cuid())
-  word         String
-  meaningEn    String
-  meaningBn    String?
-  partOfSpeech String?
-  explanation  String?
-  examples     String[]
-  tags         String[]
-  contributedBy String
-  createdAt    DateTime @default(now())
-
-  @@index([word])
-}
-
 model QuizResult {
   id             String   @id @default(cuid())
   mode           String

@@ -63,7 +63,7 @@ export default function AddWord() {
           successMessage="Word added successfully!"
           onWordChange={setCurrentWord}
           assistLoading={assistLoading}
-          wordAccessory={(
+          wordAccessory={!isGuest ? (
             <div className="flex flex-col items-center gap-1 pd-5">
               <span className={`text-[10px] uppercase tracking-wider ${
                 currentWord.trim() || assistLoading ? "text-text-secondary" : "text-text-secondary/60"
@@ -121,7 +121,7 @@ export default function AddWord() {
                 </svg>
               </button>
             </div>
-          )}
+          ) : null}
         />
       </div>
     </div>

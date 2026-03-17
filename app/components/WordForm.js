@@ -2,6 +2,7 @@
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "./AuthProvider";
 import Toast from "./Toast";
 
 const PARTS_OF_SPEECH = [
@@ -29,6 +30,7 @@ const WordForm = forwardRef(function WordForm(
   const [tags, setTags] = useState(initialData?.tags?.join(", ") || "");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const { isGuest } = useAuth();
 
   const showToast = useCallback((message, type = "success") => {
     setToast({ message, type });
@@ -155,9 +157,11 @@ const WordForm = forwardRef(function WordForm(
 
         <div className="relative my-1">
           <div className="h-px bg-border" />
-          <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-3 text-[10px] uppercase tracking-wider text-text-secondary bg-surface">
-            Or fill everything yourself
-          </span>
+          {!isGuest && (
+            <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-3 text-[10px] uppercase tracking-wider text-text-secondary bg-surface">
+              Or fill everything yourself
+            </span>
+          )}
         </div>
 
         {/* Parts of Speech */}

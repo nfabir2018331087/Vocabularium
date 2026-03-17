@@ -162,6 +162,22 @@ function ProfilePageContent() {
 
         <div className="px-4 flex flex-col gap-6">
           {/* Warning alert */}
+          <div className="mx-0 p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
+            <div className="flex gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-red-500 shrink-0 mt-0.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-red-500">Local Storage Only</p>
+                <p className="text-xs text-text-secondary mt-1">
+                  Your words are stored locally on this device. Sign up to sync across devices and keep them safe.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="mx-0 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
             <div className="flex gap-3">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-amber-500 shrink-0 mt-0.5">
@@ -170,9 +186,9 @@ function ProfilePageContent() {
                 <line x1="12" y1="17" x2="12.01" y2="17" />
               </svg>
               <div>
-                <p className="text-sm font-medium text-amber-500">Local storage only</p>
+                <p className="text-sm font-medium text-amber-500">No AI Assist</p>
                 <p className="text-xs text-text-secondary mt-1">
-                  Your words are stored locally on this device. Sign up to sync across devices and keep them safe.
+                  You have to put everything manually for your words. Sign up to get AI assistance for meanings, examples & tags.
                 </p>
               </div>
             </div>

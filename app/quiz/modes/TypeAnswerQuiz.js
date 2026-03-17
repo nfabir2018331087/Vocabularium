@@ -10,6 +10,7 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [missed, setMissed] = useState([]);
+  const [testedIds, setTestedIds] = useState([]);
   const [input, setInput] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -32,6 +33,7 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
     } else {
       setMissed((prev) => [...prev, current.id]);
     }
+    setTestedIds((prev) => [...prev, current.id]);
   }
 
   function handleNext() {
@@ -40,7 +42,8 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
 
     if (index + 1 >= total) {
       const duration = Math.round((Date.now() - startTime.current) / 1000);
-      onFinish({ score: newScore, total, missed: newMissed, duration, testedWordIds: quizWords.map((w) => w.id) });
+      const finalTested = [...testedIds];
+      onFinish({ score: newScore, total: finalTested.length, missed: newMissed, duration, testedWordIds: finalTested });
     } else {
       setIndex((prev) => prev + 1);
       setInput("");
@@ -56,9 +59,12 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
       <div className="flex items-center justify-between">
         <button
           onClick={onQuit}
-          className="text-sm text-red-500 hover:text-red-700 transition-colors"
+          className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-1"
         >
-          Quit
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Back
         </button>
         <span className="text-sm text-text-secondary font-medium">
           {index + 1} / {total}
@@ -140,6 +146,32 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
           </div>
         )}
       </form>
+
+      <div className="flex items-center justify-end gap-2 pt-2">
+        <button
+          onClick={onQuit}
+          className="px-4 py-2 rounded-xl bg-surface-alt border border-border text-sm font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors"
+        >
+          Quit
+        </button>
+        <button
+          onClick={() => {
+            if (testedIds.length === 0) return;
+            const duration = Math.round((Date.now() - startTime.current) / 1000);
+            onFinish({
+              score,
+              total: testedIds.length,
+              missed,
+              duration,
+              testedWordIds: testedIds,
+            });
+          }}
+          disabled={testedIds.length === 0}
+          className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Finish
+        </button>
+      </div>
     </div>
   );
 }

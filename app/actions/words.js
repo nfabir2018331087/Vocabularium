@@ -41,20 +41,6 @@ export async function addWord(formData) {
       },
     });
 
-    // Also add to global word bank
-    await prisma.globalWord.create({
-      data: {
-        word,
-        meaningEn,
-        meaningBn,
-        partOfSpeech,
-        explanation,
-        examples,
-        tags,
-        contributedBy: userId,
-      },
-    }).catch(() => {}); // non-critical, don't fail the main operation
-
     revalidatePath("/");
     revalidatePath("/words");
     return { success: true, id: created.id };
@@ -191,20 +177,6 @@ export async function migrateLocalWords(localWords) {
     }));
 
     await prisma.word.createMany({ data });
-
-    // Also bulk-add to global word bank
-    await prisma.globalWord.createMany({
-      data: data.map((d) => ({
-        word: d.word,
-        meaningEn: d.meaningEn,
-        meaningBn: d.meaningBn,
-        partOfSpeech: d.partOfSpeech,
-        explanation: d.explanation,
-        examples: d.examples,
-        tags: d.tags,
-        contributedBy: userId,
-      })),
-    }).catch(() => {});
 
     revalidatePath("/");
     revalidatePath("/words");
