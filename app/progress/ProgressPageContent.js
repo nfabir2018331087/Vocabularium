@@ -59,7 +59,7 @@ export default function ProgressPageContent({ words, progress }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">Progress</h1>
+          <h1 className="text-2xl font-bold text-primary">Progress</h1>
           <p className="text-xs text-text-secondary mt-0.5">
             {words.length} word{words.length !== 1 ? "s" : ""} &middot; {tested.length} tested
           </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { useRouter } from "next/navigation";
 import Toast from "./Toast";
 
@@ -15,20 +15,57 @@ const PARTS_OF_SPEECH = [
   "Interjection",
 ];
 
-export default function WordForm({ initialData, onSubmit, submitLabel = "Save Word", successMessage = "Word saved!" }) {
+const WordForm = forwardRef(function WordForm(
+  { initialData, onSubmit, submitLabel = "Save Word", successMessage = "Word saved!", onWordChange, assistLoading = false, wordAccessory },
+  ref
+) {
   const router = useRouter();
-  const [examples, setExamples] = useState(
-    initialData?.examples?.length ? initialData.examples : [""]
-  );
-  const [tags, setTags] = useState(
-    initialData?.tags?.join(", ") || ""
-  );
+  const [word, setWord] = useState(initialData?.word || "");
+  const [meaningEn, setMeaningEn] = useState(initialData?.meaningEn || "");
+  const [meaningBn, setMeaningBn] = useState(initialData?.meaningBn || "");
+  const [partOfSpeech, setPartOfSpeech] = useState(initialData?.partOfSpeech || "");
+  const [explanation, setExplanation] = useState(initialData?.explanation || "");
+  const [examples, setExamples] = useState(initialData?.examples?.length ? initialData.examples : [""]);
+  const [tags, setTags] = useState(initialData?.tags?.join(", ") || "");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
   const showToast = useCallback((message, type = "success") => {
     setToast({ message, type });
   }, []);
+
+  useEffect(() => {
+    setWord(initialData?.word || "");
+    setMeaningEn(initialData?.meaningEn || "");
+    setMeaningBn(initialData?.meaningBn || "");
+    setPartOfSpeech(initialData?.partOfSpeech || "");
+    setExplanation(initialData?.explanation || "");
+    setExamples(initialData?.examples?.length ? initialData.examples : [""]);
+    setTags(initialData?.tags?.join(", ") || "");
+    if (onWordChange) onWordChange(initialData?.word || "");
+  }, [initialData, onWordChange]);
+
+  useImperativeHandle(ref, () => ({
+    getWord: () => word,
+    applyAssist: (data) => {
+      if (!data) return;
+      if (typeof data.word === "string" && data.word.trim()) {
+        setWord(data.word.trim());
+        if (onWordChange) onWordChange(data.word.trim());
+      }
+      if (typeof data.meaningEn === "string") setMeaningEn(data.meaningEn);
+      if (typeof data.meaningBn === "string") setMeaningBn(data.meaningBn);
+      if (typeof data.partOfSpeech === "string") setPartOfSpeech(data.partOfSpeech);
+      if (typeof data.explanation === "string") setExplanation(data.explanation);
+      if (Array.isArray(data.examples) && data.examples.length > 0) {
+        setExamples(data.examples);
+      }
+      if (Array.isArray(data.tags) && data.tags.length > 0) {
+        setTags(data.tags.join(", "));
+      }
+    },
+    showToast,
+  }), [word, onWordChange, showToast]);
 
   const addExample = () => setExamples([...examples, ""]);
 
@@ -47,9 +84,14 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
     e.preventDefault();
     setLoading(true);
 
-    const formData = new FormData(e.target);
-    formData.delete("examples");
+    const formData = new FormData();
+    formData.set("word", word);
+    formData.set("meaningEn", meaningEn);
+    formData.set("meaningBn", meaningBn);
+    formData.set("partOfSpeech", partOfSpeech);
+    formData.set("explanation", explanation);
     examples.forEach((ex) => formData.append("examples", ex));
+    formData.set("tags", tags);
 
     const result = await onSubmit(formData);
 
@@ -74,21 +116,48 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
         />
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5" aria-busy={assistLoading}>
+        {assistLoading && (
+          <div className="flex items-center gap-2 text-xs text-text-secondary">
+            <span className="inline-flex h-3 w-3 rounded-full border-2 border-primary/40 border-t-primary animate-spin" />
+            Filling fields with AI...
+          </div>
+        )}
         {/* Word */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="word" className="text-sm font-medium">
             Word <span className="text-red-400">*</span>
           </label>
-          <input
-            id="word"
-            name="word"
-            type="text"
-            required
-            defaultValue={initialData?.word || ""}
-            placeholder="Enter the word"
-            className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
-          />
+          <div className="flex items-end gap-3">
+            <div className="flex-[2] min-w-0">
+              <input
+                id="word"
+                name="word"
+                type="text"
+                required
+                value={word}
+                onChange={(e) => {
+                  setWord(e.target.value);
+                  if (onWordChange) onWordChange(e.target.value);
+                }}
+                placeholder="Enter the word"
+                disabled={assistLoading}
+                className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
+              />
+            </div>
+            {wordAccessory ? (
+              <div className="flex-[1] flex items-end justify-end">
+                {wordAccessory}
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="relative my-1">
+          <div className="h-px bg-border" />
+          <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-3 text-[10px] uppercase tracking-wider text-text-secondary bg-surface">
+            Or fill everything yourself
+          </span>
         </div>
 
         {/* Parts of Speech */}
@@ -99,7 +168,9 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
           <select
             id="partOfSpeech"
             name="partOfSpeech"
-            defaultValue={initialData?.partOfSpeech || ""}
+            value={partOfSpeech}
+            onChange={(e) => setPartOfSpeech(e.target.value)}
+            disabled={assistLoading}
             className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text"
           >
             <option value="" disabled>Select part of speech</option>
@@ -119,8 +190,10 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
             name="meaningEn"
             required
             rows={2}
-            defaultValue={initialData?.meaningEn || ""}
+            value={meaningEn}
+            onChange={(e) => setMeaningEn(e.target.value)}
             placeholder="English meaning"
+            disabled={assistLoading}
             className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50 resize-none"
           />
         </div>
@@ -134,8 +207,10 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
             id="meaningBn"
             name="meaningBn"
             rows={2}
-            defaultValue={initialData?.meaningBn || ""}
+            value={meaningBn}
+            onChange={(e) => setMeaningBn(e.target.value)}
             placeholder="বাংলায় অর্থ লিখুন"
+            disabled={assistLoading}
             className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50 resize-none"
           />
         </div>
@@ -149,8 +224,10 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
             id="explanation"
             name="explanation"
             rows={3}
-            defaultValue={initialData?.explanation || ""}
+            value={explanation}
+            onChange={(e) => setExplanation(e.target.value)}
             placeholder="Add context, notes, or a detailed explanation"
+            disabled={assistLoading}
             className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50 resize-none"
           />
         </div>
@@ -167,12 +244,14 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
                 value={ex}
                 onChange={(e) => updateExample(i, e.target.value)}
                 placeholder={`Example ${i + 1}`}
+                disabled={assistLoading}
                 className="flex-1 px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
               />
               {examples.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeExample(i)}
+                  disabled={assistLoading}
                   className="px-3 rounded-xl border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -186,6 +265,7 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
           <button
             type="button"
             onClick={addExample}
+            disabled={assistLoading}
             className="self-start text-sm text-primary hover:text-primary-dark font-medium transition-colors"
           >
             + Add another example
@@ -204,6 +284,7 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             placeholder='e.g. "novel, The Great Gatsby, formal"'
+            disabled={assistLoading}
             className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
           />
           {tags && (
@@ -225,7 +306,7 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
         {/* Submit */}
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || assistLoading}
           className="w-full py-3.5 rounded-2xl bg-primary text-white font-semibold hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 shadow-lg shadow-primary/25 active:scale-[0.98]"
         >
           {loading ? "Saving..." : submitLabel}
@@ -233,4 +314,6 @@ export default function WordForm({ initialData, onSubmit, submitLabel = "Save Wo
       </form>
     </>
   );
-}
+});
+
+export default WordForm;
