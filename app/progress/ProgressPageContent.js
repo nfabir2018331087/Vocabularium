@@ -55,50 +55,47 @@ export default function ProgressPageContent({ words, progress }) {
   const overallPct = overallTotal > 0 ? Math.round((overallCorrect / overallTotal) * 100) : null;
 
   return (
-    <div className="flex flex-col gap-5 pb-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-primary">Progress</h1>
-          <p className="text-xs text-text-secondary mt-0.5">
-            {words.length} word{words.length !== 1 ? "s" : ""} &middot; {tested.length} tested
-          </p>
-        </div>
+    <div className="flex flex-col gap-5 pb-8 animate-fade-in -mx-4 -mt-6">
+      <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+        <h1 className="text-2xl font-bold text-white">Progress</h1>
+        <p className="text-xs text-white/80 mt-0.5">
+          {words.length} word{words.length !== 1 ? "s" : ""} &middot; {tested.length} tested
+        </p>
+        {overallPct !== null && (
+          <div className="mt-4 flex items-center gap-4 p-4 rounded-2xl border border-white/20 bg-white/10">
+            <p className="text-3xl font-bold text-white">{overallPct}%</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white">Overall accuracy</p>
+              <p className="text-xs text-white/70">{overallCorrect} / {overallTotal} correct across all quizzes</p>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Overall stats */}
-      {overallPct !== null && (
-        <div className={`flex items-center gap-4 p-4 rounded-2xl border ${getAccuracyStyle(overallPct).bg} ${getAccuracyStyle(overallPct).border}`}>
-          <p className={`text-3xl font-bold ${getAccuracyStyle(overallPct).color}`}>{overallPct}%</p>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium">Overall accuracy</p>
-            <p className="text-xs text-text-secondary">{overallCorrect} / {overallTotal} correct across all quizzes</p>
+      <div className="px-4 flex flex-col gap-5">
+
+        {/* Empty state */}
+        {words.length === 0 && (
+          <div className="flex flex-col items-center gap-3 py-12 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="w-12 h-12 text-text-secondary/40">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+            <p className="text-sm text-text-secondary">Add some words and take quizzes to see your progress</p>
+            <Link href="/add" className="text-sm text-primary font-medium">Add your first word</Link>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Empty state */}
-      {words.length === 0 && (
-        <div className="flex flex-col items-center gap-3 py-12 text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="w-12 h-12 text-text-secondary/40">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-          <p className="text-sm text-text-secondary">Add some words and take quizzes to see your progress</p>
-          <Link href="/add" className="text-sm text-primary font-medium">Add your first word</Link>
-        </div>
-      )}
+        {/* No quiz data state */}
+        {words.length > 0 && tested.length === 0 && (
+          <div className="flex flex-col items-center gap-3 py-8 text-center">
+            <p className="text-sm text-text-secondary">Take a quiz to start tracking your progress</p>
+            <Link href="/quiz" className="text-sm text-primary font-medium">Start a quiz</Link>
+          </div>
+        )}
 
-      {/* No quiz data state */}
-      {words.length > 0 && tested.length === 0 && (
-        <div className="flex flex-col items-center gap-3 py-8 text-center">
-          <p className="text-sm text-text-secondary">Take a quiz to start tracking your progress</p>
-          <Link href="/quiz" className="text-sm text-primary font-medium">Start a quiz</Link>
-        </div>
-      )}
-
-      {/* Word list */}
-      {wordsWithAccuracy.length > 0 && (
-        <div className="flex flex-col gap-1.5">
+        {/* Word list */}
+        {wordsWithAccuracy.length > 0 && (
+          <div className="flex flex-col gap-1.5">
           {/* Tested words */}
           {pagedTested.length > 0 && (
             <>
@@ -176,28 +173,28 @@ export default function ProgressPageContent({ words, progress }) {
         </div>
       )}
 
-      {ordered.length > 0 && (
-        <div className="flex items-center justify-between gap-3 pt-2">
-          <div className="flex items-center gap-2">
-            {PAGE_SIZES.map((size) => (
+        {ordered.length > 0 && (
+          <div className="flex items-center justify-between gap-3 pt-2">
+            <div className="flex items-center gap-2">
+              {PAGE_SIZES.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setPageSize(size)}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium border ${
+                    pageSize === size
+                      ? "bg-primary text-white border-primary shadow-sm shadow-primary/25"
+                      : "bg-surface-alt border-border text-text-secondary hover:text-text hover:border-text-secondary"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+            <span className="text-xs text-text-secondary">
+              Page {safePage} of {totalPages}
+            </span>
+            <div className="flex items-center gap-2">
               <button
-                key={size}
-                onClick={() => setPageSize(size)}
-                className={`px-3 py-2 rounded-lg text-xs font-medium border ${
-                  pageSize === size
-                    ? "bg-primary text-white border-primary shadow-sm shadow-primary/25"
-                    : "bg-surface-alt border-border text-text-secondary hover:text-text hover:border-text-secondary"
-                }`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-          <span className="text-xs text-text-secondary">
-            Page {safePage} of {totalPages}
-          </span>
-          <div className="flex items-center gap-2">
-            <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={safePage === 1}
               className="px-3.5 py-2 rounded-lg text-xs font-medium bg-surface-alt border border-border text-text-secondary disabled:opacity-50"
@@ -211,9 +208,10 @@ export default function ProgressPageContent({ words, progress }) {
             >
               Next
             </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

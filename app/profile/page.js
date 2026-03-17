@@ -126,15 +126,19 @@ function ProfilePageContent() {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-6 pb-8">
-        <div className="flex flex-col items-center gap-3 py-8">
-          <div className="w-20 h-20 rounded-full bg-surface-alt skeleton" />
-          <div className="h-6 w-32 bg-surface-alt rounded-lg skeleton" />
-          <div className="h-4 w-48 bg-surface-alt rounded skeleton" />
+      <div className="flex flex-col gap-6 pb-8 -mx-4 -mt-6">
+        <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-20 h-20 rounded-full bg-white/20" />
+            <div className="h-6 w-32 bg-white/20 rounded-lg" />
+            <div className="h-4 w-48 bg-white/15 rounded" />
+          </div>
         </div>
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-14 bg-surface-alt rounded-xl skeleton" />
-        ))}
+        <div className="px-4 flex flex-col gap-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-14 bg-surface-alt rounded-xl skeleton" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -142,63 +146,67 @@ function ProfilePageContent() {
   // Guest state
   if (isGuest) {
     return (
-      <div className="flex flex-col gap-6 pb-8">
-        <div className="flex flex-col items-center gap-3 py-8">
-          <div className="w-20 h-20 rounded-full bg-surface-alt border-2 border-border flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="w-10 h-10 text-text-secondary">
-              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </div>
-          <h1 className="text-xl font-bold">Guest User</h1>
-          <p className="text-sm text-text-secondary text-center">Browsing as guest</p>
-        </div>
-
-        {/* Warning alert */}
-        <div className="mx-0 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
-          <div className="flex gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-amber-500 shrink-0 mt-0.5">
-              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-            <div>
-              <p className="text-sm font-medium text-amber-500">Local storage only</p>
-              <p className="text-xs text-text-secondary mt-1">
-                Your words are stored locally on this device. Sign up to sync across devices and keep them safe.
-              </p>
+      <div className="flex flex-col gap-6 pb-8 -mx-4 -mt-6">
+        <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-20 h-20 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="w-10 h-10 text-white">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
             </div>
+            <h1 className="text-xl font-bold text-white">Guest User</h1>
+            <p className="text-sm text-white/80 text-center">Browsing as guest</p>
           </div>
         </div>
 
-        {/* Auth buttons */}
-        <div className="flex flex-col gap-3">
-          <Link
-            href="/auth/signup"
-            className="w-full py-3 rounded-2xl text-center font-semibold text-sm bg-primary text-white hover:opacity-90 transition-opacity"
-          >
-            Sign Up
-          </Link>
-          <Link
-            href="/auth/login"
-            className="w-full py-3 rounded-2xl text-center font-semibold text-sm bg-surface-alt border border-border text-text hover:border-primary transition-colors"
-          >
-            Log In
-          </Link>
-        </div>
-
-        {/* Theme toggle */}
-        <div className="mt-2">
-          <button
-            onClick={cycleTheme}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-surface-alt border border-border hover:border-primary/50 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-text-secondary">{themeIcons[theme]}</span>
-              <span className="text-sm font-medium">Theme</span>
+        <div className="px-4 flex flex-col gap-6">
+          {/* Warning alert */}
+          <div className="mx-0 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+            <div className="flex gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-amber-500 shrink-0 mt-0.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-amber-500">Local storage only</p>
+                <p className="text-xs text-text-secondary mt-1">
+                  Your words are stored locally on this device. Sign up to sync across devices and keep them safe.
+                </p>
+              </div>
             </div>
-            <span className="text-sm text-text-secondary">{themeLabels[theme]}</span>
-          </button>
+          </div>
+
+          {/* Auth buttons */}
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/auth/signup"
+              className="w-full py-3 rounded-2xl text-center font-semibold text-sm bg-primary text-white hover:opacity-90 transition-opacity"
+            >
+              Sign Up
+            </Link>
+            <Link
+              href="/auth/login"
+              className="w-full py-3 rounded-2xl text-center font-semibold text-sm bg-surface-alt border border-border text-text hover:border-primary transition-colors"
+            >
+              Log In
+            </Link>
+          </div>
+
+          {/* Theme toggle */}
+          <div className="mt-2">
+            <button
+              onClick={cycleTheme}
+              className="w-full flex items-center justify-between p-4 rounded-2xl bg-surface-alt border border-border hover:border-primary/50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-text-secondary">{themeIcons[theme]}</span>
+                <span className="text-sm font-medium">Theme</span>
+              </div>
+              <span className="text-sm text-text-secondary">{themeLabels[theme]}</span>
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -210,124 +218,123 @@ function ProfilePageContent() {
   const initials = displayName?.charAt(0)?.toUpperCase() || "?";
 
   return (
-    <div className="flex flex-col gap-6 pb-8">
-      {/* Migration banner */}
-      {migrating && (
-        <div className="p-4 rounded-2xl bg-primary/10 border border-primary/30">
-          <div className="flex items-center gap-3">
-            <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm font-medium text-primary">Migrating your local words...</p>
-          </div>
-        </div>
-      )}
-      {migrationResult?.success && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
-          <div className="flex gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-emerald-500 shrink-0">
-              <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-            <div>
-              <p className="text-sm font-medium text-emerald-500">Migration complete</p>
-              <p className="text-xs text-text-secondary mt-0.5">
-                {migrationResult.migrated > 0 && `${migrationResult.migrated} local word${migrationResult.migrated > 1 ? "s" : ""} moved to your account. `}
-                {migrationResult.claimed > 0 && `${migrationResult.claimed} existing word${migrationResult.claimed > 1 ? "s" : ""} claimed.`}
-                {migrationResult.migrated === 0 && migrationResult.claimed === 0 && "No words to migrate."}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-      {migrationResult?.error && (
-        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
-          <p className="text-sm text-red-400">{migrationResult.error}</p>
-        </div>
-      )}
-
-      {/* User info + Avatar upload */}
-      <div className="flex flex-col items-center gap-3 py-8">
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="relative group"
-        >
-          {currentAvatarUrl ? (
-            <img
-              src={currentAvatarUrl}
-              alt=""
-              className={`w-20 h-20 rounded-full object-cover border-2 border-primary/30 ${uploading ? "opacity-50" : ""}`}
-            />
-          ) : (
-            <div className={`w-20 h-20 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center ${uploading ? "opacity-50" : ""}`}>
-              <span className="text-2xl font-bold text-primary">{initials}</span>
-            </div>
-          )}
-          {/* Camera overlay */}
-          <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
-              <circle cx="12" cy="13" r="4" />
-            </svg>
-          </div>
-          {uploading && (
-            <div className="absolute inset-0 rounded-full flex items-center justify-center">
-              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
-          onChange={handleAvatarChange}
-          className="hidden"
-        />
-        {/* <p className="text-xs text-text-secondary -mt-1">Tap to change photo</p> */}
-
-        {/* Editable name */}
-        {editingName ? (
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={nameValue}
-              onChange={(e) => setNameValue(e.target.value)}
-              autoFocus
-              className="px-3 py-1.5 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none text-center text-lg font-bold w-48"
-              onKeyDown={(e) => e.key === "Enter" && handleNameSave()}
-            />
-            <button
-              onClick={handleNameSave}
-              disabled={savingName}
-              className="p-1.5 rounded-lg bg-primary text-white hover:opacity-90 disabled:opacity-50"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </button>
-            <button
-              onClick={() => setEditingName(false)}
-              className="p-1.5 rounded-lg bg-surface-alt border border-border text-text-secondary hover:text-text"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-        ) : (
+    <div className="flex flex-col gap-6 pb-8 -mx-4 -mt-6">
+      <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+        <div className="flex flex-col items-center gap-3 py-2">
           <button
-            onClick={() => { setNameValue(displayName); setEditingName(true); }}
-            className="pl-5 flex items-center gap-1.5 group"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="relative group"
           >
-            <h1 className="text-xl font-bold">{displayName}</h1>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
-              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
+            {currentAvatarUrl ? (
+              <img
+                src={currentAvatarUrl}
+                alt=""
+                className={`w-20 h-20 rounded-full object-cover border-2 border-white/40 ${uploading ? "opacity-50" : ""}`}
+              />
+            ) : (
+              <div className={`w-20 h-20 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center ${uploading ? "opacity-50" : ""}`}>
+                <span className="text-2xl font-bold text-white">{initials}</span>
+              </div>
+            )}
+            <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+            </div>
+            {uploading && (
+              <div className="absolute inset-0 rounded-full flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
           </button>
-        )}
-        <p className="text-sm text-text-secondary">{user.email}</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={handleAvatarChange}
+            className="hidden"
+          />
+
+          {editingName ? (
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={nameValue}
+                onChange={(e) => setNameValue(e.target.value)}
+                autoFocus
+                className="px-3 py-1.5 rounded-xl bg-white/15 border border-white/30 focus:border-white/60 focus:outline-none text-center text-lg font-bold text-white w-48"
+                onKeyDown={(e) => e.key === "Enter" && handleNameSave()}
+              />
+              <button
+                onClick={handleNameSave}
+                disabled={savingName}
+                className="p-1.5 rounded-lg bg-white/20 text-white hover:bg-white/30 disabled:opacity-50"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setEditingName(false)}
+                className="p-1.5 rounded-lg bg-white/15 border border-white/30 text-white/80 hover:text-white"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => { setNameValue(displayName); setEditingName(true); }}
+              className="flex items-center gap-1.5 group"
+            >
+              <h1 className="text-xl font-bold text-white">{displayName}</h1>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </button>
+          )}
+          <p className="text-sm text-white/80">{user.email}</p>
+        </div>
       </div>
+
+      <div className="px-4 flex flex-col gap-6">
+        {/* Migration banner */}
+        {migrating && (
+          <div className="p-4 rounded-2xl bg-primary/10 border border-primary/30">
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm font-medium text-primary">Migrating your local words...</p>
+            </div>
+          </div>
+        )}
+        {migrationResult?.success && (
+          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
+            <div className="flex gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-emerald-500 shrink-0">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-emerald-500">Migration complete</p>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  {migrationResult.migrated > 0 && `${migrationResult.migrated} local word${migrationResult.migrated > 1 ? "s" : ""} moved to your account. `}
+                  {migrationResult.claimed > 0 && `${migrationResult.claimed} existing word${migrationResult.claimed > 1 ? "s" : ""} claimed.`}
+                  {migrationResult.migrated === 0 && migrationResult.claimed === 0 && "No words to migrate."}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        {migrationResult?.error && (
+          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
+            <p className="text-sm text-red-400">{migrationResult.error}</p>
+          </div>
+        )}
 
       {/* Theme toggle */}
       <button
@@ -349,21 +356,26 @@ function ProfilePageContent() {
       >
         {signingOut ? "Signing out..." : "Sign Out"}
       </button>
+      </div>
     </div>
   );
 }
 
 function ProfileLoading() {
   return (
-    <div className="flex flex-col gap-6 pb-8">
-      <div className="flex flex-col items-center gap-3 py-8">
-        <div className="w-20 h-20 rounded-full bg-surface-alt skeleton" />
-        <div className="h-6 w-32 bg-surface-alt rounded-lg skeleton" />
-        <div className="h-4 w-48 bg-surface-alt rounded skeleton" />
+    <div className="flex flex-col gap-6 pb-8 -mx-4 -mt-6">
+      <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-20 h-20 rounded-full bg-white/20" />
+          <div className="h-6 w-32 bg-white/20 rounded-lg" />
+          <div className="h-4 w-48 bg-white/15 rounded" />
+        </div>
       </div>
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="h-14 bg-surface-alt rounded-xl skeleton" />
-      ))}
+      <div className="px-4 flex flex-col gap-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-14 bg-surface-alt rounded-xl skeleton" />
+        ))}
+      </div>
     </div>
   );
 }

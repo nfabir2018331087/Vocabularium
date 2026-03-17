@@ -11,9 +11,9 @@ const SORT_OPTIONS = [
   { value: "tags", label: "By Tag" },
 ];
 
-export default function WordsList({ words }) {
+export default function WordsList({ words, searchInHero, searchValue = "", onSearchChange }) {
   const PAGE_SIZES = [5, 10, 20];
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchValue);
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -52,6 +52,12 @@ export default function WordsList({ words }) {
     setPage(1);
   }, [search, sort, pageSize]);
 
+  useEffect(() => {
+    if (searchValue !== search) {
+      setSearch(searchValue);
+    }
+  }, [searchValue]);
+
   const listForPaging = sort === "tags" ? filtered : sorted;
   const totalPages = Math.max(1, Math.ceil(listForPaging.length / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -76,20 +82,24 @@ export default function WordsList({ words }) {
 
   return (
     <>
-      {/* Search */}
-      <div className="relative">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search words, meanings, or tags..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-sm text-text placeholder:text-text-secondary/50"
-        />
-      </div>
+      {!searchInHero && (
+        <div className="relative">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              if (onSearchChange) onSearchChange(e.target.value);
+            }}
+            placeholder="Search words, meanings, or tags..."
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-sm text-text placeholder:text-text-secondary/50"
+          />
+        </div>
+      )}
 
       {/* Sort */}
       <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
