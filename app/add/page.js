@@ -78,16 +78,17 @@ export default function AddWord() {
                     formRef.current?.showToast("Enter a word first.", "error");
                     return;
                   }
-                  setAssistLoading(true);
-                  const result = await assistWord(word);
-                  if (result.error) {
-                    formRef.current?.showToast(result.error, "error");
-                    setAssistLoading(false);
-                    return;
-                  }
-                  if (result.success) {
-                    formRef.current?.applyAssist(result.data);
-                    formRef.current?.showToast("AI filled the fields.");
+                setAssistLoading(true);
+                const result = await assistWord(word);
+                if (result.error) {
+                  formRef.current?.clearFields();
+                  formRef.current?.showToast(result.error, "error");
+                  setAssistLoading(false);
+                  return;
+                }
+                if (result.success) {
+                  formRef.current?.applyAssist(result.data);
+                  formRef.current?.showToast("AI filled the fields.");
                   }
                   setAssistLoading(false);
                 }}

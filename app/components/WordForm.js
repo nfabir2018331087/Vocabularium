@@ -50,21 +50,32 @@ const WordForm = forwardRef(function WordForm(
   useImperativeHandle(ref, () => ({
     getWord: () => word,
     applyAssist: (data) => {
-      if (!data) return;
-      if (typeof data.word === "string" && data.word.trim()) {
-        setWord(data.word.trim());
-        if (onWordChange) onWordChange(data.word.trim());
-      }
-      if (typeof data.meaningEn === "string") setMeaningEn(data.meaningEn);
-      if (typeof data.meaningBn === "string") setMeaningBn(data.meaningBn);
-      if (typeof data.partOfSpeech === "string") setPartOfSpeech(data.partOfSpeech);
-      if (typeof data.explanation === "string") setExplanation(data.explanation);
-      if (Array.isArray(data.examples) && data.examples.length > 0) {
-        setExamples(data.examples);
-      }
-      if (Array.isArray(data.tags) && data.tags.length > 0) {
-        setTags(data.tags.join(", "));
-      }
+      const nextWord = typeof data?.word === "string" ? data.word.trim() : "";
+      const nextMeaningEn = typeof data?.meaningEn === "string" ? data.meaningEn : "";
+      const nextMeaningBn = typeof data?.meaningBn === "string" ? data.meaningBn : "";
+      const nextPartOfSpeech = typeof data?.partOfSpeech === "string" ? data.partOfSpeech : "";
+      const nextExplanation = typeof data?.explanation === "string" ? data.explanation : "";
+      const nextExamples = Array.isArray(data?.examples) ? data.examples.filter((e) => typeof e === "string") : [];
+      const nextTags = Array.isArray(data?.tags) ? data.tags.filter((t) => typeof t === "string") : [];
+
+      setWord(nextWord);
+      if (onWordChange) onWordChange(nextWord);
+      setMeaningEn(nextMeaningEn);
+      setMeaningBn(nextMeaningBn);
+      setPartOfSpeech(nextPartOfSpeech);
+      setExplanation(nextExplanation);
+      setExamples(nextExamples.length > 0 ? nextExamples : [""]);
+      setTags(nextTags.join(", "));
+    },
+    clearFields: () => {
+      setWord(word);
+      if (onWordChange) onWordChange("");
+      setMeaningEn("");
+      setMeaningBn("");
+      setPartOfSpeech("");
+      setExplanation("");
+      setExamples([""]);
+      setTags("");
     },
     showToast,
   }), [word, onWordChange, showToast]);

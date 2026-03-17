@@ -1,7 +1,7 @@
 "use server";
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+const DEFAULT_MODEL = "llama-3.1-8b-instant";
 
 function normalizeWord(value) {
   return (value || "").trim().toLowerCase();
@@ -45,8 +45,8 @@ export async function assistWord(rawWord) {
     "meaningBn: Bangla meaning upto 3 comma separated or empty string",
     "partOfSpeech: one of Noun, Verb, Adjective, Adverb, Pronoun, Preposition, Conjunction, Interjection, or empty string",
     "explanation: brief explanation or empty string",
-    "examples: array of 1-2 example sentences",
-    "tags: array of 1-3 short tags with capitalized first letters",
+    "examples: array of 1-2 example sentences or empty array",
+    "tags: array of 0-2 short tags with capitalized first letters or empty array",
     "error: error message if status is not_found",
   ].join("\n");
 
@@ -74,6 +74,8 @@ export async function assistWord(rawWord) {
     const data = await response.json();
     const content = data?.choices?.[0]?.message?.content || "";
     const parsed = extractJson(content);
+
+    console.log("AI Assist Response:", { content, parsed });
 
     if (!parsed) {
       return { error: "AI response was invalid. Please try again." };
