@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../components/AuthProvider";
@@ -38,7 +38,7 @@ const themeIcons = {
   ),
 };
 
-export default function ProfilePage() {
+function ProfilePageContent() {
   const { user, isGuest, loading, signOut } = useAuth();
   const { theme, cycleTheme } = useTheme();
   const searchParams = useSearchParams();
@@ -350,5 +350,28 @@ export default function ProfilePage() {
         {signingOut ? "Signing out..." : "Sign Out"}
       </button>
     </div>
+  );
+}
+
+function ProfileLoading() {
+  return (
+    <div className="flex flex-col gap-6 pb-8">
+      <div className="flex flex-col items-center gap-3 py-8">
+        <div className="w-20 h-20 rounded-full bg-surface-alt skeleton" />
+        <div className="h-6 w-32 bg-surface-alt rounded-lg skeleton" />
+        <div className="h-4 w-48 bg-surface-alt rounded skeleton" />
+      </div>
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-14 bg-surface-alt rounded-xl skeleton" />
+      ))}
+    </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<ProfileLoading />}>
+      <ProfilePageContent />
+    </Suspense>
   );
 }

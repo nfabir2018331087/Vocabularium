@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../components/AuthProvider";
@@ -11,7 +11,7 @@ const urlErrors = {
   confirmation_failed: "Email confirmation failed or link expired. Please try signing up again.",
 };
 
-export default function Login() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isGuest } = useAuth();
@@ -145,5 +145,28 @@ export default function Login() {
         </Link>
       </p>
     </div>
+  );
+}
+
+function LoginLoading() {
+  return (
+    <div className="flex flex-col gap-6 pb-8">
+      <div className="h-6 w-28 bg-surface-alt rounded-lg skeleton" />
+      <div className="h-4 w-48 bg-surface-alt rounded skeleton" />
+      <div className="h-10 bg-surface-alt rounded-xl skeleton" />
+      <div className="flex flex-col gap-2">
+        {[1, 2].map((i) => (
+          <div key={i} className="h-12 bg-surface-alt rounded-xl skeleton" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={<LoginLoading />}>
+      <LoginContent />
+    </Suspense>
   );
 }
