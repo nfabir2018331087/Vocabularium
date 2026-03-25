@@ -197,7 +197,7 @@ function ProfilePageContent() {
                 <div>
                   <p className="text-sm font-medium text-amber-500">No AI Assist</p>
                   <p className="text-xs text-text-secondary mt-1">
-                    You have to put everything manually for your words. Sign up to get AI assistance for meanings, examples & tags.
+                    Storing word is manual now. Sign up to get AI assistance for meanings, explanations, & examples.
                   </p>
                 </div>
               </div>
