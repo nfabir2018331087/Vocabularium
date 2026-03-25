@@ -100,7 +100,7 @@ export default function HomeContent({ words, progress = {}, inbox = null, inboxU
         <div className="flex gap-3 mt-6">
           <div className="flex-1 bg-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm text-center">
             <p className="text-2xl font-bold text-white">{wordCount}</p>
-            <p className="text-xs text-white/70">Words saved</p>
+            <p className="text-xs text-white/70">Words stored</p>
           </div>
           <div className="flex-1 bg-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm text-center">
             <p className="text-2xl font-bold text-white">{testedCount}</p>
@@ -108,7 +108,7 @@ export default function HomeContent({ words, progress = {}, inbox = null, inboxU
           </div>
           <div className="flex-1 bg-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm text-center">
             <p className="text-2xl font-bold text-white">{overallPct}%</p>
-            <p className="text-xs text-white/70">Overall accuracy</p>
+            <p className="text-xs text-white/70">Accuracy</p>
           </div>
         </div>
       </div>
