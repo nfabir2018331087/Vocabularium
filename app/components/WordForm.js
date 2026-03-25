@@ -169,7 +169,7 @@ const WordForm = forwardRef(function WordForm(
         <div className="relative my-1">
           <div className="h-px bg-border" />
           {!isGuest && (
-            <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-3 text-[10px] uppercase tracking-wider text-text-secondary bg-surface">
+            <span className="text-center absolute left-1/5 right-1/5 min-[428px]:left-1/4 min-[428px]:right-1/4 -top-2.5 px-3 text-[10px] uppercase tracking-wider text-text-secondary bg-surface">
               Or fill everything yourself
             </span>
           )}
