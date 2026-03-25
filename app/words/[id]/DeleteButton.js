@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../components/AuthProvider";
-import { deleteWord } from "../../actions/words";
+import { deleteWord, getWords } from "../../actions/words";
 import { deleteLocalWord } from "../../../lib/local-words";
+import { setCachedWords } from "../../../lib/client-cache";
 
 export default function DeleteButton({ id }) {
   const router = useRouter();
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -23,6 +24,12 @@ export default function DeleteButton({ id }) {
 
     const result = await deleteWord(id);
     if (result.success) {
+      if (user?.id) {
+        const refreshed = await getWords();
+        if (refreshed?.words) {
+          setCachedWords(user.id, refreshed.words);
+        }
+      }
       router.push("/words");
     } else {
       setDeleting(false);

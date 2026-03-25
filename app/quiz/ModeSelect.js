@@ -137,15 +137,40 @@ export default function ModeSelect({ words, onSelect }) {
                 key={m.id}
                 onClick={() => !disabled && onSelect(m.id, m.id === "match_pairs" ? null : count)}
                 disabled={disabled}
-                className={`flex flex-col items-center gap-2 p-5 rounded-2xl border text-center transition-all ${
+                className={`relative flex flex-col items-center gap-2 p-5 rounded-2xl border text-center transition-all ${
                   disabled
                     ? "bg-surface-alt border-border opacity-40 cursor-not-allowed"
                     : "bg-surface-alt border-border card-hover hover:border-primary"
                 }`}
               >
-                <span className={disabled ? "text-text-secondary" : modeColors[m.id]}>
-                  {modeIcons[m.id]}
-                </span>
+                {m.id === "type_answer" && (
+                    <span
+                      className={`absolute top-2 right-2 ${
+                        disabled ? "text-text-secondary/60" : "text-violet-300"
+                      }`}
+                      title="AI assisted"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 3l1.6 3.3L17 8l-3.4 1.7L12 13l-1.6-3.3L7 8l3.4-1.7L12 3z" />
+                        <path d="M5 14l.9 1.8L8 17l-2.1 1.2L5 20l-.9-1.8L2 17l2.1-1.2L5 14z" />
+                        <path d="M18.5 14.5l1.1 2.2L22 18l-2.4 1.3-1.1 2.2-1.1-2.2L15 18l2.4-1.3 1.1-2.2z" />
+                      </svg>
+                    </span>
+                  )}
+                <div className="relative">
+                  <span className={disabled ? "text-text-secondary" : modeColors[m.id]}>
+                    {modeIcons[m.id]}
+                  </span>
+                </div>
                 <span className="text-sm font-semibold">{m.label}</span>
                 <span className="text-xs text-text-secondary">{m.description}</span>
                 {disabled && (

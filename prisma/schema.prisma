@@ -17,6 +17,8 @@ model User {
   updatedAt DateTime @updatedAt
   words       Word[]
   quizResults QuizResult[]
+  sharedSent    SharedWord[] @relation("SharedWordSender")
+  sharedReceived SharedWord[] @relation("SharedWordRecipient")
 }
 
 model Word {
@@ -52,4 +54,25 @@ model QuizResult {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+}
+
+model SharedWord {
+  id           String   @id @default(cuid())
+  word         String
+  meaningEn    String
+  meaningBn    String?
+  partOfSpeech String?
+  explanation  String?
+  examples     String[]
+  tags         String[]
+  createdAt    DateTime @default(now())
+  isNew        Boolean  @default(true)
+
+  senderId     String
+  sender       User     @relation("SharedWordSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipientId  String
+  recipient    User     @relation("SharedWordRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, createdAt])
+  @@index([senderId, createdAt])
 }

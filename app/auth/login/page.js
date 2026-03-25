@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../components/AuthProvider";
@@ -15,22 +15,39 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isGuest } = useAuth();
+  const skipAutoRedirectRef = useRef(false);
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user && !isGuest) router.replace("/profile");
+    if (user && !isGuest && !skipAutoRedirectRef.current) {
+      router.replace("/profile");
+    }
   }, [user, isGuest, router]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
+  const [resetError, setResetError] = useState("");
 
   const urlError = urlErrors[searchParams.get("error")];
+  const prefillEmail = searchParams.get("email");
   const [error, setError] = useState(urlError || null);
+
+  useEffect(() => {
+    if (prefillEmail && !email) {
+      setEmail(prefillEmail);
+    }
+  }, [prefillEmail, email]);
 
   async function handleEmailLogin(e) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setResetMessage("");
+    setResetError("");
+    skipAutoRedirectRef.current = true;
 
     const supabase = getSupabaseBrowser();
     const { error } = await supabase.auth.signInWithPassword({
@@ -44,10 +61,32 @@ function LoginContent() {
           ? "Invalid email or password. Please try again."
           : error.message
       );
+      skipAutoRedirectRef.current = false;
       setLoading(false);
     } else {
       router.push("/profile?migrating=true");
     }
+  }
+
+  async function handleResetPassword() {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setResetError("Enter your email first.");
+      return;
+    }
+    setResetLoading(true);
+    setResetError("");
+    setResetMessage("");
+    const supabase = getSupabaseBrowser();
+    const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/reset`,
+    });
+    if (error) {
+      setResetError(error.message);
+    } else {
+      setResetMessage("Password reset link sent. Check your email.");
+    }
+    setResetLoading(false);
   }
 
   async function handleGoogleLogin() {
@@ -102,6 +141,16 @@ function LoginContent() {
             {error}
           </p>
         )}
+        {resetMessage && (
+          <p className="text-sm text-emerald-500 bg-emerald-500/10 px-4 py-2.5 rounded-xl">
+            {resetMessage}
+          </p>
+        )}
+        {resetError && (
+          <p className="text-sm text-red-400 bg-red-400/10 px-4 py-2.5 rounded-xl">
+            {resetError}
+          </p>
+        )}
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="email" className="text-sm font-medium">Email</label>
@@ -118,15 +167,48 @@ function LoginContent() {
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="password" className="text-sm font-medium">Password</label>
-          <input
-            id="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Your password"
-            className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
-          />
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Your password"
+              className="w-full px-4 py-3 pr-11 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text transition-colors"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M17.94 17.94A10.94 10.94 0 0112 20C7 20 2.73 16.11 1 12c.67-1.61 1.72-3.09 3.06-4.35" />
+                  <path d="M9.9 4.24A10.94 10.94 0 0112 4c5 0 9.27 3.89 11 8-1.01 2.43-2.78 4.5-5.06 5.94" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                  <path d="M9.9 9.9a3 3 0 004.2 4.2" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
+          <div className="flex items-center justify-between">
+            <span />
+            <button
+              type="button"
+              onClick={handleResetPassword}
+              disabled={resetLoading}
+              className="text-xs text-primary font-medium hover:text-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {resetLoading ? "Sending..." : "Forgot password?"}
+            </button>
+          </div>
         </div>
 
         <button

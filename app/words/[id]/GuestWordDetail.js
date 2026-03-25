@@ -38,5 +38,5 @@ export default function GuestWordDetail({ id }) {
     );
   }
 
-  return <WordDetailContent word={word} />;
+  return <WordDetailContent word={word} showShare={false} />;
 }

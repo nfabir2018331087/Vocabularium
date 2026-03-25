@@ -1,56 +1,108 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
+import { gradeTypeAnswers } from "../../actions/quiz";
 import { fuzzyMatch } from "../../../lib/quiz-utils";
 
 export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
   const quizWords = words;
   const total = quizWords.length;
+  const wordMap = useMemo(() => {
+    const map = new Map();
+    for (const w of quizWords) map.set(w.id, w);
+    return map;
+  }, [quizWords]);
 
   const [index, setIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [missed, setMissed] = useState([]);
-  const [testedIds, setTestedIds] = useState([]);
+  const [answers, setAnswers] = useState([]);
   const [input, setInput] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
+  const [grading, setGrading] = useState(false);
   const startTime = useRef(Date.now());
   const inputRef = useRef(null);
 
   const current = quizWords[index];
   const progress = (index / total) * 100;
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (!input.trim() || submitted) return;
+  async function handleFinish(answersToGrade) {
+    if (grading) return;
+    setGrading(true);
+    const duration = Math.round((Date.now() - startTime.current) / 1000);
+    const testedWordIds = answersToGrade.map((a) => a.wordId);
+    const items = answersToGrade.map((a) => {
+      const word = wordMap.get(a.wordId);
+      return {
+        id: a.wordId,
+        word: word?.word || "",
+        meaningEn: word?.meaningEn || "",
+        partOfSpeech: word?.partOfSpeech || "",
+        answer: a.answer,
+      };
+    });
 
-    const correct = fuzzyMatch(input, current.meaningEn);
-    setIsCorrect(correct);
-    setSubmitted(true);
-
-    if (correct) {
-      setScore((prev) => prev + 1);
-    } else {
-      setMissed((prev) => [...prev, current.id]);
+    const ai = await gradeTypeAnswers({ items });
+    let resultsById = new Map();
+    if (ai?.results?.length) {
+      for (const r of ai.results) {
+        resultsById.set(r.id, r);
+      }
     }
-    setTestedIds((prev) => [...prev, current.id]);
+
+    const graded = answersToGrade.map((a) => {
+      const word = wordMap.get(a.wordId);
+      const aiResult = resultsById.get(a.wordId);
+      let status = aiResult?.status;
+      let note = aiResult?.note || "";
+      let verdict = aiResult?.verdict || "";
+      if (!status) {
+        status = fuzzyMatch(a.answer, word?.meaningEn || "") ? "correct" : "wrong";
+      }
+      const normalizedAnswer = (a.answer || "").trim().toLowerCase();
+      const normalizedWord = (word?.word || "").trim().toLowerCase();
+      if (normalizedAnswer && normalizedWord && normalizedAnswer === normalizedWord) {
+        status = "wrong";
+        verdict = "Same as the word";
+      }
+      return {
+        id: a.wordId,
+        word: word?.word || "",
+        meaningEn: word?.meaningEn || "",
+        partOfSpeech: word?.partOfSpeech || "",
+        answer: a.answer,
+        status,
+        note,
+        verdict,
+      };
+    });
+
+    const score = graded.filter((g) => g.status === "correct").length;
+    const missed = graded.filter((g) => g.status !== "correct").map((g) => g.id);
+
+    onFinish({
+      score,
+      total: testedWordIds.length,
+      missed,
+      duration,
+      testedWordIds,
+      aiGrades: graded,
+    });
   }
 
-  function handleNext() {
-    const newScore = score;
-    const newMissed = missed;
+  function handleSubmit(e) {
+    e.preventDefault();
+    const trimmed = input.trim();
+    if (!trimmed || grading) return;
+
+    const nextAnswers = [...answers, { wordId: current.id, answer: trimmed }];
+    setAnswers(nextAnswers);
 
     if (index + 1 >= total) {
-      const duration = Math.round((Date.now() - startTime.current) / 1000);
-      const finalTested = [...testedIds];
-      onFinish({ score: newScore, total: finalTested.length, missed: newMissed, duration, testedWordIds: finalTested });
-    } else {
-      setIndex((prev) => prev + 1);
-      setInput("");
-      setSubmitted(false);
-      setIsCorrect(false);
-      setTimeout(() => inputRef.current?.focus(), 50);
+      handleFinish(nextAnswers);
+      return;
     }
+
+    setIndex((prev) => prev + 1);
+    setInput("");
+    setTimeout(() => inputRef.current?.focus(), 50);
   }
 
   return (
@@ -59,7 +111,8 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
       <div className="flex items-center justify-between">
         <button
           onClick={onQuit}
-          className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-1"
+          disabled={grading}
+          className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
             <polyline points="15 18 9 12 15 6" />
@@ -97,79 +150,42 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          disabled={submitted}
+          disabled={grading}
           autoFocus
           placeholder="Your answer..."
           className={`w-full px-4 py-3 rounded-xl border focus:outline-none transition-colors text-text placeholder:text-text-secondary/50 ${
-            submitted
-              ? isCorrect
-                ? "bg-emerald-500/10 border-emerald-500/50"
-                : "bg-red-500/10 border-red-500/50"
+            grading
+              ? "bg-surface-alt/70 border-border"
               : "bg-surface-alt border-border focus:border-primary"
           }`}
         />
 
-        {!submitted ? (
-          <button
-            type="submit"
-            disabled={!input.trim()}
-            className="w-full py-3.5 rounded-2xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 active:scale-[0.98]"
-          >
-            Check
-          </button>
-        ) : (
-          <div className="flex flex-col gap-3 animate-fade-in">
-            {/* Feedback */}
-            <div className={`px-4 py-3 rounded-xl border text-sm ${
-              isCorrect
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500"
-                : "bg-red-500/10 border-red-500/30 text-red-400"
-            }`}>
-              {isCorrect ? (
-                <p className="font-medium">Correct!</p>
-              ) : (
-                <div>
-                  <p className="font-medium">Not quite</p>
-                  <p className="mt-1 text-text-secondary">
-                    Correct answer: <span className="text-text font-medium">{current.meaningEn}</span>
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <button
-              onClick={handleNext}
-              className="w-full py-3.5 rounded-2xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-all shadow-lg shadow-primary/25 active:scale-[0.98]"
-            >
-              {index + 1 >= total ? "See Results" : "Next"}
-            </button>
-          </div>
-        )}
+        <button
+          type="submit"
+          disabled={!input.trim() || grading}
+          className="w-full py-3.5 rounded-2xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 active:scale-[0.98]"
+        >
+          {grading ? "Grading with AI..." : (index + 1 >= total ? "See Results" : "Next")}
+        </button>
       </form>
 
       <div className="flex items-center justify-end gap-2 pt-2">
         <button
           onClick={onQuit}
-          className="px-4 py-2 rounded-xl bg-surface-alt border border-border text-sm font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors"
+          disabled={grading}
+          className="px-4 py-2 rounded-xl bg-surface-alt border border-border text-sm font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Quit
         </button>
         <button
           onClick={() => {
-            if (testedIds.length === 0) return;
-            const duration = Math.round((Date.now() - startTime.current) / 1000);
-            onFinish({
-              score,
-              total: testedIds.length,
-              missed,
-              duration,
-              testedWordIds: testedIds,
-            });
+            if (answers.length === 0 || grading) return;
+            handleFinish(answers);
           }}
-          disabled={testedIds.length === 0}
+          disabled={answers.length === 0 || grading}
           className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Finish
+          {grading ? "Grading with AI..." : "Finish"}
         </button>
       </div>
     </div>

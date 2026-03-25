@@ -21,14 +21,17 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [emailSent, setEmailSent] = useState(false);
+  const [emailInUse, setEmailInUse] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleEmailSignUp(e) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setEmailInUse(false);
 
     const supabase = getSupabaseBrowser();
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -40,12 +43,25 @@ export default function SignUp() {
     });
 
     if (error) {
-      setError(error.message);
+      const message = error.message === "User already registered"
+        ? "This email is already used. Try another one or log in instead."
+        : error.message;
+      setError(message);
+      setEmailInUse(error.message === "User already registered");
       setLoading(false);
-    } else {
-      setEmailSent(true);
-      setLoading(false);
+      return;
     }
+
+    const existingUser = data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
+    if (existingUser) {
+      setError("This email is already used. Try another one or log in instead.");
+      setEmailInUse(true);
+      setLoading(false);
+      return;
+    }
+
+    setEmailSent(true);
+    setLoading(false);
   }
 
   async function handleGoogleSignUp() {
@@ -119,6 +135,15 @@ export default function SignUp() {
             {error}
           </p>
         )}
+        {emailInUse && (
+          <div className="text-xs text-text-secondary px-2">
+            <span>Use a different email or </span>
+            <Link href={`/auth/login?email=${encodeURIComponent(email)}`} className="text-primary font-medium">
+              log in with this email
+            </Link>
+            .
+          </div>
+        )}
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="fullName" className="text-sm font-medium">Full Name</label>
@@ -148,16 +173,38 @@ export default function SignUp() {
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="password" className="text-sm font-medium">Password</label>
-          <input
-            id="password"
-            type="password"
-            required
-            minLength={6}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="At least 6 characters"
-            className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
-          />
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="At least 6 characters"
+              className="w-full px-4 py-3 pr-11 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text transition-colors"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M17.94 17.94A10.94 10.94 0 0112 20C7 20 2.73 16.11 1 12c.67-1.61 1.72-3.09 3.06-4.35" />
+                  <path d="M9.9 4.24A10.94 10.94 0 0112 4c5 0 9.27 3.89 11 8-1.01 2.43-2.78 4.5-5.06 5.94" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                  <path d="M9.9 9.9a3 3 0 004.2 4.2" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
 
         <button

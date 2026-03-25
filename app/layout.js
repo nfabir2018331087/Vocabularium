@@ -3,6 +3,7 @@ import "./globals.css";
 import BottomNav from "./components/BottomNav";
 import ThemeProvider from "./components/ThemeProvider";
 import AuthProvider from "./components/AuthProvider";
+import BackgroundPrefetch from "./components/BackgroundPrefetch";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +58,7 @@ export default function RootLayout({ children }) {
             <main className="max-w-lg mx-auto px-4 py-6 animate-fade-in">
               {children}
             </main>
+            <BackgroundPrefetch />
             <BottomNav />
           </AuthProvider>
         </ThemeProvider>

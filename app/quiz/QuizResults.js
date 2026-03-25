@@ -6,6 +6,8 @@ export default function QuizResults({ result, words, onRestart, onRetry }) {
   const { score, total, missed, duration } = result;
   const safeTotal = total || 0;
   const percentage = safeTotal > 0 ? Math.round((score / safeTotal) * 100) : 0;
+  const aiGrades = Array.isArray(result?.aiGrades) ? result.aiGrades : [];
+  const aiLabel = result?.mode === "type_answer" && aiGrades.length > 0;
 
   let color = "text-emerald-500";
   let bgColor = "bg-emerald-500/10 border-emerald-500/30";
@@ -36,6 +38,11 @@ export default function QuizResults({ result, words, onRestart, onRetry }) {
       <div className={`flex flex-col items-center gap-3 p-8 rounded-2xl border ${bgColor}`}>
         <p className={`text-5xl font-bold ${color}`}>{percentage}%</p>
         <p className={`text-sm font-semibold ${color}`}>{label}</p>
+        {aiLabel && (
+          <span className="text-[11px] uppercase tracking-wide text-text-secondary">
+            Graded with AI
+          </span>
+        )}
         <div className="flex items-center gap-4 mt-2 text-sm text-text-secondary">
           <span>{score} / {total} correct</span>
           <span className="w-1 h-1 rounded-full bg-text-secondary" />
@@ -44,7 +51,7 @@ export default function QuizResults({ result, words, onRestart, onRetry }) {
       </div>
 
       {/* Missed words */}
-      {missedWords.length > 0 && (
+      {aiGrades.length === 0 && missedWords.length > 0 && (
         <div>
           <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-3">
             Words to review
@@ -65,6 +72,59 @@ export default function QuizResults({ result, words, onRestart, onRetry }) {
                 </svg>
               </Link>
             ))}
+          </div>
+        </div>
+      )}
+
+      {aiGrades.length > 0 && (
+        <div>
+          <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-3">
+            Answer review
+          </h2>
+          <div className="flex flex-col gap-2">
+            {aiGrades.map((g) => {
+              let border = "border-emerald-500/30 bg-emerald-500/10 text-emerald-500";
+              let label = "Correct";
+              if (g.status === "wrong") {
+                border = "border-red-500/30 bg-red-500/10 text-red-400";
+                label = "Wrong";
+              } else if (g.status === "pos_mismatch") {
+                border = "border-amber-500/30 bg-amber-500/10 text-amber-500";
+                label = "Partially correct";
+              }
+              return (
+                <div key={g.id} className={`flex flex-col gap-1.5 p-3 rounded-xl border ${border}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-sm text-text">{g.word}</span>
+                    <span className="text-[10px] uppercase tracking-wide">{label}</span>
+                  </div>
+                  <div className="flex flex-col gap-1 text-xs text-text-secondary">
+                    <div className="flex items-center gap-2">
+                      <span>Your answer:</span>
+                      <span className="text-text font-medium">{g.answer}</span>
+                      {g.status === "pos_mismatch" && (
+                        <span className="text-[10px] uppercase tracking-wide text-amber-500">POS mismatch</span>
+                      )}
+                      {g.status === "correct" && g.verdict && (
+                        <span className="text-[10px] uppercase tracking-wide text-emerald-500">{g.verdict}</span>
+                      )}
+                      {g.status === "wrong" && g.verdict && (
+                        <span className="text-[10px] uppercase tracking-wide text-red-400">{g.verdict}</span>
+                      )}
+                    </div>
+                    <div>
+                      <span>Stored answer:</span>{" "}
+                      <span className="text-text font-medium">{g.meaningEn}</span>
+                    </div>
+                  </div>
+                  {g.status === "pos_mismatch" && (
+                    <p className="text-[11px] text-amber-500/90">
+                      [{g.note || "Wrong part of speech"}]
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

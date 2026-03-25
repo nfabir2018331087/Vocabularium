@@ -1,7 +1,8 @@
 import Link from "next/link";
 import DeleteButton from "./DeleteButton";
+import ShareWordButton from "./ShareWordButton";
 
-export default function WordDetailContent({ word }) {
+export default function WordDetailContent({ word, showShare = true }) {
   return (
     <div className="flex flex-col gap-5 pb-8">
       {/* Header */}
@@ -23,6 +24,7 @@ export default function WordDetailContent({ word }) {
             )}
           </div>
           <div className="flex gap-2 mt-1">
+            {showShare && <ShareWordButton wordId={word.id} />}
             <Link
               href={`/words/${word.id}/edit`}
               className="p-2 rounded-xl bg-surface-alt border border-border hover:border-primary text-text-secondary hover:text-primary transition-colors"

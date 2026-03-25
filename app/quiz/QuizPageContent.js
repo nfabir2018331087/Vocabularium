@@ -35,8 +35,8 @@ export default function QuizPageContent({ words, isGuest }) {
     setScreen("session");
   }, [words]);
 
-  const finishQuiz = useCallback(async ({ score, total, missed, duration, testedWordIds }) => {
-    const resultData = { mode, score, total, missed, duration, testedWordIds };
+  const finishQuiz = useCallback(async ({ score, total, missed, duration, testedWordIds, aiGrades }) => {
+    const resultData = { mode, score, total, missed, duration, testedWordIds, aiGrades };
     setResult(resultData);
     setScreen("results");
 

@@ -6,14 +6,20 @@ import { getWordProgress } from "../actions/quiz";
 import ProgressPageContent from "./ProgressPageContent";
 import GuestProgressPage from "./GuestProgressPage";
 import { useAuth } from "../components/AuthProvider";
-import { getCachedProgress, getCachedWords, setCachedProgress, setCachedWords } from "../../lib/client-cache";
+import { getCachedProgress, getCachedWords, isProgressFresh, isWordsFresh, setCachedProgress, setCachedWords } from "../../lib/client-cache";
+
+const WORDS_TTL_MS = 2 * 60 * 1000;
+const PROGRESS_TTL_MS = 2 * 60 * 1000;
 
 function ProgressLoading() {
   return (
-    <div className="flex flex-col gap-4 pb-8">
-      <div className="h-8 w-40 bg-surface-alt rounded-lg skeleton" />
-      <div className="h-4 w-56 bg-surface-alt rounded skeleton" />
-      <div className="flex flex-col gap-2 mt-2">
+    <div className="flex flex-col gap-4 pb-8 -mx-4 -mt-6">
+      <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+        <div className="h-7 w-32 bg-white/20 rounded-lg" />
+        <div className="h-4 w-56 bg-white/10 rounded mt-2" />
+        <div className="h-16 bg-white/15 rounded-2xl mt-4" />
+      </div>
+      <div className="px-4 flex flex-col gap-2 mt-2">
         {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="h-14 bg-surface-alt rounded-xl skeleton" />
         ))}
@@ -34,19 +40,27 @@ export default function Progress() {
     const userId = user?.id;
     const cachedWords = getCachedWords(userId);
     const cachedProgress = getCachedProgress(userId);
+    const wordsFresh = cachedWords && isWordsFresh(userId, WORDS_TTL_MS);
+    const progressFresh = cachedProgress && isProgressFresh(userId, PROGRESS_TTL_MS);
+
     if (cachedWords) setWords(cachedWords);
     if (cachedProgress) setProgress(cachedProgress);
     setLoadingData(!(cachedWords && cachedProgress));
-    Promise.all([getWords(), getWordProgress()]).then(([w, p]) => {
-      if (!alive) return;
-      const nextWords = w.words || [];
-      const nextProgress = p.progress || {};
-      setWords(nextWords);
-      setProgress(nextProgress);
-      setCachedWords(userId, nextWords);
-      setCachedProgress(userId, nextProgress);
+
+    if (!wordsFresh || !progressFresh) {
+      Promise.all([getWords(), getWordProgress()]).then(([w, p]) => {
+        if (!alive) return;
+        const nextWords = w.words || [];
+        const nextProgress = p.progress || {};
+        setWords(nextWords);
+        setProgress(nextProgress);
+        setCachedWords(userId, nextWords);
+        setCachedProgress(userId, nextProgress);
+        setLoadingData(false);
+      });
+    } else {
       setLoadingData(false);
-    });
+    }
     return () => { alive = false; };
   }, [loading, isGuest, user?.id]);
 

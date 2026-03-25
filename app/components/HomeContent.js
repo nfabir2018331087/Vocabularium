@@ -1,6 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getWords } from "../actions/words";
+import { acceptSharedWord, markSharedWordSeen, removeSharedWord } from "../actions/share";
+import { useAuth } from "./AuthProvider";
+import { setCachedInbox, setCachedWords } from "../../lib/client-cache";
 import { useTheme } from "./ThemeProvider";
 
 const themeIcons = {
@@ -31,14 +36,45 @@ const themeIcons = {
   ),
 };
 
-export default function HomeContent({ words }) {
+export default function HomeContent({ words, progress = {}, inbox = null, inboxUnread = 0, showInbox = true, onWordsRefresh }) {
   const { theme, cycleTheme } = useTheme();
+  const { user } = useAuth();
+  const [inboxItems, setInboxItems] = useState(Array.isArray(inbox) ? inbox : []);
+  const [expandedId, setExpandedId] = useState(null);
+  const [actionId, setActionId] = useState(null);
+  const [actionType, setActionType] = useState(null);
   const wordCount = words?.length || 0;
   const recentWords = words?.slice(0, 3) || [];
-  const tagCount = new Set(words?.flatMap((w) => w.tags) || []).size;
-  const daysActive = wordCount > 0
-    ? Math.ceil((Date.now() - new Date(words[words.length - 1].createdAt)) / (1000 * 60 * 60 * 24))
-    : 0;
+  const testedCount = Object.keys(progress).length;
+  const overallCorrect = Object.values(progress).reduce((sum, s) => sum + (s.tested - s.missed), 0);
+  const overallTotal = Object.values(progress).reduce((sum, s) => sum + s.tested, 0);
+  const overallPct = overallTotal > 0 ? Math.round((overallCorrect / overallTotal) * 100) : 0;
+  const unreadCount = inboxItems.filter((i) => i.isNew).length || inboxUnread;
+  const inboxKey = Array.isArray(inbox)
+    ? inbox.map((i) => `${i.id}:${i.isNew ? 1 : 0}`).join("|")
+    : "";
+  const inboxPreview = inboxItems.slice(0, 1);
+  const updateInboxItems = (updater) => {
+    setInboxItems((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      if (user?.id) setCachedInbox(user.id, next);
+      return next;
+    });
+  };
+
+  const refreshWords = async () => {
+    if (!user?.id) return;
+    const result = await getWords();
+    if (result?.words) {
+      setCachedWords(user.id, result.words);
+      if (typeof onWordsRefresh === "function") onWordsRefresh(result.words);
+    }
+  };
+
+  useEffect(() => {
+    if (!Array.isArray(inbox)) return;
+    setInboxItems(inbox);
+  }, [inboxKey, user?.id]);
 
   return (
     <div className="flex flex-col gap-6 -mx-4 -mt-6">
@@ -67,12 +103,12 @@ export default function HomeContent({ words }) {
             <p className="text-xs text-white/70">Words saved</p>
           </div>
           <div className="flex-1 bg-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm text-center">
-            <p className="text-2xl font-bold text-white">{tagCount}</p>
-            <p className="text-xs text-white/70">Tags</p>
+            <p className="text-2xl font-bold text-white">{testedCount}</p>
+            <p className="text-xs text-white/70">Words tested</p>
           </div>
           <div className="flex-1 bg-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm text-center">
-            <p className="text-2xl font-bold text-white">{daysActive}</p>
-            <p className="text-xs text-white/70">Days active</p>
+            <p className="text-2xl font-bold text-white">{overallPct}%</p>
+            <p className="text-xs text-white/70">Overall accuracy</p>
           </div>
         </div>
       </div>
@@ -125,6 +161,153 @@ export default function HomeContent({ words }) {
         </Link>
       </div>
 
+      {/* Inbox */}
+      {showInbox && (
+      <div className="px-4">
+        <div className="relative w-full p-4 rounded-2xl bg-surface-alt border border-border">
+          {unreadCount > 0 && (
+            <span className="absolute -top-2 -right-2 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-semibold">
+              {unreadCount}
+            </span>
+          )}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-semibold">Inbox</h2>
+              <p className="text-xs text-text-secondary">Shared words from others</p>
+            </div>
+            <Link href="/inbox" className="text-xs text-primary font-medium inline-flex items-center gap-1">
+              View all
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </Link>
+          </div>
+
+          {inboxItems.length === 0 ? (
+            <div className="text-center mt-3 text-sm text-text-secondary">
+              No shared words yet.
+            </div>
+          ) : (
+            <div className="mt-3 flex flex-col gap-2">
+              {inboxPreview.map((item) => {
+                const senderName = item.sender?.name || item.sender?.email || "Unknown sender";
+                const isExpanded = expandedId === item.id;
+                return (
+                  <div key={item.id} className="rounded-xl border border-border bg-surface p-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm">{item.word}</p>
+                        <p className="text-xs text-text-secondary truncate">{item.meaningEn}</p>
+                        <p className="text-[11px] text-text-secondary mt-1">From: {senderName}</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const next = isExpanded ? null : item.id;
+                          setExpandedId(next);
+                          if (!isExpanded && item.isNew) {
+                            markSharedWordSeen(item.id);
+                            updateInboxItems((prev) => prev.map((i) => (
+                              i.id === item.id ? { ...i, isNew: false } : i
+                            )));
+                          }
+                        }}
+                        className="text-xs font-medium text-primary hover:text-primary-dark inline-flex items-center gap-1"
+                      >
+                        {isExpanded ? "Hide" : "View"}
+                        {isExpanded ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                            <polyline points="18 15 12 9 6 15" />
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+
+                    {isExpanded && (
+                      <div className="mt-3 text-xs text-text-secondary flex flex-col gap-2">
+                        {item.partOfSpeech && (
+                          <div>
+                            <span className="text-text font-medium">Part of speech:</span> {item.partOfSpeech}
+                          </div>
+                        )}
+                        <div>
+                          <span className="text-text font-medium">Meaning:</span> {item.meaningEn}
+                        </div>
+                        {item.meaningBn && (
+                          <div>
+                            <span className="text-text font-medium">Bangla:</span> {item.meaningBn}
+                          </div>
+                        )}
+                        {item.explanation && (
+                          <div>
+                            <span className="text-text font-medium">Explanation:</span> {item.explanation}
+                          </div>
+                        )}
+                        {item.examples?.length > 0 && (
+                          <div>
+                            <span className="text-text font-medium">Examples:</span> {item.examples.join(" · ")}
+                          </div>
+                        )}
+                        {item.tags?.length > 0 && (
+                          <div>
+                            <span className="text-text font-medium">Tags:</span> {item.tags.join(", ")}
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-end gap-2 pt-2">
+                          <button
+                            onClick={async () => {
+                              setActionId(item.id);
+                              setActionType("remove");
+                              const result = await removeSharedWord(item.id);
+                              if (!result?.error) {
+                                updateInboxItems((prev) => prev.filter((i) => i.id !== item.id));
+                              }
+                              setActionId(null);
+                              setActionType(null);
+                            }}
+                            disabled={actionId === item.id}
+                            className="px-3 py-1.5 rounded-lg bg-surface-alt border border-border text-xs font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {actionId === item.id && actionType === "remove" ? "Removing..." : "Remove"}
+                          </button>
+                          <button
+                            onClick={async () => {
+                              setActionId(item.id);
+                              setActionType("save");
+                              const result = await acceptSharedWord(item.id);
+                              if (!result?.error) {
+                                updateInboxItems((prev) => prev.filter((i) => i.id !== item.id));
+                                refreshWords();
+                              }
+                              setActionId(null);
+                              setActionType(null);
+                            }}
+                            disabled={actionId === item.id}
+                            className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {actionId === item.id && actionType === "save" ? "Saving..." : "Save"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {inboxItems.length > 0 && (
+            <p className="text-center text-[11px] text-text-secondary mt-2">
+              You have {inboxItems.length} word{inboxItems.length === 1 ? "" : "s"} in the inbox
+            </p>
+          )}
+        </div>
+      </div>
+      )}
+
       {/* Recently Added */}
       {recentWords.length > 0 && (
         <div className="px-4">
@@ -132,8 +315,11 @@ export default function HomeContent({ words }) {
             <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">
               Recently Added
             </h2>
-            <Link href="/words" className="text-xs text-primary font-medium">
+            <Link href="/words" className="text-xs text-primary font-medium inline-flex items-center gap-1">
               View all
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
             </Link>
           </div>
           <div className="flex flex-col gap-2">

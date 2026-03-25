@@ -5,14 +5,18 @@ import { getWords } from "../actions/words";
 import QuizPageContent from "./QuizPageContent";
 import GuestQuizPage from "./GuestQuizPage";
 import { useAuth } from "../components/AuthProvider";
-import { getCachedWords, setCachedWords } from "../../lib/client-cache";
+import { getCachedWords, isWordsFresh, setCachedWords } from "../../lib/client-cache";
+
+const WORDS_TTL_MS = 2 * 60 * 1000;
 
 function QuizLoading() {
   return (
-    <div className="flex flex-col gap-4 pb-8">
-      <div className="h-8 w-32 bg-surface-alt rounded-lg skeleton" />
-      <div className="h-4 w-48 bg-surface-alt rounded skeleton" />
-      <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4 pb-8 -mx-4 -mt-6">
+      <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+        <div className="h-7 w-28 bg-white/20 rounded-lg" />
+        <div className="h-4 w-56 bg-white/10 rounded mt-2" />
+      </div>
+      <div className="px-4 flex flex-col gap-2">
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-28 bg-surface-alt rounded-2xl skeleton" />
         ))}
@@ -31,19 +35,20 @@ export default function QuizPage() {
     if (loading || isGuest) return;
     const userId = user?.id;
     const cached = getCachedWords(userId);
-    if (cached) {
-      setWords(cached);
-      setLoadingWords(false);
+    const fresh = cached && isWordsFresh(userId, WORDS_TTL_MS);
+    if (cached) setWords(cached);
+    setLoadingWords(!cached);
+    if (!fresh) {
+      getWords().then(({ words: w }) => {
+        if (!alive) return;
+        const nextWords = w || [];
+        setWords(nextWords);
+        setCachedWords(userId, nextWords);
+        setLoadingWords(false);
+      });
     } else {
-      setLoadingWords(true);
-    }
-    getWords().then(({ words: w }) => {
-      if (!alive) return;
-      const nextWords = w || [];
-      setWords(nextWords);
-      setCachedWords(userId, nextWords);
       setLoadingWords(false);
-    });
+    }
     return () => { alive = false; };
   }, [loading, isGuest, user?.id]);
 

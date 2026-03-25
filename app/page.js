@@ -2,10 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { getWords } from "./actions/words";
+import { getInbox } from "./actions/share";
+import { getWordProgress } from "./actions/quiz";
 import HomeContent from "./components/HomeContent";
 import GuestHomeContent from "./components/GuestHomeContent";
 import { useAuth } from "./components/AuthProvider";
-import { getCachedWords, setCachedWords } from "../lib/client-cache";
+import { getCachedInbox, getCachedProgress, getCachedWords, isInboxFresh, isProgressFresh, isWordsFresh, setCachedInbox, setCachedProgress, setCachedWords } from "../lib/client-cache";
+
+const WORDS_TTL_MS = 2 * 60 * 1000;
+const PROGRESS_TTL_MS = 2 * 60 * 1000;
+const INBOX_TTL_MS = 2 * 60 * 1000;
 
 function HomeLoading() {
   return (
@@ -26,6 +32,9 @@ function HomeLoading() {
 export default function Home() {
   const { loading, isGuest, user } = useAuth();
   const [words, setWords] = useState([]);
+  const [progress, setProgress] = useState({});
+  const [inbox, setInbox] = useState(null);
+  const [inboxUnread, setInboxUnread] = useState(0);
   const [loadingWords, setLoadingWords] = useState(false);
 
   useEffect(() => {
@@ -33,19 +42,47 @@ export default function Home() {
     if (loading || isGuest) return;
     const userId = user?.id;
     const cached = getCachedWords(userId);
-    if (cached) {
-      setWords(cached);
-      setLoadingWords(false);
-    } else {
-      setLoadingWords(true);
+    const cachedProgress = getCachedProgress(userId);
+    const cachedInbox = getCachedInbox(userId);
+    const fresh = cached && isWordsFresh(userId, WORDS_TTL_MS);
+    const progressFresh = cachedProgress && isProgressFresh(userId, PROGRESS_TTL_MS);
+    const inboxFresh = cachedInbox && isInboxFresh(userId, INBOX_TTL_MS);
+    const shouldFetchInbox = !inboxFresh || (Array.isArray(cachedInbox) && cachedInbox.length === 0);
+    if (cached) setWords(cached);
+    if (cachedProgress) setProgress(cachedProgress);
+    if (cachedInbox) {
+      setInbox(cachedInbox);
+      setInboxUnread(cachedInbox.filter((i) => i.isNew).length);
     }
-    getWords().then(({ words: w }) => {
-      if (!alive) return;
-      const nextWords = w || [];
-      setWords(nextWords);
-      setCachedWords(userId, nextWords);
+    setLoadingWords(!cached);
+    if (!fresh) {
+      getWords().then(({ words: w }) => {
+        if (!alive) return;
+        const nextWords = w || [];
+        setWords(nextWords);
+        setCachedWords(userId, nextWords);
+        setLoadingWords(false);
+      });
+    } else {
       setLoadingWords(false);
-    });
+    }
+    if (!progressFresh) {
+      getWordProgress().then(({ progress: p }) => {
+        if (!alive) return;
+        const nextProgress = p || {};
+        setProgress(nextProgress);
+        setCachedProgress(userId, nextProgress);
+      });
+    }
+    if (shouldFetchInbox) {
+      getInbox().then(({ inbox: items, unread }) => {
+        if (!alive) return;
+        const nextInbox = items || [];
+        setInbox(nextInbox);
+        setInboxUnread(unread || 0);
+        setCachedInbox(userId, nextInbox);
+      });
+    }
     return () => { alive = false; };
   }, [loading, isGuest, user?.id]);
 
@@ -61,5 +98,13 @@ export default function Home() {
     return <HomeLoading />;
   }
 
-  return <HomeContent words={words} />;
+  return (
+    <HomeContent
+      words={words}
+      progress={progress}
+      inbox={inbox}
+      inboxUnread={inboxUnread}
+      onWordsRefresh={setWords}
+    />
+  );
 }
