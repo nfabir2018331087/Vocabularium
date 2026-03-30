@@ -331,7 +331,7 @@ function ProfilePageContent() {
           ) : (
             <button
               onClick={() => { setNameValue(displayName); setEditingName(true); }}
-              className="flex items-center gap-1.5 group"
+              className="pl-5 flex items-center gap-1.5 group"
             >
               <h1 className="text-xl font-bold text-white">{displayName}</h1>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">
