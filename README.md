@@ -1,21 +1,27 @@
 # Vocabularium
 
-A personal vocabulary builder web app for storing English words with meanings, examples, and tags. Built as a mobile-first PWA.
+A personal vocabulary learning app for storing English words with meanings, examples, and quiz modes. Built mobile-first for Bengali speakers learning English.
 
 ## Features
 
-- **Add Words** — Save words with English meaning, Bangla meaning, part of speech, explanation, examples, and tags
-- **Browse & Search** — View all words with sorting (A-Z, newest, by tag) and full-text search
+- **Add Words** — Save words with English meaning, Bengali meaning, part of speech, explanation, examples, and tags
+- **AI Assist** — Auto-fill word details with one click using Groq AI
+- **Browse & Search** — View all words with sorting and full-text search
 - **Edit & Delete** — Manage your vocabulary from the word detail page
+- **4 Quiz Modes** — Flashcard, Multiple Choice, Type Answer (AI-graded), Match Pairs
+- **Progress Tracking** — Quiz history and per-word miss statistics
+- **Word Sharing** — Share words with other users by email; accept or dismiss from inbox
+- **Guest Mode** — Full functionality without an account (stored in IndexedDB); migrates to account on signup
 - **Dark/Light Mode** — System-aware theme with manual toggle
-- **PWA** — Installable on mobile, works like a native app
 - **Bangla Support** — Noto Sans Bengali font for proper rendering
 
 ## Tech Stack
 
-- **Next.js 16** (App Router)
+- **Next.js 16** (App Router) + **React 19**
 - **TailwindCSS 4**
 - **Prisma 6** + **PostgreSQL** (Supabase)
+- **Supabase Auth** (email/password + Google OAuth)
+- **Groq API** (`llama-3.1-8b-instant`) for AI assist and quiz grading
 - **Vercel** (deployment)
 
 ## Setup
@@ -29,6 +35,9 @@ Create a `.env` file:
 ```
 DATABASE_URL=postgresql://...pooler...supabase.com:6543/postgres?pgbouncer=true
 DIRECT_URL=postgresql://...supabase.com:5432/postgres
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+GROQ_API_KEY=your-groq-api-key
 ```
 
 Run migrations and start:
@@ -40,9 +49,5 @@ npm run dev
 
 ## Roadmap
 
-- [ ] Quiz mode with hints and scoring
-- [ ] AI-powered meaning suggestions (Claude API)
-- [ ] AI quiz grading (synonym acceptance)
-- [ ] User authentication
 - [ ] Spaced repetition
 - [ ] Import/export (CSV)

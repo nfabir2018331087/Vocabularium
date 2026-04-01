@@ -236,6 +236,24 @@ function ProfilePageContent() {
             </Link>
           </div>
 
+          {/* User Manual */}
+          <Link
+            href="/profile/manual"
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-surface-alt border border-border hover:border-primary/50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-text-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+                </svg>
+              </span>
+              <span className="text-sm font-medium">User Manual</span>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-text-secondary">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </Link>
+
           {/* Theme toggle */}
           <div className="mt-2">
             <button
@@ -251,6 +269,7 @@ function ProfilePageContent() {
           </div>
         </div>
       </div>
+
     );
   }
 
@@ -378,6 +397,24 @@ function ProfilePageContent() {
           </div>
         )}
 
+      {/* User Manual */}
+      <Link
+        href="/profile/manual"
+        className="w-full flex items-center justify-between p-4 rounded-2xl bg-surface-alt border border-border hover:border-primary/50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-text-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+              <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+            </svg>
+          </span>
+          <span className="text-sm font-medium">User Manual</span>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-text-secondary">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </Link>
+
       {/* Theme toggle */}
       <button
         onClick={cycleTheme}
@@ -400,6 +437,7 @@ function ProfilePageContent() {
       </button>
       </div>
     </div>
+
   );
 }
 
