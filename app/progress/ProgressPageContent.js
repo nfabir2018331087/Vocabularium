@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useCallback } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 function getAccuracy(wordId, progress) {
   const stat = progress[wordId];
@@ -18,8 +19,24 @@ function getAccuracyStyle(accuracy) {
 
 export default function ProgressPageContent({ words, progress }) {
   const PAGE_SIZES = [5, 10, 20];
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
+  const pageSize = (() => {
+    const s = parseInt(searchParams.get("size") || "10", 10);
+    return PAGE_SIZES.includes(s) ? s : 10;
+  })();
+
+  const updateParams = useCallback((updates) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([k, v]) => params.set(k, String(v)));
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, pathname, router]);
+
+  const setPage = (fn) => updateParams({ page: typeof fn === "function" ? fn(page) : fn });
+  const setPageSize = (v) => updateParams({ size: v, page: 1 });
 
   const wordsWithAccuracy = words.map((w) => ({
     ...w,
@@ -45,10 +62,6 @@ export default function ProgressPageContent({ words, progress }) {
   const paged = ordered.slice(startIndex, endIndex);
   const pagedTested = paged.filter((w) => w.accuracy !== null);
   const pagedUntested = paged.filter((w) => w.accuracy === null);
-
-  useEffect(() => {
-    setPage(1);
-  }, [words.length, Object.keys(progress).length, pageSize]);
 
   const overallCorrect = Object.values(progress).reduce((sum, s) => sum + (s.tested - s.missed), 0);
   const overallTotal = Object.values(progress).reduce((sum, s) => sum + s.tested, 0);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { getWords } from "../actions/words";
 import { getWordProgress } from "../actions/quiz";
 import ProgressPageContent from "./ProgressPageContent";
@@ -68,5 +68,9 @@ export default function Progress() {
   if (isGuest) return <GuestProgressPage />;
   if (loadingData) return <ProgressLoading />;
 
-  return <ProgressPageContent words={words} progress={progress} />;
+  return (
+    <Suspense fallback={<ProgressLoading />}>
+      <ProgressPageContent words={words} progress={progress} />
+    </Suspense>
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { getWords } from "../actions/words";
 import WordsPageContent from "./WordsPageContent";
 import GuestWordsPage from "./GuestWordsPage";
@@ -59,5 +59,9 @@ export default function Words() {
   if (isGuest) return <GuestWordsPage />;
   if (loadingWords) return <WordsLoading />;
 
-  return <WordsPageContent words={words} error={error} />;
+  return (
+    <Suspense fallback={<WordsLoading />}>
+      <WordsPageContent words={words} error={error} />
+    </Suspense>
+  );
 }

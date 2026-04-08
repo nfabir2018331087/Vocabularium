@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import ModeSelect from "./ModeSelect";
 import FlashcardQuiz from "./modes/FlashcardQuiz";
 import MultipleChoiceQuiz from "./modes/MultipleChoiceQuiz";
@@ -61,6 +61,24 @@ export default function QuizPageContent({ words, isGuest }) {
     setResult(null);
     setScreen("session");
   }, [words, wordCount]);
+
+  // When entering session or results, push a history entry so the browser
+  // back button returns to mode_select instead of leaving the quiz page.
+  useEffect(() => {
+    if (screen === "mode_select") return;
+
+    if (screen === "session") {
+      // New entry for each session start so back = mode_select
+      window.history.pushState(null, "");
+    }
+
+    const handlePopState = () => {
+      restart();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [screen, restart]);
 
   if (screen === "mode_select") {
     return <ModeSelect words={words} onSelect={startQuiz} />;

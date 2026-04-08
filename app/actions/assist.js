@@ -46,7 +46,7 @@ export async function assistWord(rawWord) {
     "partOfSpeech: one of Noun, Verb, Adjective, Adverb, Pronoun, Preposition, Conjunction, Interjection, or empty string",
     "explanation: brief explanation or empty string",
     "examples: array of 1-2 example sentences or empty array",
-    "tags: array of 0-2 short tags with capitalized first letters or empty array",
+    "tags: array of 0-1 short tag to define broad category of the word with capitalized first letters or empty array",
     "error: error message if status is not_found",
   ].join("\n");
 
@@ -75,7 +75,7 @@ export async function assistWord(rawWord) {
     const content = data?.choices?.[0]?.message?.content || "";
     const parsed = extractJson(content);
 
-    console.log("AI Assist Response:", { content, parsed });
+    console.log("AI Assist Response:", { parsed });
 
     if (!parsed) {
       return { error: "AI response was invalid. Please try again." };

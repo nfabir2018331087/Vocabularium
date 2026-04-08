@@ -1,18 +1,23 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DeleteButton from "./DeleteButton";
 import ShareWordButton from "./ShareWordButton";
 
 export default function WordDetailContent({ word, showShare = true }) {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col gap-5 pb-8">
       {/* Header */}
       <div>
-        <Link href="/words" className="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-primary transition-colors">
+        <button onClick={() => router.back()} className="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-primary transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
             <polyline points="15 18 9 12 15 6" />
           </svg>
           Back
-        </Link>
+        </button>
 
         <div className="flex items-start justify-between mt-3">
           <div>

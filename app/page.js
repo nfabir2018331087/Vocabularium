@@ -94,10 +94,8 @@ export default function Home() {
     return <GuestHomeContent />;
   }
 
-  if (loadingWords) {
-    return <HomeLoading />;
-  }
-
+  // Render the static UI immediately. Inline shimmers handle the dynamic
+  // bits (stats, recent words) when no cache exists yet.
   return (
     <HomeContent
       words={words}
@@ -105,6 +103,7 @@ export default function Home() {
       inbox={inbox}
       inboxUnread={inboxUnread}
       onWordsRefresh={setWords}
+      loading={loadingWords}
     />
   );
 }

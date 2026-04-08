@@ -52,7 +52,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${notoBangla.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${notoBangla.variable} antialiased`} suppressHydrationWarning>
         <ThemeProvider>
           <AuthProvider initialUser={null}>
             <main className="max-w-lg mx-auto px-4 py-6 animate-fade-in">

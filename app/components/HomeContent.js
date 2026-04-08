@@ -36,8 +36,9 @@ const themeIcons = {
   ),
 };
 
-export default function HomeContent({ words, progress = {}, inbox = null, inboxUnread = 0, showInbox = true, onWordsRefresh }) {
+export default function HomeContent({ words, progress = {}, inbox = null, inboxUnread = 0, showInbox = true, onWordsRefresh, loading = false }) {
   const { theme, cycleTheme } = useTheme();
+  const isInitialLoad = loading && (!words || words.length === 0);
   const { user } = useAuth();
   const [inboxItems, setInboxItems] = useState(Array.isArray(inbox) ? inbox : []);
   const [expandedId, setExpandedId] = useState(null);
@@ -99,16 +100,28 @@ export default function HomeContent({ words, progress = {}, inbox = null, inboxU
         {/* Stats */}
         <div className="flex gap-3 mt-6">
           <div className="flex-1 bg-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm text-center">
-            <p className="text-2xl font-bold text-white">{wordCount}</p>
-            <p className="text-xs text-white/70">Words stored</p>
+            {isInitialLoad ? (
+              <div className="h-7 w-10 mx-auto rounded-md bg-white/20 skeleton" />
+            ) : (
+              <p className="text-2xl font-bold text-white">{wordCount}</p>
+            )}
+            <p className="text-xs text-white/70 mt-0.5">Words stored</p>
           </div>
           <div className="flex-1 bg-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm text-center">
-            <p className="text-2xl font-bold text-white">{testedCount}</p>
-            <p className="text-xs text-white/70">Words tested</p>
+            {isInitialLoad ? (
+              <div className="h-7 w-10 mx-auto rounded-md bg-white/20 skeleton" />
+            ) : (
+              <p className="text-2xl font-bold text-white">{testedCount}</p>
+            )}
+            <p className="text-xs text-white/70 mt-0.5">Words tested</p>
           </div>
           <div className="flex-1 bg-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm text-center">
-            <p className="text-2xl font-bold text-white">{overallPct}%</p>
-            <p className="text-xs text-white/70">Accuracy</p>
+            {isInitialLoad ? (
+              <div className="h-7 w-12 mx-auto rounded-md bg-white/20 skeleton" />
+            ) : (
+              <p className="text-2xl font-bold text-white">{overallPct}%</p>
+            )}
+            <p className="text-xs text-white/70 mt-0.5">Accuracy</p>
           </div>
         </div>
       </div>
@@ -308,8 +321,19 @@ export default function HomeContent({ words, progress = {}, inbox = null, inboxU
       </div>
       )}
 
-      {/* Recently Added */}
-      {recentWords.length > 0 && (
+      {/* Recently Added — skeleton while loading first time */}
+      {isInitialLoad && (
+        <div className="px-4">
+          <div className="h-3 w-32 bg-surface-alt rounded skeleton mb-3" />
+          <div className="flex flex-col gap-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-14 bg-surface-alt rounded-xl border border-border skeleton" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!isInitialLoad && recentWords.length > 0 && (
         <div className="px-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { QUIZ_MODES } from "../../lib/quiz-utils";
 
@@ -47,11 +47,11 @@ const modeColors = {
 
 export default function ModeSelect({ words, onSelect }) {
   const wordCount = words.length;
-  const [count, setCount] = useState(() => {
-    if (wordCount <= 5) return wordCount;
-    if (wordCount <= 10) return wordCount;
-    return 10;
-  });
+  const [count, setCount] = useState(wordCount);
+
+  useEffect(() => {
+    if (wordCount > 0 && count === 0) setCount(wordCount);
+  }, [wordCount, count]);
 
   const countOptions = [];
   if (wordCount >= 5) countOptions.push(5);

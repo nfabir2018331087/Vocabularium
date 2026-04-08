@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 const SORT_OPTIONS = [
@@ -13,10 +14,29 @@ const SORT_OPTIONS = [
 
 export default function WordsList({ words, searchInHero, searchValue = "", onSearchChange }) {
   const PAGE_SIZES = [5, 10, 20];
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // page, pageSize, sort live in the URL so they survive navigation
+  const sort = searchParams.get("sort") || "newest";
+  const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
+  const pageSize = (() => {
+    const s = parseInt(searchParams.get("size") || "5", 10);
+    return PAGE_SIZES.includes(s) ? s : 5;
+  })();
+
+  const updateParams = useCallback((updates) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([k, v]) => params.set(k, String(v)));
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, pathname, router]);
+
+  const setSort = (v) => updateParams({ sort: v, page: 1 });
+  const setPage = (fn) => updateParams({ page: typeof fn === "function" ? fn(page) : fn });
+  const setPageSize = (v) => updateParams({ size: v, page: 1 });
+
   const [search, setSearch] = useState(searchValue);
-  const [sort, setSort] = useState("newest");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -49,13 +69,11 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
   }, [filtered, sort]);
 
   useEffect(() => {
-    setPage(1);
-  }, [search, sort, pageSize]);
-
-  useEffect(() => {
     if (searchValue !== search) {
       setSearch(searchValue);
+      updateParams({ page: 1 });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);
 
   const listForPaging = sort === "tags" ? filtered : sorted;
@@ -94,6 +112,7 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
             onChange={(e) => {
               setSearch(e.target.value);
               if (onSearchChange) onSearchChange(e.target.value);
+              updateParams({ page: 1 });
             }}
             placeholder="Search words, meanings, or tags..."
             className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-sm text-text placeholder:text-text-secondary/50"
