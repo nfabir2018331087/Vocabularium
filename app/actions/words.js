@@ -19,6 +19,12 @@ export async function addWord(formData) {
   if (!word) return { error: "Word is required" };
   if (!meaningEn) return { error: "English meaning is required" };
 
+  const duplicate = await prisma.word.findFirst({
+    where: { userId, word: { equals: word, mode: "insensitive" } },
+    select: { id: true },
+  });
+  if (duplicate) return { error: `"${word}" is already in your vocabulary` };
+
   const examples = examplesRaw
     .map((e) => e.trim())
     .filter((e) => e.length > 0);

@@ -150,10 +150,10 @@ export default function MatchPairsQuiz({ words, onFinish, onQuit }) {
         <p className="text-xs text-text-secondary text-center">{mistakes} mistake{mistakes !== 1 ? "s" : ""}</p>
       )}
 
-      <div className="flex items-center justify-end gap-2 pt-2">
+      <div className="flex items-center justify-between pt-2">
         <button
           onClick={onQuit}
-          className="px-4 py-2 rounded-xl bg-surface-alt border border-border text-sm font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors"
+          className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-sm font-semibold text-red-400 hover:bg-red-500/20 transition-colors"
         >
           Quit
         </button>

@@ -28,7 +28,11 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
     setGrading(true);
     const duration = Math.round((Date.now() - startTime.current) / 1000);
     const testedWordIds = answersToGrade.map((a) => a.wordId);
-    const items = answersToGrade.map((a) => {
+
+    const skippedAnswers = answersToGrade.filter((a) => a.skipped);
+    const realAnswers = answersToGrade.filter((a) => !a.skipped);
+
+    const items = realAnswers.map((a) => {
       const word = wordMap.get(a.wordId);
       return {
         id: a.wordId,
@@ -39,40 +43,62 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
       };
     });
 
-    const ai = await gradeTypeAnswers({ items });
-    let resultsById = new Map();
-    if (ai?.results?.length) {
-      for (const r of ai.results) {
-        resultsById.set(r.id, r);
+    let gradedReal = [];
+    if (items.length > 0) {
+      const ai = await gradeTypeAnswers({ items });
+      let resultsById = new Map();
+      if (ai?.results?.length) {
+        for (const r of ai.results) {
+          resultsById.set(r.id, r);
+        }
       }
+
+      gradedReal = realAnswers.map((a) => {
+        const word = wordMap.get(a.wordId);
+        const aiResult = resultsById.get(a.wordId);
+        let status = aiResult?.status;
+        let note = aiResult?.note || "";
+        let verdict = aiResult?.verdict || "";
+        if (!status) {
+          status = fuzzyMatch(a.answer, word?.meaningEn || "") ? "correct" : "wrong";
+        }
+        const normalizedAnswer = (a.answer || "").trim().toLowerCase();
+        const normalizedWord = (word?.word || "").trim().toLowerCase();
+        if (normalizedAnswer && normalizedWord && normalizedAnswer === normalizedWord) {
+          status = "wrong";
+          verdict = "Same as the word";
+        }
+        return {
+          id: a.wordId,
+          word: word?.word || "",
+          meaningEn: word?.meaningEn || "",
+          partOfSpeech: word?.partOfSpeech || "",
+          answer: a.answer,
+          status,
+          note,
+          verdict,
+        };
+      });
     }
 
-    const graded = answersToGrade.map((a) => {
+    const gradedSkipped = skippedAnswers.map((a) => {
       const word = wordMap.get(a.wordId);
-      const aiResult = resultsById.get(a.wordId);
-      let status = aiResult?.status;
-      let note = aiResult?.note || "";
-      let verdict = aiResult?.verdict || "";
-      if (!status) {
-        status = fuzzyMatch(a.answer, word?.meaningEn || "") ? "correct" : "wrong";
-      }
-      const normalizedAnswer = (a.answer || "").trim().toLowerCase();
-      const normalizedWord = (word?.word || "").trim().toLowerCase();
-      if (normalizedAnswer && normalizedWord && normalizedAnswer === normalizedWord) {
-        status = "wrong";
-        verdict = "Same as the word";
-      }
       return {
         id: a.wordId,
         word: word?.word || "",
         meaningEn: word?.meaningEn || "",
         partOfSpeech: word?.partOfSpeech || "",
-        answer: a.answer,
-        status,
-        note,
-        verdict,
+        answer: "",
+        status: "wrong",
+        note: "",
+        verdict: "Unanswered",
       };
     });
+
+    // Reconstruct in original answer order
+    const gradedMap = new Map();
+    [...gradedReal, ...gradedSkipped].forEach((g) => gradedMap.set(g.id, g));
+    const graded = answersToGrade.map((a) => gradedMap.get(a.wordId));
 
     const score = graded.filter((g) => g.status === "correct").length;
     const missed = graded.filter((g) => g.status !== "correct").map((g) => g.id);
@@ -105,19 +131,31 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
     setTimeout(() => inputRef.current?.focus(), 50);
   }
 
+  function handleSkip() {
+    if (grading) return;
+    const nextAnswers = [...answers, { wordId: current.id, answer: "", skipped: true }];
+    setAnswers(nextAnswers);
+
+    if (index + 1 >= total) {
+      handleFinish(nextAnswers);
+      return;
+    }
+
+    setIndex((prev) => prev + 1);
+    setInput("");
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }
+
   return (
     <div className="flex flex-col gap-5 pb-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
-          onClick={onQuit}
+          onClick={handleSkip}
           disabled={grading}
-          className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 rounded-xl bg-surface-alt border border-border text-sm font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-          Back
+          Skip
         </button>
         <span className="text-sm text-text-secondary font-medium">
           {index + 1} / {total}
@@ -169,11 +207,11 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
         </button>
       </form>
 
-      <div className="flex items-center justify-end gap-2 pt-2">
+      <div className="flex items-center justify-between pt-2">
         <button
           onClick={onQuit}
           disabled={grading}
-          className="px-4 py-2 rounded-xl bg-surface-alt border border-border text-sm font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-sm font-semibold text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Quit
         </button>

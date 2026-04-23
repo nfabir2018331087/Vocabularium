@@ -40,18 +40,35 @@ export default function FlashcardQuiz({ words, onFinish, onQuit }) {
     }
   }
 
+  function handleSkip() {
+    const newMissed = [...missed, current.id];
+    const newTestedIds = [...testedIds, current.id];
+    if (index + 1 >= total) {
+      const duration = Math.round((Date.now() - startTime.current) / 1000);
+      onFinish({
+        score: known.length,
+        total: newTestedIds.length,
+        missed: newMissed,
+        duration,
+        testedWordIds: newTestedIds,
+      });
+    } else {
+      setMissed(newMissed);
+      setTestedIds(newTestedIds);
+      setIndex((prev) => prev + 1);
+      setFlipped(false);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-5 pb-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
-          onClick={onQuit}
-          className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-1"
+          onClick={handleSkip}
+          className="px-4 py-2 rounded-xl bg-surface-alt border border-border text-sm font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-          Back
+          Skip
         </button>
         <span className="text-sm text-text-secondary font-medium">
           {index + 1} / {total}
@@ -115,10 +132,10 @@ export default function FlashcardQuiz({ words, onFinish, onQuit }) {
         </div>
       )}
 
-      <div className="flex items-center justify-end gap-2 pt-2">
+      <div className="flex items-center justify-between pt-2">
         <button
           onClick={onQuit}
-          className="px-4 py-2 rounded-xl bg-surface-alt border border-border text-sm font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors"
+          className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-sm font-semibold text-red-400 hover:bg-red-500/20 transition-colors"
         >
           Quit
         </button>

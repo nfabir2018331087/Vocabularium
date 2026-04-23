@@ -17,12 +17,20 @@ function getAccuracyStyle(accuracy) {
   return { color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/30", barColor: "bg-red-500" };
 }
 
+const SORT_OPTIONS = [
+  { value: "accuracy-asc", label: "Accuracy ↑" },
+  { value: "accuracy-desc", label: "Accuracy ↓" },
+  { value: "frequency-asc", label: "Frequency ↑" },
+  { value: "frequency-desc", label: "Frequency ↓" },
+];
+
 export default function ProgressPageContent({ words, progress }) {
   const PAGE_SIZES = [5, 10, 20];
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const sort = searchParams.get("sort") || "accuracy-asc";
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
   const pageSize = (() => {
     const s = parseInt(searchParams.get("size") || "10", 10);
@@ -37,23 +45,25 @@ export default function ProgressPageContent({ words, progress }) {
 
   const setPage = (fn) => updateParams({ page: typeof fn === "function" ? fn(page) : fn });
   const setPageSize = (v) => updateParams({ size: v, page: 1 });
+  const setSort = (v) => updateParams({ sort: v, page: 1 });
 
   const wordsWithAccuracy = words.map((w) => ({
     ...w,
     accuracy: getAccuracy(w.id, progress),
   }));
 
-  // Sort: tested words first (lowest accuracy first), then untested
-  wordsWithAccuracy.sort((a, b) => {
-    if (a.accuracy === null && b.accuracy === null) return 0;
-    if (a.accuracy === null) return 1;
-    if (b.accuracy === null) return -1;
+  const tested = wordsWithAccuracy.filter((w) => w.accuracy !== null);
+  const untested = wordsWithAccuracy.filter((w) => w.accuracy === null);
+
+  const sortedTested = [...tested].sort((a, b) => {
+    if (sort === "frequency-desc") return (progress[b.id]?.tested ?? 0) - (progress[a.id]?.tested ?? 0);
+    if (sort === "frequency-asc") return (progress[a.id]?.tested ?? 0) - (progress[b.id]?.tested ?? 0);
+    if (sort === "accuracy-desc") return b.accuracy - a.accuracy;
+    // default: accuracy-asc (lowest accuracy first)
     return a.accuracy - b.accuracy;
   });
 
-  const tested = wordsWithAccuracy.filter((w) => w.accuracy !== null);
-  const untested = wordsWithAccuracy.filter((w) => w.accuracy === null);
-  const ordered = useMemo(() => [...tested, ...untested], [tested, untested]);
+  const ordered = useMemo(() => [...sortedTested, ...untested], [sortedTested, untested]);
 
   const totalPages = Math.max(1, Math.ceil(ordered.length / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -103,6 +113,25 @@ export default function ProgressPageContent({ words, progress }) {
           <div className="flex flex-col items-center gap-3 py-8 text-center">
             <p className="text-sm text-text-secondary">Take a quiz to start tracking your progress</p>
             <Link href="/quiz" className="text-sm text-primary font-medium">Start a quiz</Link>
+          </div>
+        )}
+
+        {/* Sort chips — only shown when there are tested words */}
+        {tested.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+            {SORT_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setSort(opt.value)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                  sort === opt.value
+                    ? "bg-primary text-white shadow-sm shadow-primary/25"
+                    : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
         )}
 

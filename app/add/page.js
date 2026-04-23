@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useAuth } from "../components/AuthProvider";
 import { addWord } from "../actions/words";
 import { assistWord } from "../actions/assist";
-import { addLocalWord } from "../../lib/local-words";
+import { addLocalWord, getLocalWords } from "../../lib/local-words";
 import WordForm from "../components/WordForm";
 
 export default function AddWord() {
@@ -24,6 +24,12 @@ export default function AddWord() {
 
     if (!word) return { error: "Word is required" };
     if (!meaningEn) return { error: "English meaning is required" };
+
+    const existingWords = await getLocalWords();
+    const isDuplicate = existingWords.some(
+      (w) => w.word?.toLowerCase() === word.toLowerCase()
+    );
+    if (isDuplicate) return { error: `"${word}" is already in your vocabulary` };
 
     const examples = examplesRaw
       .map((e) => e.trim())

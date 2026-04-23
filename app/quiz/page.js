@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { getWords } from "../actions/words";
+import { getWordProgress } from "../actions/quiz";
 import QuizPageContent from "./QuizPageContent";
 import GuestQuizPage from "./GuestQuizPage";
 import { useAuth } from "../components/AuthProvider";
-import { getCachedWords, isWordsFresh, setCachedWords } from "../../lib/client-cache";
+import { getCachedWords, isWordsFresh, setCachedWords, getCachedProgress, isProgressFresh, setCachedProgress } from "../../lib/client-cache";
 
 const WORDS_TTL_MS = 2 * 60 * 1000;
+const PROGRESS_TTL_MS = 2 * 60 * 1000;
 
 function QuizLoading() {
   return (
@@ -28,27 +30,50 @@ function QuizLoading() {
 export default function QuizPage() {
   const { loading, isGuest, user } = useAuth();
   const [words, setWords] = useState([]);
+  const [progress, setProgress] = useState({});
   const [loadingWords, setLoadingWords] = useState(false);
 
   useEffect(() => {
     let alive = true;
     if (loading || isGuest) return;
     const userId = user?.id;
+
     const cached = getCachedWords(userId);
     const fresh = cached && isWordsFresh(userId, WORDS_TTL_MS);
     if (cached) setWords(cached);
     setLoadingWords(!cached);
+
+    const cachedProgress = getCachedProgress(userId);
+    const progressFresh = cachedProgress && isProgressFresh(userId, PROGRESS_TTL_MS);
+    if (cachedProgress) setProgress(cachedProgress);
+
+    const fetchPromises = [];
+
     if (!fresh) {
-      getWords().then(({ words: w }) => {
-        if (!alive) return;
-        const nextWords = w || [];
-        setWords(nextWords);
-        setCachedWords(userId, nextWords);
-        setLoadingWords(false);
-      });
+      fetchPromises.push(
+        getWords().then(({ words: w }) => {
+          if (!alive) return;
+          const nextWords = w || [];
+          setWords(nextWords);
+          setCachedWords(userId, nextWords);
+          setLoadingWords(false);
+        })
+      );
     } else {
       setLoadingWords(false);
     }
+
+    if (!progressFresh) {
+      fetchPromises.push(
+        getWordProgress().then(({ progress: p }) => {
+          if (!alive) return;
+          const nextProgress = p || {};
+          setProgress(nextProgress);
+          setCachedProgress(userId, nextProgress);
+        })
+      );
+    }
+
     return () => { alive = false; };
   }, [loading, isGuest, user?.id]);
 
@@ -56,5 +81,5 @@ export default function QuizPage() {
   if (isGuest) return <GuestQuizPage />;
   if (loadingWords) return <QuizLoading />;
 
-  return <QuizPageContent words={words} isGuest={false} />;
+  return <QuizPageContent words={words} isGuest={false} progress={progress} />;
 }

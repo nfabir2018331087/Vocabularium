@@ -2,15 +2,27 @@
 
 import { useState, useEffect } from "react";
 import { getLocalWords } from "../../lib/local-words";
+import { getLocalQuizResults } from "../../lib/local-quiz";
 import QuizPageContent from "./QuizPageContent";
 
 export default function GuestQuizPage() {
   const [words, setWords] = useState([]);
+  const [progress, setProgress] = useState({});
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    getLocalWords().then((w) => {
+    Promise.all([getLocalWords(), getLocalQuizResults()]).then(([w, results]) => {
+      const stats = {};
+      for (const r of results) {
+        if (!r.testedWordIds) continue;
+        for (const wid of r.testedWordIds) {
+          if (!stats[wid]) stats[wid] = { tested: 0, missed: 0 };
+          stats[wid].tested++;
+          if (r.missed?.includes(wid)) stats[wid].missed++;
+        }
+      }
       setWords(w);
+      setProgress(stats);
       setLoaded(true);
     });
   }, []);
@@ -29,5 +41,5 @@ export default function GuestQuizPage() {
     );
   }
 
-  return <QuizPageContent words={words} isGuest={true} />;
+  return <QuizPageContent words={words} isGuest={true} progress={progress} />;
 }

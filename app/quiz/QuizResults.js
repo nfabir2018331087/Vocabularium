@@ -101,14 +101,16 @@ export default function QuizResults({ result, words, onRestart, onRetry }) {
                   <div className="flex flex-col gap-1 text-xs text-text-secondary">
                     <div className="flex items-center gap-2">
                       <span>Your answer:</span>
-                      <span className="text-text font-medium">{g.answer}</span>
+                      <span className={`font-medium ${g.answer ? "text-text" : "text-text-secondary italic"}`}>
+                        {g.answer || "Unanswered"}
+                      </span>
                       {g.status === "pos_mismatch" && (
                         <span className="text-[10px] uppercase tracking-wide text-amber-500">POS mismatch</span>
                       )}
                       {g.status === "correct" && g.verdict && (
                         <span className="text-[10px] uppercase tracking-wide text-emerald-500">{g.verdict}</span>
                       )}
-                      {g.status === "wrong" && g.verdict && (
+                      {g.status === "wrong" && g.verdict && g.answer && (
                         <span className="text-[10px] uppercase tracking-wide text-red-400">{g.verdict}</span>
                       )}
                     </div>

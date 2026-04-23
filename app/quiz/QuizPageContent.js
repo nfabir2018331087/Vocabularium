@@ -9,7 +9,7 @@ import MatchPairsQuiz from "./modes/MatchPairsQuiz";
 import QuizResults from "./QuizResults";
 import { saveQuizResult } from "../actions/quiz";
 import { saveLocalQuizResult } from "../../lib/local-quiz";
-import { shuffle } from "../../lib/quiz-utils";
+import { weightedSample } from "../../lib/quiz-utils";
 
 const MODE_COMPONENTS = {
   flashcard: FlashcardQuiz,
@@ -18,7 +18,7 @@ const MODE_COMPONENTS = {
   match_pairs: MatchPairsQuiz,
 };
 
-export default function QuizPageContent({ words, isGuest }) {
+export default function QuizPageContent({ words, isGuest, progress = {} }) {
   const [screen, setScreen] = useState("mode_select");
   const [mode, setMode] = useState(null);
   const [wordCount, setWordCount] = useState(null);
@@ -26,14 +26,11 @@ export default function QuizPageContent({ words, isGuest }) {
   const sessionWordsRef = useRef(null);
 
   const startQuiz = useCallback((selectedMode, count) => {
-    const shuffled = shuffle(words);
-    // For match_pairs, count is null (handled internally)
-    // For others, slice to selected count
-    sessionWordsRef.current = count ? shuffled.slice(0, count) : shuffled;
+    sessionWordsRef.current = weightedSample(words, count, progress);
     setMode(selectedMode);
     setWordCount(count);
     setScreen("session");
-  }, [words]);
+  }, [words, progress]);
 
   const finishQuiz = useCallback(async ({ score, total, missed, duration, testedWordIds, aiGrades }) => {
     const resultData = { mode, score, total, missed, duration, testedWordIds, aiGrades };
@@ -56,11 +53,10 @@ export default function QuizPageContent({ words, isGuest }) {
   }, []);
 
   const retryMode = useCallback(() => {
-    const shuffled = shuffle(words);
-    sessionWordsRef.current = wordCount ? shuffled.slice(0, wordCount) : shuffled;
+    sessionWordsRef.current = weightedSample(words, wordCount, progress);
     setResult(null);
     setScreen("session");
-  }, [words, wordCount]);
+  }, [words, wordCount, progress]);
 
   // When entering session or results, push a history entry so the browser
   // back button returns to mode_select instead of leaving the quiz page.
