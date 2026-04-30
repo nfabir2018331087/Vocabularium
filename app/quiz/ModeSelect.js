@@ -130,7 +130,7 @@ function QuizConfigModal({ mode, words, onStart, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-surface rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm max-h-[88vh] flex flex-col shadow-xl"
+        className="bg-surface rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm max-h-[88vh] flex flex-col shadow-xl mb-16 sm:mb-0"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile drag handle */}
