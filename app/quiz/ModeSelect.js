@@ -80,8 +80,8 @@ function QuizConfigModal({ mode, words, onStart, onClose }) {
   const countOptions = useMemo(() => {
     const opts = [];
     if (filteredCount >= 5) opts.push(5);
-    if (filteredCount >= 10) opts.push(10);
-    if (filteredCount > 10) opts.push(filteredCount);
+    if (filteredCount > 10) opts.push(10);
+    if (filteredCount > 5) opts.push(filteredCount); // "All" — only when there's a real choice
     if (opts.length === 0) opts.push(filteredCount);
     return opts;
   }, [filteredCount]);
