@@ -18,17 +18,31 @@ const MODE_COMPONENTS = {
   match_pairs: MatchPairsQuiz,
 };
 
+function filterWordPool(words, filterType, filterValues) {
+  if (filterType === "tags" && filterValues.length > 0) {
+    return words.filter((w) => (w.tags ?? []).some((t) => filterValues.includes(t)));
+  }
+  if (filterType === "letters" && filterValues.length > 0) {
+    return words.filter((w) => w.word?.[0] && filterValues.includes(w.word[0].toUpperCase()));
+  }
+  return words;
+}
+
 export default function QuizPageContent({ words, isGuest, progress = {} }) {
   const [screen, setScreen] = useState("mode_select");
   const [mode, setMode] = useState(null);
   const [wordCount, setWordCount] = useState(null);
+  const [filterConfig, setFilterConfig] = useState(null);
   const [result, setResult] = useState(null);
   const sessionWordsRef = useRef(null);
 
-  const startQuiz = useCallback((selectedMode, count) => {
-    sessionWordsRef.current = weightedSample(words, count, progress);
+  const startQuiz = useCallback((selectedMode, config) => {
+    const { count, filterType, filterValues } = config;
+    const pool = filterWordPool(words, filterType, filterValues);
+    sessionWordsRef.current = weightedSample(pool, count, progress);
     setMode(selectedMode);
     setWordCount(count);
+    setFilterConfig(config);
     setScreen("session");
   }, [words, progress]);
 
@@ -48,15 +62,18 @@ export default function QuizPageContent({ words, isGuest, progress = {} }) {
     setScreen("mode_select");
     setMode(null);
     setWordCount(null);
+    setFilterConfig(null);
     setResult(null);
     sessionWordsRef.current = null;
   }, []);
 
   const retryMode = useCallback(() => {
-    sessionWordsRef.current = weightedSample(words, wordCount, progress);
+    const { count, filterType, filterValues } = filterConfig ?? {};
+    const pool = filterWordPool(words, filterType ?? "random", filterValues ?? []);
+    sessionWordsRef.current = weightedSample(pool, count ?? wordCount, progress);
     setResult(null);
     setScreen("session");
-  }, [words, wordCount, progress]);
+  }, [words, wordCount, progress, filterConfig]);
 
   // When entering session or results, push a history entry so the browser
   // back button returns to mode_select instead of leaving the quiz page.

@@ -22,7 +22,7 @@ const sections = [
           'Fill in the word, English meaning, and optionally: Bengali meaning, part of speech, explanation, example sentences, and tags.',
           'Tap Save. The word is stored on your device.',
         ],
-        note: "AI Assist is not available in guest mode. You fill in everything manually.",
+        note: "AI Assist is not available in guest mode. You fill in everything manually. The app will warn you if you try to save a word that already exists in your library.",
       },
       {
         icon: (
@@ -49,7 +49,13 @@ const sections = [
         color: "green",
         steps: [
           'Tap Quiz in the bottom nav.',
-          'Choose a mode — each has a minimum word requirement:',
+          'Tap a mode card to open the quiz configuration panel.',
+          'Choose your Word Pool: Random (default), By Tags, or By Letters.',
+          'By Tags: select one or more tags — only words with those tags are included.',
+          'By Letters: tap one or more letters — only words starting with those letters are included.',
+          'If the filtered pool has more words than the quiz size, the app picks randomly from it. If fewer, it uses all of them.',
+          'Select the quiz size (if more than one option is available), then tap Start Quiz.',
+          'You can skip any question during a quiz — skipped questions count as missed.',
         ],
         modes: [
           { name: "Flashcard", min: "1+ words", desc: "Tap to flip between word and meaning." },
@@ -115,7 +121,7 @@ const sections = [
           'The AI auto-fills: English meaning, Bengali meaning, part of speech, explanation, example sentences, and tags.',
           'Review and edit anything before saving.',
         ],
-        note: "Powered by Groq (llama-3.1-8b-instant). Results are fast and usually accurate.",
+        note: "Powered by Groq (llama-3.3-70b-versatile). Results are fast and usually accurate.",
       },
       {
         icon: (
@@ -127,7 +133,9 @@ const sections = [
         color: "blue",
         steps: [
           'Tap + to add a word. Use AI Assist or fill in manually.',
+          'The app prevents duplicates — if the word already exists in your library, you will see a warning and the save will be blocked.',
           'Tap any word in your list → tap Edit to change it.',
+          'The Update Word button only becomes active once you make a change — unchanged forms cannot be submitted.',
           'Tap Delete on the word detail page to remove it.',
           'Words sync to your account immediately.',
         ],
@@ -175,8 +183,15 @@ const sections = [
         title: "Quiz Modes",
         color: "green",
         steps: [
-          'All 4 quiz modes available — same as guest.',
+          'Tap a mode card to open the quiz configuration panel.',
+          'Choose your Word Pool: Random, By Tags, or By Letters.',
+          'Random uses weighted selection — words you\'ve tested less often and words you struggle with are picked more frequently.',
+          'By Tags: select one or more tags — only words carrying those tags enter the pool.',
+          'By Letters: tap one or more A–Z letters — only words starting with those letters enter the pool.',
+          'If the filtered pool exceeds the chosen quiz size, weighted randomization picks from it. If it\'s smaller, all words are used.',
+          'Select your quiz size, then tap Start Quiz.',
           'Type Answer is AI-graded: synonyms and close answers are accepted.',
+          'You can skip any question — skipped questions count as missed.',
           'Quiz results are saved to your account and visible in Progress.',
         ],
         modes: [

@@ -9,9 +9,9 @@ export default function Toast({ message, type = "success", onClose }) {
   }, [onClose]);
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-max max-w-[80vw]">
       <div
-        className={`px-5 py-3 rounded-xl shadow-lg text-sm font-medium transition-all animate-toast-down ${
+        className={`px-5 py-3 rounded-xl shadow-lg text-sm font-medium text-center transition-all animate-toast-down ${
           type === "success"
             ? "bg-emerald-500 text-white"
             : "bg-red-500 text-white"

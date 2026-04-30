@@ -4,11 +4,12 @@ A personal vocabulary learning app for storing English words with meanings, exam
 
 ## Features
 
-- **Add Words** — Save words with English meaning, Bengali meaning, part of speech, explanation, examples, and tags
+- **Add Words** — Save words with English meaning, Bengali meaning, part of speech, explanation, examples, and tags; duplicate words are automatically rejected
 - **AI Assist** — Auto-fill word details with one click using Groq AI
 - **Browse & Search** — View all words with sorting and full-text search
 - **Edit & Delete** — Manage your vocabulary from the word detail page
-- **4 Quiz Modes** — Flashcard, Multiple Choice, Type Answer (AI-graded), Match Pairs
+- **4 Quiz Modes** — Flashcard, Multiple Choice, Type Answer (AI-graded), Match Pairs; word pool can be filtered by tag or starting letter before each session
+- **Weighted Quiz Randomization** — Words are selected based on quiz history; untested and frequently missed words are prioritized
 - **Progress Tracking** — Quiz history and per-word miss statistics
 - **Word Sharing** — Share words with other users by email; accept or dismiss from inbox
 - **Guest Mode** — Full functionality without an account (stored in IndexedDB); migrates to account on signup
@@ -21,7 +22,7 @@ A personal vocabulary learning app for storing English words with meanings, exam
 - **TailwindCSS 4**
 - **Prisma 6** + **PostgreSQL** (Supabase)
 - **Supabase Auth** (email/password + Google OAuth)
-- **Groq API** (`llama-3.1-8b-instant`) for AI assist and quiz grading
+- **Groq API** (`llama-3.3-70b-versatile`) for AI assist and quiz grading
 - **Vercel** (deployment)
 
 ## Setup
@@ -47,7 +48,9 @@ npx prisma migrate dev
 npm run dev
 ```
 
-## Roadmap
+## Upcoming Features
 
-- [ ] Spaced repetition
-- [ ] Import/export (CSV)
+- [ ] Stored word's pronunciation. (USA/UK) [WordDetailPage]
+- [ ] Import/export words. (CSV/PDF/XLSX) Dynamic Range. [WordListPage]
+- [ ] Reading tracker. [ProfilePage]
+- [ ] Friends (Add, List). [ProfilePage]

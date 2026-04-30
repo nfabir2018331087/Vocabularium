@@ -32,6 +32,15 @@ const WordForm = forwardRef(function WordForm(
   const [toast, setToast] = useState(null);
   const { isGuest } = useAuth();
 
+  const isDirty = !initialData ||
+    word !== (initialData.word || "") ||
+    meaningEn !== (initialData.meaningEn || "") ||
+    meaningBn !== (initialData.meaningBn || "") ||
+    partOfSpeech !== (initialData.partOfSpeech || "") ||
+    explanation !== (initialData.explanation || "") ||
+    tags !== (initialData.tags?.join(", ") || "") ||
+    JSON.stringify(examples.filter(Boolean)) !== JSON.stringify((initialData.examples ?? []).filter(Boolean));
+
   const showToast = useCallback((message, type = "success") => {
     setToast({ message, type });
   }, []);
@@ -321,7 +330,7 @@ const WordForm = forwardRef(function WordForm(
         {/* Submit */}
         <button
           type="submit"
-          disabled={loading || assistLoading}
+          disabled={loading || assistLoading || !isDirty}
           className="w-full py-3.5 rounded-2xl bg-primary text-white font-semibold hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 shadow-lg shadow-primary/25 active:scale-[0.98]"
         >
           {loading ? "Saving..." : submitLabel}
