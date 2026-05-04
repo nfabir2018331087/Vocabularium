@@ -42,6 +42,43 @@ const sections = [
       {
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+        ),
+        title: "Export Words",
+        color: "orange",
+        steps: [
+          'Go to the Words page.',
+          'Tap the Export button (↗) next to the word count.',
+          'Choose CSV or PDF from the dropdown.',
+          'Select your word pool: All Words, By Tags, or By Letters.',
+          'Tap Export — the file downloads immediately (CSV) or opens a print dialog (PDF).',
+        ],
+        note: "Exported columns: Word, Meaning (En), Meaning (Bn), Explanation, Examples. Words are always sorted A–Z in the export.",
+      },
+      {
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M15.54 8.46a5 5 0 010 7.07" />
+            <path d="M19.07 4.93a10 10 0 010 14.14" />
+          </svg>
+        ),
+        title: "Pronounce a Word",
+        color: "teal",
+        steps: [
+          'Open any word from your list.',
+          'Tap the speaker icon next to the word title.',
+          'The word is read aloud in English (en-US).',
+          'Tap again to stop.',
+        ],
+        note: "Uses your browser's built-in text-to-speech. Works offline with no data usage.",
+      },
+      {
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
             <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
           </svg>
         ),
@@ -143,6 +180,43 @@ const sections = [
       {
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+        ),
+        title: "Export Words",
+        color: "orange",
+        steps: [
+          'Go to the Words page.',
+          'Tap the Export button (↗) next to the word count.',
+          'Choose CSV or PDF from the dropdown.',
+          'Select your word pool: All Words, By Tags, or By Letters.',
+          'Tap Export — the file downloads immediately (CSV) or opens a print dialog (PDF).',
+        ],
+        note: "Exported columns: Word, Meaning (En), Meaning (Bn), Explanation, Examples. Words are always sorted A–Z in the export.",
+      },
+      {
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M15.54 8.46a5 5 0 010 7.07" />
+            <path d="M19.07 4.93a10 10 0 010 14.14" />
+          </svg>
+        ),
+        title: "Pronounce a Word",
+        color: "teal",
+        steps: [
+          'Open any word from your list.',
+          'Tap the speaker icon next to the word title.',
+          'The word is read aloud in English (en-US).',
+          'Tap again to stop.',
+        ],
+        note: "Uses your browser's built-in text-to-speech. Works offline with no data usage.",
+      },
+      {
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
             <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
           </svg>
@@ -228,6 +302,7 @@ const colorMap = {
   primary: { bg: "bg-primary/10",     icon: "text-primary",     border: "border-primary/20"     },
   yellow:  { bg: "bg-yellow-500/10",  icon: "text-yellow-500",  border: "border-yellow-500/20"  },
   pink:    { bg: "bg-pink-500/10",    icon: "text-pink-500",    border: "border-pink-500/20"    },
+  teal:    { bg: "bg-teal-500/10",    icon: "text-teal-500",    border: "border-teal-500/20"    },
 };
 
 function FeatureCard({ feature }) {

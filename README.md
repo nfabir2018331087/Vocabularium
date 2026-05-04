@@ -11,6 +11,8 @@ A personal vocabulary learning app for storing English words with meanings, exam
 - **4 Quiz Modes** — Flashcard, Multiple Choice, Type Answer (AI-graded), Match Pairs; word pool can be filtered by tag or starting letter before each session
 - **Weighted Quiz Randomization** — Words are selected based on quiz history; untested and frequently missed words are prioritized
 - **Progress Tracking** — Quiz history and per-word miss statistics
+- **Word Pronunciation** — Tap the speaker icon next to any word title to hear it spoken aloud (Web Speech API, en-US)
+- **Export Words** — Export your vocabulary as CSV or PDF from the word list; filter by all words, tags, or starting letters; always sorted A–Z
 - **Word Sharing** — Share words with other users by email; accept or dismiss from inbox
 - **Guest Mode** — Full functionality without an account (stored in IndexedDB); migrates to account on signup
 - **Dark/Light Mode** — System-aware theme with manual toggle
@@ -50,7 +52,7 @@ npm run dev
 
 ## Upcoming Features
 
-- [ ] Stored word's pronunciation. (USA/UK) [WordDetailPage]
-- [ ] Import/export words. (CSV/PDF/XLSX) Dynamic Range. [WordListPage]
+- [x] Word pronunciation via Web Speech API (speaker icon beside word title)
+- [x] Export words as CSV/PDF with dynamic range (All / By Tags / By Letters) [WordListPage]
 - [ ] Reading tracker. [ProfilePage]
 - [ ] Friends (Add, List). [ProfilePage]

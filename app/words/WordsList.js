@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import ExportButton from "./ExportButton";
 
 const SORT_OPTIONS = [
   { value: "newest", label: "Newest" },
@@ -137,11 +138,14 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
         ))}
       </div>
 
-      {/* Count */}
-      <p className="text-xs text-text-secondary">
-        {filtered.length} word{filtered.length !== 1 ? "s" : ""}
-        {search && ` matching "${search}"`}
-      </p>
+      {/* Count + Export */}
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-text-secondary">
+          {filtered.length} word{filtered.length !== 1 ? "s" : ""}
+          {search && ` matching "${search}"`}
+        </p>
+        <ExportButton words={words} />
+      </div>
 
       {/* Word Cards */}
       {sort === "tags" && pagedGroupedByTag ? (

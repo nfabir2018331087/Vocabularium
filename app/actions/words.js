@@ -71,6 +71,7 @@ export async function getWords() {
         meaningBn: true,
         partOfSpeech: true,
         explanation: true,
+        examples: true,
         tags: true,
         createdAt: true,
       },

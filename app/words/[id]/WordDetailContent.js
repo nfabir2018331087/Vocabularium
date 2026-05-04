@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DeleteButton from "./DeleteButton";
 import ShareWordButton from "./ShareWordButton";
+import PronounceButton from "./PronounceButton";
 
 export default function WordDetailContent({ word, showShare = true }) {
   const router = useRouter();
@@ -21,7 +22,10 @@ export default function WordDetailContent({ word, showShare = true }) {
 
         <div className="flex items-start justify-between mt-3">
           <div>
-            <h1 className="text-3xl font-bold">{word.word}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold">{word.word}</h1>
+              <PronounceButton word={word.word} />
+            </div>
             {word.partOfSpeech && (
               <span className="inline-block mt-1 text-xs font-medium text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
                 {word.partOfSpeech}
