@@ -52,7 +52,7 @@ npm run dev
 
 ## Upcoming Features
 
-- [x] Word pronunciation via Web Speech API (speaker icon beside word title)
+- [x] Word pronunciation via Web Speech API (speaker icon beside word title) [WordDetailPage]
 - [x] Export words as CSV/PDF with dynamic range (All / By Tags / By Letters) [WordListPage]
 - [ ] Reading tracker. [ProfilePage]
 - [ ] Friends (Add, List). [ProfilePage]
