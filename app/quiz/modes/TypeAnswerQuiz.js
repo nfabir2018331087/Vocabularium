@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { gradeTypeAnswers } from "../../actions/quiz";
 import { fuzzyMatch } from "../../../lib/quiz-utils";
 
-export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
+export default function TypeAnswerQuiz({ words, onFinish, onQuit, isGuest }) {
   const quizWords = words;
   const total = quizWords.length;
   const wordMap = useMemo(() => {
@@ -43,19 +43,31 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
       };
     });
 
+    // Answers that exactly match the stored meaning are always correct — skip AI for these
+    const exactMatchIds = new Set(
+      items
+        .filter((i) => i.answer.trim().toLowerCase() === (i.meaningEn || "").trim().toLowerCase())
+        .map((i) => i.id)
+    );
+    const itemsForAI = items.filter((i) => !exactMatchIds.has(i.id));
+
     let gradedReal = [];
     if (items.length > 0) {
-      const ai = await gradeTypeAnswers({ items });
       let resultsById = new Map();
-      if (ai?.results?.length) {
-        for (const r of ai.results) {
-          resultsById.set(r.id, r);
+      if (!isGuest && itemsForAI.length > 0) {
+        const ai = await gradeTypeAnswers({ items: itemsForAI });
+        if (ai?.results?.length) {
+          for (const r of ai.results) {
+            resultsById.set(r.id, r);
+          }
         }
       }
 
       gradedReal = realAnswers.map((a) => {
         const word = wordMap.get(a.wordId);
-        const aiResult = resultsById.get(a.wordId);
+        const aiResult = exactMatchIds.has(a.wordId)
+          ? { status: "correct", verdict: "Meaning", note: "" }
+          : resultsById.get(a.wordId);
         let status = aiResult?.status;
         let note = aiResult?.note || "";
         let verdict = aiResult?.verdict || "";
@@ -203,7 +215,7 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
           disabled={!input.trim() || grading}
           className="w-full py-3.5 rounded-2xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 active:scale-[0.98]"
         >
-          {grading ? "Grading with AI..." : (index + 1 >= total ? "See Results" : "Next")}
+          {grading ? (isGuest ? "Finishing..." : "Grading with AI...") : (index + 1 >= total ? "See Results" : "Next")}
         </button>
       </form>
 
@@ -223,7 +235,7 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit }) {
           disabled={answers.length === 0 || grading}
           className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {grading ? "Grading with AI..." : "Finish"}
+          {grading ? (isGuest ? "Finishing..." : "Grading with AI...") : "Finish"}
         </button>
       </div>
     </div>

@@ -94,7 +94,7 @@ export default function QuizPageContent({ words, isGuest, progress = {} }) {
   }, [screen, restart]);
 
   if (screen === "mode_select") {
-    return <ModeSelect words={words} onSelect={startQuiz} />;
+    return <ModeSelect words={words} onSelect={startQuiz} isGuest={isGuest} />;
   }
 
   if (screen === "session") {
@@ -105,6 +105,7 @@ export default function QuizPageContent({ words, isGuest, progress = {} }) {
         allWords={words}
         onFinish={finishQuiz}
         onQuit={restart}
+        isGuest={isGuest}
       />
     );
   }
@@ -116,6 +117,7 @@ export default function QuizPageContent({ words, isGuest, progress = {} }) {
         words={words}
         onRestart={restart}
         onRetry={retryMode}
+        isGuest={isGuest}
       />
     );
   }

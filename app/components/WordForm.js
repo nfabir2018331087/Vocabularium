@@ -125,7 +125,7 @@ const WordForm = forwardRef(function WordForm(
 
     showToast(successMessage);
     setLoading(false);
-    setTimeout(() => router.push(`/words/${result.id}`), 1000);
+    setTimeout(() => router.replace(`/words/${result.id}`), 1000);
   }
 
   return (

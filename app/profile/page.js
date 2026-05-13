@@ -48,6 +48,8 @@ function ProfilePageContent() {
   const [migrationResult, setMigrationResult] = useState(null);
   const [signingOut, setSigningOut] = useState(false);
   const migrationStarted = useRef(false);
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
 
   // Avatar upload state
   const [uploading, setUploading] = useState(false);
@@ -67,7 +69,10 @@ function ProfilePageContent() {
       const shouldForce = searchParams.get("migrating") === "true";
       const localWords = await getLocalWords();
       if (!alive) return;
-      if (!shouldForce && localWords.length === 0) return;
+      if (localWords.length === 0) {
+        if (shouldForce) router.replace("/profile");
+        return;
+      }
       migrationStarted.current = true;
       handleMigration();
     }
@@ -94,7 +99,9 @@ function ProfilePageContent() {
       setMigrationResult({ error: "Migration failed unexpectedly" });
     }
     setMigrating(false);
-    router.replace("/profile");
+    if (mountedRef.current) {
+      router.replace("/profile");
+    }
   }
 
   async function handleSignOut() {
@@ -235,6 +242,18 @@ function ProfilePageContent() {
               Log In
             </Link>
           </div>
+
+          {/* Feature shortcuts */}
+          <Link
+            href="/reading-tracker"
+            className="w-full flex flex-col items-center gap-2 py-5 px-4 rounded-2xl bg-surface-alt border border-border card-hover hover:border-primary"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7 text-amber-400">
+              <path d="M2 6s1.5-2 5-2 5 2 5 2v14s-1.5-1-5-1-5 1-5 1V6z" />
+              <path d="M12 6s1.5-2 5-2 5 2 5 2v14s-1.5-1-5-1-5 1-5 1V6z" />
+            </svg>
+            <span className="text-sm font-semibold">Learning Tracker</span>
+          </Link>
 
           {/* User Manual */}
           <Link
@@ -396,6 +415,33 @@ function ProfilePageContent() {
             <p className="text-sm text-red-400">{migrationResult.error}</p>
           </div>
         )}
+
+      {/* Feature shortcuts */}
+      <div className="grid grid-cols-2 gap-3">
+        <Link
+          href="/reading-tracker"
+          className="flex flex-col items-center gap-2 py-7 px-4 rounded-2xl bg-surface-alt border border-border card-hover hover:border-primary"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7 text-amber-400">
+            <path d="M2 6s1.5-2 5-2 5 2 5 2v14s-1.5-1-5-1-5 1-5 1V6z" />
+            <path d="M12 6s1.5-2 5-2 5 2 5 2v14s-1.5-1-5-1-5 1-5 1V6z" />
+          </svg>
+          <span className="text-sm font-semibold text-center leading-tight">Learning Tracker</span>
+        </Link>
+
+        <Link
+          href="/friends"
+          className="flex flex-col items-center gap-2 py-7 px-4 rounded-2xl bg-surface-alt border border-border card-hover hover:border-primary"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7 text-violet-400">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87" />
+            <path d="M16 3.13a4 4 0 010 7.75" />
+          </svg>
+          <span className="text-sm font-semibold">Friends</span>
+        </Link>
+      </div>
 
       {/* User Manual */}
       <Link

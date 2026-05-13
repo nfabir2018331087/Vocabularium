@@ -15,6 +15,7 @@ model User {
   avatarUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  trackerData Json?
   words       Word[]
   quizResults QuizResult[]
   sharedSent    SharedWord[] @relation("SharedWordSender")

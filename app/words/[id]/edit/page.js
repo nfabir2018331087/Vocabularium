@@ -28,7 +28,7 @@ export default async function EditWord({ params }) {
   return (
     <div className="flex flex-col gap-6 pb-8">
       <div>
-        <Link href={`/words/${word.id}`} className="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-primary transition-colors">
+        <Link href={`/words/${word.id}`} replace className="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-primary transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
             <polyline points="15 18 9 12 15 6" />
           </svg>

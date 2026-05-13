@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 
-export default function QuizResults({ result, words, onRestart, onRetry }) {
+export default function QuizResults({ result, words, onRestart, onRetry, isGuest }) {
   const { score, total, missed, duration } = result;
   const safeTotal = total || 0;
   const percentage = safeTotal > 0 ? Math.round((score / safeTotal) * 100) : 0;
   const aiGrades = Array.isArray(result?.aiGrades) ? result.aiGrades : [];
-  const aiLabel = result?.mode === "type_answer" && aiGrades.length > 0;
+  const aiLabel = result?.mode === "type_answer" && aiGrades.length > 0 && !isGuest;
 
   let color = "text-emerald-500";
   let bgColor = "bg-emerald-500/10 border-emerald-500/30";

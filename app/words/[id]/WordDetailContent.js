@@ -36,6 +36,7 @@ export default function WordDetailContent({ word, showShare = true }) {
             {showShare && <ShareWordButton wordId={word.id} />}
             <Link
               href={`/words/${word.id}/edit`}
+              replace
               className="p-2 rounded-xl bg-surface-alt border border-border hover:border-primary text-text-secondary hover:text-primary transition-colors"
               title="Edit"
             >

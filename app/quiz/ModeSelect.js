@@ -377,7 +377,7 @@ function QuizConfigModal({ mode, words, onStart, onClose }) {
   );
 }
 
-export default function ModeSelect({ words, onSelect }) {
+export default function ModeSelect({ words, onSelect, isGuest }) {
   const wordCount = words.length;
   const [modalMode, setModalMode] = useState(null);
 
@@ -442,7 +442,7 @@ export default function ModeSelect({ words, onSelect }) {
                     : "bg-surface-alt border-border card-hover hover:border-primary"
                 }`}
               >
-                {m.id === "type_answer" && (
+                {m.id === "type_answer" && !isGuest && (
                   <span
                     className={`absolute top-2 right-2 ${
                       disabled ? "text-text-secondary/60" : "text-violet-300"

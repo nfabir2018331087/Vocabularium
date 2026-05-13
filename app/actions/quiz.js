@@ -77,6 +77,9 @@ export async function getQuizHistory() {
 }
 
 export async function gradeTypeAnswers({ items }) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { error: "Sign in to use AI grading." };
+
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return { error: "Missing GROQ_API_KEY on the server." };
 
@@ -85,13 +88,16 @@ export async function gradeTypeAnswers({ items }) {
   if (safeItems.length === 0) return { results: [] };
 
   const system = [
-    "You are a strict but fair vocabulary grader.",
-    "Return ONLY valid JSON.",
-    "Mark an answer as correct if it is a direct meaning or a close synonym of the given meaning.",
-    "If the answer is semantically related but the part of speech is wrong, mark status as pos_mismatch.",
-    "If the answer is unrelated or incorrect, mark status as wrong.",
-    "If the answer is misspelled or not a real word, mark status as wrong and set verdict to \"Not a word\".",
-    "If the answer exactly matches the word itself (case-insensitive), mark status as wrong and set verdict to \"Same as the word\".",
+    "You are a strict but fair vocabulary grader. Return ONLY valid JSON.",
+    "Your primary task: judge whether the answer correctly captures the MEANING of the word, not its grammar.",
+    "Mark correct if the answer is the direct meaning, a synonym, or semantically equivalent to meaningEn.",
+    "Mark pos_mismatch ONLY when ALL of these are true: (1) partOfSpeech is explicitly provided, (2) the answer is semantically correct, AND (3) the answer word cannot function as the same part of speech as partOfSpeech in standard English.",
+    "Example of valid pos_mismatch: word is a noun meaning 'a sprint', answer is 'to run' (purely verbal form).",
+    "Do NOT mark pos_mismatch when the answer word is flexible across parts of speech. Many English words serve as multiple POS — judge by the answer's PRIMARY meaning in context of meaningEn, never by a secondary meaning.",
+    "Do NOT mark pos_mismatch when partOfSpeech is empty or absent.",
+    "Mark wrong if the answer is semantically unrelated or incorrect.",
+    "If the answer is misspelled or not a real English word, mark wrong with verdict 'Not a word'.",
+    "If the answer exactly matches the word being defined (case-insensitive), mark wrong with verdict 'Same as the word'.",
     "Keep notes short (max 8 words).",
   ].join(" ");
 
