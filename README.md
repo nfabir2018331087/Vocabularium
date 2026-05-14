@@ -54,5 +54,5 @@ npm run dev
 
 - [x] Word pronunciation via Web Speech API (speaker icon beside word title) [WordDetailPage]
 - [x] Export words as CSV/PDF with dynamic range (All / By Tags / By Letters) [WordListPage]
-- [x] Learning tracker. [ProfilePage]
+- [x] Learning tracker by Letters and Tags. [ProfilePage]
 - [ ] Friends (Add, List). [ProfilePage]
