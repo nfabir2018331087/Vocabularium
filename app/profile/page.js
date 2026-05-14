@@ -245,7 +245,7 @@ function ProfilePageContent() {
 
           {/* Feature shortcuts */}
           <Link
-            href="/reading-tracker"
+            href="/learning-tracker"
             className="w-full flex flex-col items-center gap-2 py-5 px-4 rounded-2xl bg-surface-alt border border-border card-hover hover:border-primary"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7 text-amber-400">
@@ -419,7 +419,7 @@ function ProfilePageContent() {
       {/* Feature shortcuts */}
       <div className="grid grid-cols-2 gap-3">
         <Link
-          href="/reading-tracker"
+          href="/learning-tracker"
           className="flex flex-col items-center gap-2 py-7 px-4 rounded-2xl bg-surface-alt border border-border card-hover hover:border-primary"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7 text-amber-400">
