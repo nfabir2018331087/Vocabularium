@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getWords } from "../actions/words";
 import { getTrackerData, saveTrackerData } from "../actions/tracker";
 import { useAuth } from "../components/AuthProvider";
+import { getCachedWords, setCachedWords, getCachedTracker, setCachedTracker } from "../../lib/client-cache";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const STATE_CYCLE = [null, "learning", "learned"];
@@ -80,7 +81,7 @@ const GUEST_STORAGE_KEY = "vocab-tracker-guest";
 
 export default function LearningTrackerPage() {
   const router = useRouter();
-  const { isGuest, loading: authLoading } = useAuth();
+  const { isGuest, loading: authLoading, user } = useAuth();
   const [tab, setTab] = useState("letters");
   const [words, setWords] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -92,24 +93,34 @@ export default function LearningTrackerPage() {
   const scheduleSave = useCallback((nextLetters, nextTags) => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveTrackerData({ letters: nextLetters, tags: nextTags });
+      const data = { letters: nextLetters, tags: nextTags };
+      saveTrackerData(data);
+      if (user?.id) setCachedTracker(user.id, data);
     }, 800);
-  }, []);
+  }, [user?.id]);
 
   // Load words + tracker state, then reconcile counts
   useEffect(() => {
     if (authLoading) return;
     async function load() {
-      setLoading(true);
+      const userId = user?.id;
 
-      // 1. Load words
+      // 1. Load words — use client cache for auth users
       let loadedWords = [];
       if (isGuest) {
         const { getLocalWords } = await import("../../lib/local-words");
         loadedWords = (await getLocalWords()) || [];
       } else {
+        const cached = getCachedWords(userId);
+        if (cached) {
+          loadedWords = cached;
+          setWords(cached);
+          setLoading(false); // show content immediately from cache
+        }
+        // Always fetch fresh words to ensure reconciliation accuracy
         const { words: w } = await getWords();
         loadedWords = w || [];
+        setCachedWords(userId, loadedWords);
       }
       setWords(loadedWords);
 
@@ -124,15 +135,22 @@ export default function LearningTrackerPage() {
         });
       });
 
-      // 3. Load stored tracker state
+      // 3. Load stored tracker state — use client cache for auth users
       let rawLetters = {}, rawTags = {};
       if (isGuest) {
         rawLetters = loadFromStorage(`${GUEST_STORAGE_KEY}-letters`);
         rawTags = loadFromStorage(`${GUEST_STORAGE_KEY}-tags`);
       } else {
-        const { data } = await getTrackerData();
-        rawLetters = data?.letters || {};
-        rawTags = data?.tags || {};
+        const cachedTracker = getCachedTracker(userId);
+        if (cachedTracker) {
+          rawLetters = cachedTracker.letters || {};
+          rawTags = cachedTracker.tags || {};
+        } else {
+          const { data } = await getTrackerData();
+          rawLetters = data?.letters || {};
+          rawTags = data?.tags || {};
+          setCachedTracker(userId, { letters: rawLetters, tags: rawTags });
+        }
       }
 
       // 4. Reconcile: reset any letter/tag whose count changed
@@ -148,7 +166,9 @@ export default function LearningTrackerPage() {
           if (lChanged) saveToStorage(`${GUEST_STORAGE_KEY}-letters`, reconciledLetters);
           if (tChanged) saveToStorage(`${GUEST_STORAGE_KEY}-tags`, reconciledTags);
         } else {
-          saveTrackerData({ letters: reconciledLetters, tags: reconciledTags });
+          const reconciled = { letters: reconciledLetters, tags: reconciledTags };
+          saveTrackerData(reconciled);
+          setCachedTracker(userId, reconciled);
         }
       }
 

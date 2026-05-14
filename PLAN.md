@@ -95,27 +95,57 @@
 
 ---
 
-## Phase 4 — AI Integration (PLANNED)
+## Phase 4 — AI Integration (COMPLETE)
 
 ### Sprint 1: AI-Assisted Word Entry
-- "Suggest with AI" button on Add Word page
-- Call Claude API to generate meaning, explanation, and example sentences
-- Display AI suggestions as editable prefills in the form
-- Loading states and error handling
+- "Suggest with AI" button on Add Word page (sparkle icon)
+- Calls Groq API (`llama-3.3-70b-versatile`) to generate meaning, part of speech, explanation, examples, tags
+- Displays AI suggestions as editable prefills in the form
+- Loading animation on button, disabled state until word field has input
 
 ### Sprint 2: AI Quiz Grading
-- Replace/supplement fuzzy matching with AI-powered answer evaluation
-- Accept synonyms, paraphrases, and contextually correct answers
-- Show AI feedback on why an answer was accepted/rejected
-- Fallback to fuzzy match if AI is unavailable
+- Type Answer mode uses Groq AI to evaluate free-text answers
+- Accepts synonyms, paraphrases, and contextually correct answers
+- Fallback to fuzzy Levenshtein match (threshold 0.75) if AI is unavailable
 
 ---
 
-## Phase 5 — Advanced Features (PLANNED)
+## Phase 5 — Social + Learning Tracker (COMPLETE)
+
+### Sprint 1: Word Sharing + Inbox
+- `SharedWord` model: word snapshot fields, senderId, recipientId, isNew flag
+- `app/actions/share.js` — `shareWord`, `getInbox`, `markSharedWordSeen`, `acceptSharedWord`, `removeSharedWord`
+- Inbox page (`/inbox`) — hero gradient, back button, cache-first load (2-min TTL); remove/save actions update inbox cache instantly; saving a shared word also refreshes words cache in background
+- Share button on word detail page (`ShareWordButton.js`) with friend picker searchable dropdown above email field
+
+### Sprint 2: Friends
+- `Friendship` model: senderId, receiverId, status (`pending`/`accepted`), unique pair constraint, indexed by receiver and status
+- `app/actions/friends.js` — `sendFriendRequest`, `acceptFriendRequest`, `rejectFriendRequest`, `removeFriend`, `getFriendData`
+- Friends page (`/friends`) — hero gradient with Add Friend button and search; pending requests preview (latest 2 + "View all" link); friends list with pagination (5 per page); cache-first load (2-min TTL), force-refetch after mutations
+- Friend Requests page (`/friend-requests`) — full list of pending requests, accept/decline with loading states, empty state
+- Share Word modal on each friend card — searchable word list, inline share status per word, "Remove from friend list" with inline confirm/cancel
+
+### Sprint 3: Learning Tracker
+- Learning Tracker page (`/learning-tracker`) — track progress by letter or tag with 3-state cycle: Not Started → Learning → Learned
+- State stored as `{ state, count }` per letter/tag; auto-resets if word count for that letter/tag changes (reconciliation on every page load)
+- `app/actions/tracker.js` — `getTrackerData`, `saveTrackerData`
+- Debounced save (800ms) after each toggle; also updates client cache on save
+- Stats row shows words learned / learning / remaining for the active tab
+
+### Sprint 4: Client-Side Caching
+- `lib/client-cache.js` — module-level Maps + localStorage blob for 5 data types: words, progress, inbox, friends, tracker
+- Caches survive hard refresh via localStorage; Maps serve as in-memory layer to avoid repeated JSON parsing
+- `BackgroundPrefetch` component — runs once per session on app load; prefetches any cache older than 2 minutes in parallel
+- Words cache invalidated on add, edit, delete (via `WordForm` and `DeleteButton`) and on inbox save
+- Friends cache invalidated after every mutation (accept/reject/remove/add friend)
+- Tracker cache updated after every toggle via debounced save
+
+---
+
+## Phase 6 — Advanced Features (PLANNED)
 
 - Spaced repetition — prioritize quizzing words with low accuracy
 - Word of the day (random from collection)
-- Export vocabulary as CSV/PDF
 - Import words from CSV
 - Tag management page (rename, merge, delete tags)
 - Dashboard with charts (words added over time, quiz performance trends)

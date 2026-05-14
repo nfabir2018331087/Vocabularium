@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../components/AuthProvider";
 import { acceptSharedWord, getInbox, markSharedWordSeen, removeSharedWord } from "../actions/share";
-import { getCachedInbox, isInboxFresh, setCachedInbox } from "../../lib/client-cache";
+import { getCachedInbox, isInboxFresh, setCachedInbox, setCachedWords } from "../../lib/client-cache";
+import { getWords } from "../actions/words";
 
 const INBOX_TTL_MS = 2 * 60 * 1000;
 
@@ -81,15 +82,36 @@ export default function InboxPage() {
   return (
     <div className="flex flex-col gap-4 -mx-4 -mt-6 pb-8">
       <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
-        <h1 className="text-2xl font-bold text-white">Inbox</h1>
-        <p className="text-sm text-white/75 mt-0.5">
-          You have {items.length} word{items.length === 1 ? "" : "s"} shared with you
-        </p>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Inbox</h1>
+            <p className="text-sm text-white/75 mt-0.5">
+              You have {items.length} word{items.length === 1 ? "" : "s"} shared with you
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="px-4 flex flex-col gap-2 mt-1">
         {items.length === 0 ? (
-          <div className="text-sm text-text-secondary">No shared words yet.</div>
+          <div className="text-center py-16 flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-primary">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </div>
+            <p className="text-text-secondary text-sm">No shared words yet.</p>
+            <Link href="/" className="text-primary font-medium text-sm">Back to Home</Link>
+          </div>
         ) : (
           items.map((item) => {
             const senderName = item.sender?.name || item.sender?.email || "Unknown sender";
@@ -183,6 +205,11 @@ export default function InboxPage() {
                           const result = await acceptSharedWord(item.id);
                           if (!result?.error) {
                             updateItems((prev) => prev.filter((i) => i.id !== item.id));
+                            if (user?.id) {
+                              getWords().then(({ words }) => {
+                                if (words) setCachedWords(user.id, words);
+                              }).catch(() => {});
+                            }
                           }
                           setActionId(null);
                           setActionType(null);

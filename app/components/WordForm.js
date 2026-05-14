@@ -4,6 +4,8 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } fro
 import { useRouter } from "next/navigation";
 import { useAuth } from "./AuthProvider";
 import Toast from "./Toast";
+import { getWords } from "../actions/words";
+import { setCachedWords } from "../../lib/client-cache";
 
 const PARTS_OF_SPEECH = [
   "Noun",
@@ -30,7 +32,7 @@ const WordForm = forwardRef(function WordForm(
   const [tags, setTags] = useState(initialData?.tags?.join(", ") || "");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
 
   const isDirty = !initialData ||
     word !== (initialData.word || "") ||
@@ -125,6 +127,11 @@ const WordForm = forwardRef(function WordForm(
 
     showToast(successMessage);
     setLoading(false);
+    if (!isGuest && user?.id) {
+      getWords().then(({ words }) => {
+        if (words) setCachedWords(user.id, words);
+      }).catch(() => {});
+    }
     setTimeout(() => router.replace(`/words/${result.id}`), 1000);
   }
 

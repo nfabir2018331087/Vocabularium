@@ -120,6 +120,24 @@ const sections = [
       {
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>
+        ),
+        title: "Learning Tracker",
+        color: "green",
+        steps: [
+          'Go to Profile → Learning Tracker.',
+          'Switch between the By Letters and By Tags tabs.',
+          'Tap any letter or tag to cycle through three states: gray (not started), outlined (learning), filled (learned).',
+          'Tap again to move to the next state; one more tap resets it back to not started.',
+          'The stats bar at the top shows how many words are learned, learning, or remaining.',
+          'If you add new words to a letter or tag later, that letter/tag automatically resets — so your progress always reflects your current library.',
+        ],
+        note: "The tracker stores progress per letter and tag — it is separate from quiz progress. Use it as a personal study planner alongside the quiz.",
+      },
+      {
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
           </svg>
         ),
@@ -247,6 +265,44 @@ const sections = [
           'Tap Remove to dismiss it without saving.',
           'Words are marked as read automatically when you open the inbox.',
         ],
+      },
+      {
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" />
+          </svg>
+        ),
+        title: "Friends",
+        color: "primary",
+        steps: [
+          'Go to Profile → Friends.',
+          'Tap Add Friend, enter their email address, and send a request.',
+          'They will see your request on their Friends page and can Accept or Decline.',
+          'Once accepted, they appear in your friends list.',
+          'Tap the › button on any friend card to open a Share Word sheet — search your words and share one directly.',
+          'To view all pending incoming requests, tap the "View all" link next to the requests section.',
+          'To remove a friend, open the Share Word sheet, scroll to the bottom, and tap Remove from friend list.',
+        ],
+        note: "The friend list updates in real time after every action. You can search friends by name or email in the search bar.",
+      },
+      {
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>
+        ),
+        title: "Learning Tracker",
+        color: "green",
+        steps: [
+          'Go to Profile → Learning Tracker.',
+          'Switch between the By Letters and By Tags tabs.',
+          'Tap any letter or tag to cycle through three states: gray (not started), outlined (learning), filled (learned).',
+          'Tap again to move to the next state; one more tap resets it back to not started.',
+          'The stats bar at the top shows how many words are learned, learning, or remaining.',
+          'If you add new words to a letter or tag later, that letter/tag automatically resets — so your progress always reflects your current library.',
+        ],
+        note: "The tracker stores progress per letter and tag — it is separate from quiz progress. Use it as a personal study planner alongside the quiz.",
       },
       {
         icon: (

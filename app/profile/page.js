@@ -176,73 +176,6 @@ function ProfilePageContent() {
         </div>
 
         <div className="px-4 flex flex-col gap-6">
-          {/* Warning alert */}
-          <div className="flex flex-col gap-2">
-            <div className="mx-0 p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
-              <div className="flex gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-red-500 shrink-0 mt-0.5">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                  <line x1="12" y1="9" x2="12" y2="13" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-                <div>
-                  <p className="text-sm font-medium text-red-500">Local Storage Only</p>
-                  <p className="text-xs text-text-secondary mt-1">
-                    Your words are stored locally on this device. Sign up to sync across devices and keep them safe.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mx-0 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
-              <div className="flex gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-amber-500 shrink-0 mt-0.5">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                  <line x1="12" y1="9" x2="12" y2="13" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-                <div>
-                  <p className="text-sm font-medium text-amber-500">No AI Assist</p>
-                  <p className="text-xs text-text-secondary mt-1">
-                    Storing word is manual now. Sign up to get AI assistance for meanings, explanations, & examples.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mx-0 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
-              <div className="flex gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-amber-500 shrink-0 mt-0.5">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                  <line x1="12" y1="9" x2="12" y2="13" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-                <div>
-                  <p className="text-sm font-medium text-amber-500">No Word Sharing</p>
-                  <p className="text-xs text-text-secondary mt-1">
-                    You can't share your words with others. Sign up to enable word sharing.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Auth buttons */}
-          <div className="flex flex-col gap-3">
-            <Link
-              href="/auth/signup"
-              className="w-full py-3 rounded-2xl text-center font-semibold text-sm bg-primary text-white hover:opacity-90 transition-opacity"
-            >
-              Sign Up
-            </Link>
-            <Link
-              href="/auth/login"
-              className="w-full py-3 rounded-2xl text-center font-semibold text-sm bg-surface-alt border border-border text-text hover:border-primary transition-colors"
-            >
-              Log In
-            </Link>
-          </div>
-
           {/* Feature shortcuts */}
           <Link
             href="/learning-tracker"
@@ -272,6 +205,48 @@ function ProfilePageContent() {
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </Link>
+
+          {/* Warning alert */}
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+            <div className="flex items-center gap-2 mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-amber-500 shrink-0">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <p className="text-xs font-semibold text-amber-500 uppercase tracking-wide">Guest limitations</p>
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+              {[
+                "Local storage only",
+                "No AI Assist",
+                "No word sharing",
+                "No friends",
+              ].map((label) => (
+                <div key={label} className="flex items-center gap-1.5 text-xs text-text-secondary">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-red-400 shrink-0">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                  {label}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Auth buttons */}
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/auth/signup"
+              className="w-full py-3 rounded-2xl text-center font-semibold text-sm bg-primary text-white hover:opacity-90 transition-opacity"
+            >
+              Sign Up
+            </Link>
+            <Link
+              href="/auth/login"
+              className="w-full py-3 rounded-2xl text-center font-semibold text-sm bg-surface-alt border border-border text-text hover:border-primary transition-colors"
+            >
+              Log In
+            </Link>
+          </div>
 
           {/* Theme toggle */}
           <div className="mt-2">

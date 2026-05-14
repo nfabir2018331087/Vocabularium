@@ -14,6 +14,8 @@ A personal vocabulary learning app for storing English words with meanings, exam
 - **Word Pronunciation** — Tap the speaker icon next to any word title to hear it spoken aloud (Web Speech API, en-US)
 - **Export Words** — Export your vocabulary as CSV or PDF from the word list; filter by all words, tags, or starting letters; always sorted A–Z
 - **Word Sharing** — Share words with other users by email; accept or dismiss from inbox
+- **Friends** — Add friends by email, view friend list with search and pagination, send/accept/decline friend requests, share words directly from a friend card, remove friends
+- **Learning Tracker** — Track learning progress by letter or tag; tap to cycle through Not Started → Learning → Learned; auto-resets when new words are added to a letter or tag
 - **Guest Mode** — Full functionality without an account (stored in IndexedDB); migrates to account on signup
 - **Dark/Light Mode** — System-aware theme with manual toggle
 - **Bangla Support** — Noto Sans Bengali font for proper rendering
@@ -54,5 +56,5 @@ npm run dev
 
 - [x] Word pronunciation via Web Speech API (speaker icon beside word title) [WordDetailPage]
 - [x] Export words as CSV/PDF with dynamic range (All / By Tags / By Letters) [WordListPage]
-- [x] Learning tracker by Letters and Tags. [ProfilePage]
-- [ ] Friends (Add, List). [ProfilePage]
+- [x] Learning tracker by Letters and Tags with auto-reconciliation. [ProfilePage → /learning-tracker]
+- [x] Friends — add by email, requests page, share words from friend card, remove friend. [ProfilePage → /friends]
