@@ -323,9 +323,19 @@ export default function FriendsPage() {
       {/* Hero */}
       <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl relative">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Friends</h1>
-            <p className="text-white/75 mt-0.5 text-sm">Connect and grow together</p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.back()}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Friends</h1>
+              <p className="text-white/75 mt-0.5 text-sm">Connect and grow together</p>
+            </div>
           </div>
           <button
             onClick={() => setShowModal(true)}

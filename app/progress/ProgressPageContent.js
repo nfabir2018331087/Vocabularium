@@ -80,10 +80,22 @@ export default function ProgressPageContent({ words, progress }) {
   return (
     <div className="flex flex-col gap-5 pb-8 animate-fade-in -mx-4 -mt-6">
       <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
-        <h1 className="text-2xl font-bold text-white">Progress</h1>
-        <p className="text-xs text-white/80 mt-0.5">
-          {words.length} word{words.length !== 1 ? "s" : ""} &middot; {tested.length} tested
-        </p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Progress</h1>
+            <p className="text-xs text-white/80 mt-0.5">
+              {words.length} word{words.length !== 1 ? "s" : ""} &middot; {tested.length} tested
+            </p>
+          </div>
+        </div>
         {overallPct !== null && (
           <div className="mt-4 flex items-center gap-4 p-4 rounded-2xl border border-white/20 bg-white/10">
             <p className="text-3xl font-bold text-white">{overallPct}%</p>

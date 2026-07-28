@@ -49,7 +49,7 @@ export default function DeleteButton({ id }) {
         </button>
         <button
           onClick={() => setConfirming(false)}
-          className="px-3 py-1.5 rounded-xl text-sm font-medium bg-surface-alt border border-border text-text-secondary hover:text-text transition-colors"
+          className="px-3 py-1.5 rounded-xl text-sm font-medium bg-white/15 border border-white/20 text-white hover:bg-white/25 transition-colors"
         >
           No
         </button>
@@ -60,7 +60,7 @@ export default function DeleteButton({ id }) {
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="p-2 rounded-xl bg-surface-alt border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors"
+      className="p-2 rounded-xl bg-white/15 border border-white/20 text-white hover:bg-red-400/80 hover:border-red-400/80 transition-colors"
       title="Delete"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">

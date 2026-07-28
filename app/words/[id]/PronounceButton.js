@@ -38,10 +38,10 @@ export default function PronounceButton({ word }) {
   return (
     <button
       onClick={handleClick}
-      className={`p-2 rounded-xl bg-surface-alt border transition-colors ${
+      className={`p-2 rounded-xl border transition-colors ${
         speaking
-          ? "border-primary text-primary"
-          : "border-border text-text-secondary hover:border-primary hover:text-primary"
+          ? "bg-white/25 border-white/40 text-white"
+          : "bg-white/15 border-white/20 text-white/90 hover:bg-white/25 hover:text-white"
       }`}
       title={speaking ? "Stop" : "Pronounce"}
     >

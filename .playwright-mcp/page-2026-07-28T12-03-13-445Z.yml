@@ -1,0 +1,41 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - link "Back" [ref=e5] [cursor=pointer]:
+          - /url: /profile
+        - heading "Welcome Back" [level=1] [ref=e8]
+        - paragraph [ref=e9]: Log in to access your vocabulary
+      - generic [ref=e10]:
+        - button "Continue with Google" [ref=e11] [cursor=pointer]
+        - generic [ref=e17]: or
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - generic [ref=e23]: Email
+            - textbox "Email" [ref=e24]:
+              - /placeholder: you@example.com
+          - generic [ref=e25]:
+            - generic [ref=e26]: Password
+            - generic [ref=e27]:
+              - textbox "Password" [ref=e28]:
+                - /placeholder: Your password
+              - button "Show password" [ref=e29] [cursor=pointer]
+            - button "Forgot password?" [ref=e34] [cursor=pointer]
+          - button "Log In" [ref=e35] [cursor=pointer]
+        - paragraph [ref=e36]:
+          - text: Don't have an account?
+          - link "Sign up" [ref=e37] [cursor=pointer]:
+            - /url: /auth/signup
+  - navigation [ref=e38]:
+    - generic [ref=e39]:
+      - link "Home" [ref=e40] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=e45] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=e49] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=e54] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=e59] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=e69] [cursor=pointer]

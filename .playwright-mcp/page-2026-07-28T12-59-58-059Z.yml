@@ -1,0 +1,41 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e5]:
+        - button [ref=e6] [cursor=pointer]
+        - generic [ref=e9]:
+          - heading "User Manual" [level=1] [ref=e10]
+          - paragraph [ref=e11]: Everything you need to know about Vocabularium
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - button "Guest" [ref=e14] [cursor=pointer]
+          - button "Account" [ref=e15] [cursor=pointer]
+        - paragraph [ref=e16]: No account needed. Jump right in — everything is stored locally on your device.
+        - generic [ref=e17]:
+          - button "Add Words" [ref=e19] [cursor=pointer]
+          - button "Browse Your Words" [ref=e26] [cursor=pointer]
+          - button "Export Words" [ref=e35] [cursor=pointer]
+          - button "Pronounce a Word" [ref=e45] [cursor=pointer]
+          - button "Quiz Yourself" [ref=e55] [cursor=pointer]
+          - button "Track Progress" [ref=e64] [cursor=pointer]
+          - button "Learning Tracker" [ref=e71] [cursor=pointer]
+          - button "Create an Account" [ref=e80] [cursor=pointer]
+        - generic [ref=e88]:
+          - paragraph [ref=e89]: Guest Limitations
+          - list [ref=e90]:
+            - listitem [ref=e91]: Words stored only on this device — lost if you clear browser data
+            - listitem [ref=e95]: No AI Assist for auto-filling word details
+            - listitem [ref=e99]: No Word Sharing with other users
+            - listitem [ref=e103]: No cross-device sync
+  - navigation [ref=e107]:
+    - generic [ref=e108]:
+      - link "Home" [ref=e109] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=e114] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=e118] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=e123] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=e128] [cursor=pointer]:
+        - /url: /profile

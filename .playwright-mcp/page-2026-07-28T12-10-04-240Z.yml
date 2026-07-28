@@ -1,0 +1,36 @@
+- generic [active] [ref=f12e1]:
+  - main [ref=f12e2]:
+    - generic [ref=f12e310]:
+      - generic [ref=f12e311]:
+        - heading "Match Pairs" [level=1] [ref=f12e312]
+        - paragraph [ref=f12e313]: 0 of 4 matched
+      - generic [ref=f12e315]:
+        - paragraph [ref=f12e316]: Tap a word, then tap its meaning
+        - generic [ref=f12e317]:
+          - generic [ref=f12e318]:
+            - button "serendipity" [ref=f12e319] [cursor=pointer]
+            - button "gregarious" [ref=f12e320] [cursor=pointer]
+            - button "quixotic" [ref=f12e321] [cursor=pointer]
+            - button "ephemeral" [ref=f12e322] [cursor=pointer]
+          - generic [ref=f12e323]:
+            - button "fond of company; sociable" [ref=f12e324] [cursor=pointer]
+            - button "lasting for a very short time" [ref=f12e325] [cursor=pointer]
+            - button "the occurrence of events by chance in a happy way" [ref=f12e326] [cursor=pointer]
+            - button "extremely idealistic and unrealistic" [ref=f12e327] [cursor=pointer]
+        - generic [ref=f12e328]:
+          - button "Quit" [ref=f12e329] [cursor=pointer]
+          - button "Finish" [disabled] [ref=f12e330] [cursor=pointer]
+  - navigation [ref=f12e11]:
+    - generic [ref=f12e12]:
+      - link "Home" [ref=f12e13] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f12e18] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f12e22] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f12e27] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f12e33] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f12e43] [cursor=pointer]
+  - alert [ref=f12e47]

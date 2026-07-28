@@ -1,0 +1,36 @@
+- generic [active] [ref=f12e1]:
+  - main [ref=f12e2]:
+    - generic [ref=f12e235]:
+      - generic [ref=f12e237]:
+        - generic [ref=f12e238]:
+          - heading "Quiz" [level=1] [ref=f12e239]
+          - paragraph [ref=f12e240]: 4 words available
+        - link "Progress" [ref=f12e241] [cursor=pointer]:
+          - /url: /progress
+      - generic [ref=f12e245]:
+        - button "Flashcard Flip cards to reveal meanings" [ref=f12e246] [cursor=pointer]:
+          - generic [ref=f12e252]: Flashcard
+          - generic [ref=f12e253]: Flip cards to reveal meanings
+        - button "Multiple Choice Pick the correct meaning" [ref=f12e254] [cursor=pointer]:
+          - generic [ref=f12e258]: Multiple Choice
+          - generic [ref=f12e259]: Pick the correct meaning
+        - button "Type Answer Type the English meaning" [ref=f12e260] [cursor=pointer]:
+          - generic [ref=f12e265]: Type Answer
+          - generic [ref=f12e266]: Type the English meaning
+        - button "Match Pairs Connect words with meanings" [ref=f12e267] [cursor=pointer]:
+          - generic [ref=f12e275]: Match Pairs
+          - generic [ref=f12e276]: Connect words with meanings
+  - navigation [ref=f12e11]:
+    - generic [ref=f12e12]:
+      - link "Home" [ref=f12e13] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f12e18] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f12e22] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f12e27] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f12e33] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f12e43] [cursor=pointer]
+  - alert [ref=f12e47]

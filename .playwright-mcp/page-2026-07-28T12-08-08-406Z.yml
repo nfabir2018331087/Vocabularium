@@ -1,0 +1,31 @@
+- generic [ref=f11e1]:
+  - main [ref=f11e2]:
+    - generic [ref=f11e123]:
+      - generic [ref=f11e125]:
+        - generic [ref=f11e126]:
+          - heading "Flashcards" [level=1] [ref=f11e127]
+          - paragraph [ref=f11e128]: Question 2 of 4
+        - button "Skip" [active] [ref=f11e129] [cursor=pointer]
+      - generic [ref=f11e131]:
+        - generic [ref=f11e133] [cursor=pointer]:
+          - generic [ref=f11e134]:
+            - paragraph [ref=f11e135]: ephemeral
+            - paragraph [ref=f11e136]: Tap to reveal
+          - paragraph [ref=f11e138]: lasting for a very short time
+        - generic [ref=f11e139]:
+          - button "Quit" [ref=f11e140] [cursor=pointer]
+          - button "Finish" [ref=f11e141] [cursor=pointer]
+  - navigation [ref=f11e11]:
+    - generic [ref=f11e12]:
+      - link "Home" [ref=f11e13] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f11e18] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f11e22] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f11e27] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f11e33] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f11e43] [cursor=pointer]
+  - alert [ref=f11e47]

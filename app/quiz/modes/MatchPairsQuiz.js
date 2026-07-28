@@ -66,31 +66,34 @@ export default function MatchPairsQuiz({ words, onFinish, onQuit }) {
   }
 
   return (
-    <div className="flex flex-col gap-5 pb-8">
+    <div className="flex flex-col gap-5 pb-8 -mx-4 -mt-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={onQuit}
-          className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-1"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-          Back
-        </button>
-        <span className="text-sm text-text-secondary font-medium">
-          {matched.length} / {total} matched
-        </span>
+      <div className="hero-gradient px-6 pt-10 pb-6 rounded-b-3xl">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onQuit}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Match Pairs</h1>
+            <p className="text-sm text-white/75 mt-0.5">{matched.length} of {total} matched</p>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden mt-4">
+          <div
+            className="h-full bg-white rounded-full transition-all duration-300"
+            style={{ width: `${(matched.length / total) * 100}%` }}
+          />
+        </div>
       </div>
 
-      {/* Progress bar */}
-      <div className="w-full h-1.5 bg-surface-alt rounded-full overflow-hidden">
-        <div
-          className="h-full bg-primary rounded-full transition-all duration-300"
-          style={{ width: `${(matched.length / total) * 100}%` }}
-        />
-      </div>
-
+      <div className="px-4 flex flex-col gap-5">
       <p className="text-xs text-text-secondary text-center">Tap a word, then tap its meaning</p>
 
       {/* Columns */}
@@ -175,6 +178,7 @@ export default function MatchPairsQuiz({ words, onFinish, onQuit }) {
         >
           Finish
         </button>
+      </div>
       </div>
     </div>
   );

@@ -429,65 +429,70 @@ export default function UserManualPage() {
   const active = sections.find((s) => s.id === tab);
 
   return (
-    <div className="flex flex-col gap-6 pb-8">
-      {/* Header — same pattern as login/signup */}
-      <div>
-        <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-primary transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-          Back
-        </button>
-        <h1 className="text-2xl font-bold mt-3">User Manual</h1>
-        <p className="text-sm text-text-secondary mt-0.5">Everything you need to know about Vocabularium</p>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-2 p-1 rounded-2xl bg-surface-alt border border-border">
-        {sections.map((s) => (
+    <div className="flex flex-col gap-6 pb-8 -mx-4 -mt-6">
+      {/* Header */}
+      <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+        <div className="flex items-center gap-3">
           <button
-            key={s.id}
-            onClick={() => setTab(s.id)}
-            className={`flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all ${
-              tab === s.id
-                ? "bg-primary text-white shadow-sm"
-                : "text-text-secondary hover:text-text"
-            }`}
+            onClick={() => router.back()}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0"
           >
-            {s.label}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
           </button>
-        ))}
-      </div>
-
-      {/* Intro */}
-      <p className="text-sm text-text-secondary leading-relaxed">{active.intro}</p>
-
-      {/* Feature cards */}
-      <div className="flex flex-col gap-3">
-        {active.features.map((f) => (
-          <FeatureCard key={f.title} feature={f} />
-        ))}
-      </div>
-
-      {/* Guest limitations */}
-      {active.limits && (
-        <div className="p-4 rounded-2xl bg-red-500/5 border border-red-500/20 flex flex-col gap-2">
-          <p className="text-xs font-semibold text-red-500 uppercase tracking-wide">Guest Limitations</p>
-          <ul className="flex flex-col gap-2">
-            {active.limits.map((l) => (
-              <li key={l} className="flex items-start gap-2 text-sm text-text-secondary">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-red-400 shrink-0 mt-0.5">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-                {l}
-              </li>
-            ))}
-          </ul>
+          <div>
+            <h1 className="text-2xl font-bold text-white">User Manual</h1>
+            <p className="text-sm text-white/75 mt-0.5">Everything you need to know about Vocabularium</p>
+          </div>
         </div>
-      )}
+      </div>
+
+      <div className="px-4 flex flex-col gap-6">
+        {/* Tabs */}
+        <div className="flex gap-2 p-1 rounded-2xl bg-surface-alt border border-border">
+          {sections.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setTab(s.id)}
+              className={`flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all ${
+                tab === s.id
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-text-secondary hover:text-text"
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Intro */}
+        <p className="text-sm text-text-secondary leading-relaxed">{active.intro}</p>
+
+        {/* Feature cards */}
+        <div className="flex flex-col gap-3">
+          {active.features.map((f) => (
+            <FeatureCard key={f.title} feature={f} />
+          ))}
+        </div>
+
+        {/* Guest limitations */}
+        {active.limits && (
+          <div className="p-4 rounded-2xl bg-red-500/5 border border-red-500/20 flex flex-col gap-2">
+            <p className="text-xs font-semibold text-red-500 uppercase tracking-wide">Guest Limitations</p>
+            <ul className="flex flex-col gap-2">
+              {active.limits.map((l) => (
+                <li key={l} className="flex items-start gap-2 text-sm text-text-secondary">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-red-400 shrink-0 mt-0.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                  {l}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

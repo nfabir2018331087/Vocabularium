@@ -1,0 +1,62 @@
+- generic [active] [ref=f6e1]:
+  - main [ref=f6e2]:
+    - generic [ref=f6e77]:
+      - generic [ref=f6e78]:
+        - link "Back" [ref=f6e79] [cursor=pointer]:
+          - /url: /words/local_0a7c8077-2647-498c-9299-113e549ee395
+        - heading "Edit Word" [level=1] [ref=f6e82]
+        - paragraph [ref=f6e83]: Editing “serendipity”
+      - generic [ref=f6e85]:
+        - generic [ref=f6e86]:
+          - generic [ref=f6e87]: Word *
+          - textbox "Word *" [ref=f6e90]:
+            - /placeholder: Enter the word
+            - text: serendipity
+        - generic [ref=f6e93]:
+          - generic [ref=f6e94]: Part of Speech (optional)
+          - combobox "Part of Speech (optional)" [ref=f6e95] [cursor=pointer]:
+            - option "Select part of speech" [disabled] [selected]
+            - option "Noun"
+            - option "Verb"
+            - option "Adjective"
+            - option "Adverb"
+            - option "Pronoun"
+            - option "Preposition"
+            - option "Conjunction"
+            - option "Interjection"
+        - generic [ref=f6e96]:
+          - generic [ref=f6e97]: Meaning (English) *
+          - textbox "Meaning (English) *" [ref=f6e98]:
+            - /placeholder: English meaning
+            - text: the occurrence of events by chance in a happy way
+        - generic [ref=f6e99]:
+          - generic [ref=f6e100]: অর্থ (বাংলা) (optional)
+          - textbox "অর্থ (বাংলা) (optional)" [ref=f6e101]:
+            - /placeholder: বাংলায় অর্থ লিখুন
+        - generic [ref=f6e102]:
+          - generic [ref=f6e103]: Explanation (optional)
+          - textbox "Explanation (optional)" [ref=f6e104]:
+            - /placeholder: Add context, notes, or a detailed explanation
+        - generic [ref=f6e105]:
+          - generic [ref=f6e106]: Examples (optional)
+          - textbox "Example 1" [ref=f6e108]
+          - button "+ Add another example" [ref=f6e109] [cursor=pointer]
+        - generic [ref=f6e110]:
+          - generic [ref=f6e111]: Tags (comma separated)
+          - textbox "Tags (comma separated)" [ref=f6e112]:
+            - /placeholder: e.g. "novel, The Great Gatsby, formal"
+        - button "Update Word" [disabled] [ref=f6e113] [cursor=pointer]
+  - navigation [ref=f6e10]:
+    - generic [ref=f6e11]:
+      - link "Home" [ref=f6e12] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f6e17] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f6e21] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f6e27] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f6e32] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f6e42] [cursor=pointer]
+  - alert [ref=f6e46]

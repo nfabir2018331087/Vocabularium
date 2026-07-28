@@ -1,0 +1,15 @@
+- generic [active] [ref=f1e1]:
+  - main [ref=f1e2]
+  - navigation [ref=f1e10]:
+    - generic [ref=f1e11]:
+      - link "Home" [ref=f1e12] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f1e17] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f1e21] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f1e27] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f1e32] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f1e42] [cursor=pointer]

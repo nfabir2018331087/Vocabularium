@@ -1,0 +1,42 @@
+- generic [active] [ref=f1e1]:
+  - main [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - generic [ref=f1e5]:
+        - button [ref=f1e6] [cursor=pointer]
+        - generic [ref=f1e9]:
+          - heading "User Manual" [level=1] [ref=f1e10]
+          - paragraph [ref=f1e11]: Everything you need to know about Vocabularium
+      - generic [ref=f1e12]:
+        - generic [ref=f1e13]:
+          - button "Guest" [ref=f1e14] [cursor=pointer]
+          - button "Account" [ref=f1e15] [cursor=pointer]
+        - paragraph [ref=f1e16]: No account needed. Jump right in — everything is stored locally on your device.
+        - generic [ref=f1e17]:
+          - button "Add Words" [ref=f1e19] [cursor=pointer]
+          - button "Browse Your Words" [ref=f1e26] [cursor=pointer]
+          - button "Export Words" [ref=f1e35] [cursor=pointer]
+          - button "Pronounce a Word" [ref=f1e45] [cursor=pointer]
+          - button "Quiz Yourself" [ref=f1e55] [cursor=pointer]
+          - button "Track Progress" [ref=f1e64] [cursor=pointer]
+          - button "Learning Tracker" [ref=f1e71] [cursor=pointer]
+          - button "Create an Account" [ref=f1e80] [cursor=pointer]
+        - generic [ref=f1e88]:
+          - paragraph [ref=f1e89]: Guest Limitations
+          - list [ref=f1e90]:
+            - listitem [ref=f1e91]: Words stored only on this device — lost if you clear browser data
+            - listitem [ref=f1e95]: No AI Assist for auto-filling word details
+            - listitem [ref=f1e99]: No Word Sharing with other users
+            - listitem [ref=f1e103]: No cross-device sync
+  - navigation [ref=f1e107]:
+    - generic [ref=f1e108]:
+      - link "Home" [ref=f1e109] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f1e114] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f1e118] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f1e123] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f1e128] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f1e139] [cursor=pointer]

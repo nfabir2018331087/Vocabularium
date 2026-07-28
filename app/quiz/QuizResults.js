@@ -33,7 +33,26 @@ export default function QuizResults({ result, words, onRestart, onRetry, isGuest
   const timeStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 
   return (
-    <div className="flex flex-col gap-6 pb-8">
+    <div className="flex flex-col gap-6 pb-8 -mx-4 -mt-6">
+      {/* Header */}
+      <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onRestart}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Results</h1>
+            <p className="text-sm text-white/75 mt-0.5">{percentage}% • {label}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 flex flex-col gap-6">
       {/* Score card */}
       <div className={`flex flex-col items-center gap-3 p-8 rounded-2xl border ${bgColor}`}>
         <p className={`text-5xl font-bold ${color}`}>{percentage}%</p>
@@ -157,6 +176,7 @@ export default function QuizResults({ result, words, onRestart, onRetry, isGuest
         </svg>
         View Progress
       </Link>
+      </div>
     </div>
   );
 }

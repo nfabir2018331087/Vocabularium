@@ -53,7 +53,7 @@ export default function ShareWordButton({ wordId }) {
 
       <button
         onClick={() => setOpen(true)}
-        className="p-2 rounded-xl bg-surface-alt border border-border hover:border-primary text-text-secondary hover:text-primary transition-colors"
+        className="p-2 rounded-xl bg-white/15 border border-white/20 hover:bg-white/25 text-white transition-colors"
         title="Share"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">

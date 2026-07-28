@@ -1,0 +1,41 @@
+- generic [active] [ref=f2e1]:
+  - main [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - generic [ref=f2e4]:
+        - button "Back" [ref=f2e5] [cursor=pointer]
+        - heading "User Manual" [level=1] [ref=f2e8]
+        - paragraph [ref=f2e9]: Everything you need to know about Vocabularium
+      - generic [ref=f2e10]:
+        - generic [ref=f2e11]:
+          - button "Guest" [ref=f2e12] [cursor=pointer]
+          - button "Account" [ref=f2e13] [cursor=pointer]
+        - paragraph [ref=f2e14]: No account needed. Jump right in — everything is stored locally on your device.
+        - generic [ref=f2e15]:
+          - button "Add Words" [ref=f2e17] [cursor=pointer]
+          - button "Browse Your Words" [ref=f2e24] [cursor=pointer]
+          - button "Export Words" [ref=f2e33] [cursor=pointer]
+          - button "Pronounce a Word" [ref=f2e43] [cursor=pointer]
+          - button "Quiz Yourself" [ref=f2e53] [cursor=pointer]
+          - button "Track Progress" [ref=f2e62] [cursor=pointer]
+          - button "Learning Tracker" [ref=f2e69] [cursor=pointer]
+          - button "Create an Account" [ref=f2e78] [cursor=pointer]
+        - generic [ref=f2e86]:
+          - paragraph [ref=f2e87]: Guest Limitations
+          - list [ref=f2e88]:
+            - listitem [ref=f2e89]: Words stored only on this device — lost if you clear browser data
+            - listitem [ref=f2e93]: No AI Assist for auto-filling word details
+            - listitem [ref=f2e97]: No Word Sharing with other users
+            - listitem [ref=f2e101]: No cross-device sync
+  - navigation [ref=f2e105]:
+    - generic [ref=f2e106]:
+      - link "Home" [ref=f2e107] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f2e112] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f2e116] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f2e121] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f2e126] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f2e137] [cursor=pointer]

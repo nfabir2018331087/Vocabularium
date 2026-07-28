@@ -159,29 +159,43 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit, isGuest }) {
   }
 
   return (
-    <div className="flex flex-col gap-5 pb-8">
+    <div className="flex flex-col gap-5 pb-8 -mx-4 -mt-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={handleSkip}
-          disabled={grading}
-          className="px-4 py-2 rounded-xl bg-surface-alt border border-border text-sm font-semibold text-text-secondary hover:text-text hover:border-text-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Skip
-        </button>
-        <span className="text-sm text-text-secondary font-medium">
-          {index + 1} / {total}
-        </span>
+      <div className="hero-gradient px-6 pt-10 pb-6 rounded-b-3xl">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onQuit}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Type the Meaning</h1>
+              <p className="text-sm text-white/75 mt-0.5">Question {index + 1} of {total}</p>
+            </div>
+          </div>
+          <button
+            onClick={handleSkip}
+            disabled={grading}
+            className="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+          >
+            Skip
+          </button>
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden mt-4">
+          <div
+            className="h-full bg-white rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </div>
 
-      {/* Progress bar */}
-      <div className="w-full h-1.5 bg-surface-alt rounded-full overflow-hidden">
-        <div
-          className="h-full bg-primary rounded-full transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
+      <div className="px-4 flex flex-col gap-5">
       {/* Word */}
       <div className="flex flex-col items-center gap-2 py-8">
         <p className="text-3xl font-bold text-center">{current.word}</p>
@@ -237,6 +251,7 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit, isGuest }) {
         >
           {grading ? (isGuest ? "Finishing..." : "Grading with AI...") : "Finish"}
         </button>
+      </div>
       </div>
     </div>
   );

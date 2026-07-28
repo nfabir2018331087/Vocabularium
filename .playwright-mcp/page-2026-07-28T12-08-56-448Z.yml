@@ -1,0 +1,32 @@
+- generic [active] [ref=f12e1]:
+  - main [ref=f12e2]:
+    - generic [ref=f12e123]:
+      - generic [ref=f12e125]:
+        - generic [ref=f12e126]:
+          - heading "Multiple Choice" [level=1] [ref=f12e127]
+          - paragraph [ref=f12e128]: Question 1 of 4
+        - button "Skip" [ref=f12e129] [cursor=pointer]
+      - generic [ref=f12e131]:
+        - paragraph [ref=f12e133]: quixotic
+        - generic [ref=f12e134]:
+          - button "extremely idealistic and unrealistic" [ref=f12e135] [cursor=pointer]
+          - button "the occurrence of events by chance in a happy way" [ref=f12e136] [cursor=pointer]
+          - button "lasting for a very short time" [ref=f12e137] [cursor=pointer]
+          - button "fond of company; sociable" [ref=f12e138] [cursor=pointer]
+        - generic [ref=f12e139]:
+          - button "Quit" [ref=f12e140] [cursor=pointer]
+          - button "Finish" [disabled] [ref=f12e141] [cursor=pointer]
+  - navigation [ref=f12e11]:
+    - generic [ref=f12e12]:
+      - link "Home" [ref=f12e13] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f12e18] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f12e22] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f12e27] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f12e33] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f12e43] [cursor=pointer]
+  - alert [ref=f12e47]

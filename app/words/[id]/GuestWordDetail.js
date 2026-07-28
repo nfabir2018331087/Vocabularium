@@ -18,11 +18,15 @@ export default function GuestWordDetail({ id }) {
 
   if (!loaded) {
     return (
-      <div className="flex flex-col gap-5 pb-8">
-        <div className="h-4 w-16 bg-surface-alt rounded skeleton" />
-        <div className="h-10 w-48 bg-surface-alt rounded-lg skeleton" />
-        <div className="h-24 bg-surface-alt rounded-2xl skeleton" />
-        <div className="h-24 bg-surface-alt rounded-2xl skeleton" />
+      <div className="flex flex-col gap-5 pb-8 -mx-4 -mt-6">
+        <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+          <div className="h-4 w-16 bg-white/20 rounded" />
+          <div className="h-9 w-48 bg-white/20 rounded-lg mt-3" />
+        </div>
+        <div className="px-4 flex flex-col gap-4">
+          <div className="h-24 bg-surface-alt rounded-2xl skeleton" />
+          <div className="h-24 bg-surface-alt rounded-2xl skeleton" />
+        </div>
       </div>
     );
   }

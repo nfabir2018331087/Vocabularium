@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ExportButton from "./ExportButton";
@@ -13,19 +13,36 @@ const SORT_OPTIONS = [
   { value: "tags", label: "By Tag" },
 ];
 
+const FILTER_OPTIONS = [
+  { value: "all", label: "All Words", desc: "Show your entire vocabulary" },
+  { value: "tags", label: "By Tags", desc: "Filter by specific tags" },
+  { value: "letters", label: "By Letters", desc: "Filter by starting letter" },
+];
+
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
 export default function WordsList({ words, searchInHero, searchValue = "", onSearchChange }) {
   const PAGE_SIZES = [5, 10, 20];
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // page, pageSize, sort live in the URL so they survive navigation
+  // page, pageSize, sort, filter live in the URL so they survive navigation
   const sort = searchParams.get("sort") || "newest";
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
   const pageSize = (() => {
     const s = parseInt(searchParams.get("size") || "5", 10);
     return PAGE_SIZES.includes(s) ? s : 5;
   })();
+  const filterType = searchParams.get("filter") || "all";
+  const selectedTags = useMemo(
+    () => (searchParams.get("ftags") || "").split(",").filter(Boolean),
+    [searchParams]
+  );
+  const selectedLetters = useMemo(
+    () => (searchParams.get("fletters") || "").split(",").filter(Boolean),
+    [searchParams]
+  );
 
   const updateParams = useCallback((updates) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -36,20 +53,66 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
   const setSort = (v) => updateParams({ sort: v, page: 1 });
   const setPage = (fn) => updateParams({ page: typeof fn === "function" ? fn(page) : fn });
   const setPageSize = (v) => updateParams({ size: v, page: 1 });
+  const setFilterType = (v) => updateParams({ filter: v, ftags: "", fletters: "", page: 1 });
+  const clearFilter = () => updateParams({ filter: "all", ftags: "", fletters: "", page: 1 });
+  const toggleFilterTag = (tag) => {
+    const next = selectedTags.includes(tag) ? selectedTags.filter((t) => t !== tag) : [...selectedTags, tag];
+    updateParams({ ftags: next.join(","), page: 1 });
+  };
+  const toggleFilterLetter = (l) => {
+    const next = selectedLetters.includes(l) ? selectedLetters.filter((x) => x !== l) : [...selectedLetters, l];
+    updateParams({ fletters: next.join(","), page: 1 });
+  };
 
   const [search, setSearch] = useState(searchValue);
+  const [openDropdown, setOpenDropdown] = useState(null); // "sort" | "filter" | null
+  const sortRef = useRef(null);
+  const filterRef = useRef(null);
+
+  useEffect(() => {
+    function handleOutside(e) {
+      if (sortRef.current?.contains(e.target)) return;
+      if (filterRef.current?.contains(e.target)) return;
+      setOpenDropdown(null);
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
+
+  const allTags = useMemo(() => {
+    const s = new Set();
+    words.forEach((w) => (w.tags ?? []).forEach((t) => { if (t) s.add(t); }));
+    return [...s].sort((a, b) => a.localeCompare(b));
+  }, [words]);
+
+  const availableLetters = useMemo(() => {
+    const s = new Set();
+    words.forEach((w) => { if (w.word?.[0]) s.add(w.word[0].toUpperCase()); });
+    return s;
+  }, [words]);
+
+  const filterActive = filterType !== "all";
+  const filterCount = filterType === "tags" ? selectedTags.length : filterType === "letters" ? selectedLetters.length : 0;
+
+  const poolFiltered = useMemo(() => {
+    if (filterType === "tags" && selectedTags.length > 0)
+      return words.filter((w) => (w.tags ?? []).some((t) => selectedTags.includes(t)));
+    if (filterType === "letters" && selectedLetters.length > 0)
+      return words.filter((w) => w.word?.[0] && selectedLetters.includes(w.word[0].toUpperCase()));
+    return words;
+  }, [words, filterType, selectedTags, selectedLetters]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    if (!q) return words;
-    return words.filter(
+    if (!q) return poolFiltered;
+    return poolFiltered.filter(
       (w) =>
         w.word.toLowerCase().includes(q) ||
         w.meaningEn.toLowerCase().includes(q) ||
         (w.meaningBn && w.meaningBn.includes(q)) ||
         w.tags.some((t) => t.toLowerCase().includes(q))
     );
-  }, [words, search]);
+  }, [poolFiltered, search]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
@@ -121,21 +184,191 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
         </div>
       )}
 
-      {/* Sort */}
-      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-        {SORT_OPTIONS.map((opt) => (
+      {/* Sort & Filter */}
+      <div className="flex gap-2">
+        {/* Sort dropdown */}
+        <div className="relative" ref={sortRef}>
           <button
-            key={opt.value}
-            onClick={() => setSort(opt.value)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-              sort === opt.value
+            onClick={() => setOpenDropdown((d) => (d === "sort" ? null : "sort"))}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+              sort !== "newest"
                 ? "bg-primary text-white shadow-sm shadow-primary/25"
                 : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
             }`}
           >
-            {opt.label}
+            Sort
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={`w-3 h-3 transition-transform duration-150 ${openDropdown === "sort" ? "rotate-180" : ""}`}>
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
           </button>
-        ))}
+
+          {openDropdown === "sort" && (
+            <div className="absolute left-0 top-full mt-1.5 w-40 bg-surface border border-border rounded-xl shadow-lg z-20 overflow-hidden py-1">
+              {SORT_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => { setSort(opt.value); setOpenDropdown(null); }}
+                  className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 text-sm transition-colors ${
+                    sort === opt.value
+                      ? "text-primary font-medium bg-primary/5"
+                      : "text-text-secondary hover:text-text hover:bg-surface-alt"
+                  }`}
+                >
+                  {opt.label}
+                  {sort === opt.value && (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Filter dropdown */}
+        <div className="relative" ref={filterRef}>
+          <button
+            onClick={() => setOpenDropdown((d) => (d === "filter" ? null : "filter"))}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+              filterActive
+                ? "bg-primary text-white shadow-sm shadow-primary/25"
+                : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
+            }`}
+          >
+            Filter{filterCount > 0 ? ` (${filterCount})` : ""}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={`w-3 h-3 transition-transform duration-150 ${openDropdown === "filter" ? "rotate-180" : ""}`}>
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+
+          {openDropdown === "filter" && (
+            <div className="absolute left-0 top-full mt-1.5 w-72 max-w-[85vw] max-h-96 overflow-y-auto bg-surface border border-border rounded-xl shadow-lg z-20 p-3 flex flex-col gap-3">
+              {/* Word Pool */}
+              <div className="flex flex-col gap-1.5">
+                {FILTER_OPTIONS.map((opt) => (
+                  <label
+                    key={opt.value}
+                    className={`flex items-center gap-3 p-2.5 rounded-xl border cursor-pointer transition-all ${
+                      filterType === opt.value
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="wordsFilterType"
+                      value={opt.value}
+                      checked={filterType === opt.value}
+                      onChange={() => setFilterType(opt.value)}
+                      className="hidden"
+                    />
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${filterType === opt.value ? "border-primary" : "border-border"}`}>
+                      {filterType === opt.value && <div className="w-2 h-2 rounded-full bg-primary" />}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium leading-none">{opt.label}</p>
+                      <p className="text-xs text-text-secondary mt-0.5">{opt.desc}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+
+              {/* Tags selector */}
+              {filterType === "tags" && (
+                <div>
+                  <p className="text-xs font-medium text-text-secondary mb-2 uppercase tracking-wide">
+                    Select Tags
+                    {selectedTags.length > 0 && (
+                      <span className="normal-case ml-1 text-primary font-normal">
+                        · {selectedTags.length} selected
+                      </span>
+                    )}
+                  </p>
+                  {allTags.length === 0 ? (
+                    <p className="text-sm text-text-secondary py-2">No tags found.</p>
+                  ) : (
+                    <div className="max-h-40 overflow-y-auto rounded-lg border border-border divide-y divide-border">
+                      {allTags.map((tag) => {
+                        const checked = selectedTags.includes(tag);
+                        const count = words.filter((w) => (w.tags ?? []).includes(tag)).length;
+                        return (
+                          <label
+                            key={tag}
+                            className="flex items-center gap-2.5 px-3 py-2.5 hover:bg-surface-alt cursor-pointer transition-colors"
+                          >
+                            <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${checked ? "bg-primary border-primary" : "border-border"}`}>
+                              {checked && (
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" className="w-2.5 h-2.5">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              )}
+                            </div>
+                            <input type="checkbox" checked={checked} onChange={() => toggleFilterTag(tag)} className="hidden" />
+                            <span className="text-sm flex-1">{tag}</span>
+                            <span className="text-xs text-text-secondary">{count}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Letters selector */}
+              {filterType === "letters" && (
+                <div>
+                  <p className="text-xs font-medium text-text-secondary mb-2 uppercase tracking-wide">
+                    Select Letters
+                    {selectedLetters.length > 0 && (
+                      <span className="normal-case ml-1 text-primary font-normal">
+                        · {selectedLetters.length} selected
+                      </span>
+                    )}
+                  </p>
+                  <div className="grid grid-cols-7 gap-1">
+                    {LETTERS.map((letter) => {
+                      const has = availableLetters.has(letter);
+                      const sel = selectedLetters.includes(letter);
+                      return (
+                        <button
+                          key={letter}
+                          onClick={() => has && toggleFilterLetter(letter)}
+                          disabled={!has}
+                          className={`aspect-square flex items-center justify-center rounded-lg text-xs font-semibold transition-all ${
+                            !has
+                              ? "bg-surface-alt text-text-secondary/25 cursor-not-allowed"
+                              : sel
+                              ? "bg-primary text-white shadow-sm"
+                              : "bg-surface-alt border border-border text-text hover:border-primary hover:text-primary"
+                          }`}
+                        >
+                          {letter}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between pt-1 border-t border-border">
+                <button
+                  onClick={clearFilter}
+                  disabled={!filterActive}
+                  className="text-xs font-medium text-text-secondary hover:text-text disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Clear
+                </button>
+                <button
+                  onClick={() => setOpenDropdown(null)}
+                  className="text-xs font-semibold text-primary hover:text-primary-dark transition-colors"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Count + Export */}

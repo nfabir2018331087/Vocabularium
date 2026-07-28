@@ -1,0 +1,45 @@
+- generic [active] [ref=f17e1]:
+  - main [ref=f17e2]:
+    - generic [ref=f17e3]:
+      - generic [ref=f17e4]:
+        - link "Back" [ref=f17e5] [cursor=pointer]:
+          - /url: /profile
+        - heading "Create Account" [level=1] [ref=f17e8]
+        - paragraph [ref=f17e9]: Sign up to sync your words across devices
+      - generic [ref=f17e10]:
+        - button "Continue with Google" [ref=f17e11] [cursor=pointer]
+        - generic [ref=f17e17]: or
+        - generic [ref=f17e21]:
+          - generic [ref=f17e22]:
+            - generic [ref=f17e23]: Full Name
+            - textbox "Full Name" [ref=f17e24]:
+              - /placeholder: Your full name
+          - generic [ref=f17e25]:
+            - generic [ref=f17e26]: Email
+            - textbox "Email" [ref=f17e27]:
+              - /placeholder: you@example.com
+          - generic [ref=f17e28]:
+            - generic [ref=f17e29]: Password
+            - generic [ref=f17e30]:
+              - textbox "Password" [ref=f17e31]:
+                - /placeholder: At least 6 characters
+              - button "Show password" [ref=f17e32] [cursor=pointer]
+          - button "Create Account" [ref=f17e36] [cursor=pointer]
+        - paragraph [ref=f17e37]:
+          - text: Already have an account?
+          - link "Log in" [ref=f17e38] [cursor=pointer]:
+            - /url: /auth/login
+  - navigation [ref=f17e39]:
+    - generic [ref=f17e40]:
+      - link "Home" [ref=f17e41] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f17e46] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f17e50] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f17e55] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f17e60] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f17e70] [cursor=pointer]
+  - alert [ref=f17e74]

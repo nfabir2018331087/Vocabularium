@@ -1,0 +1,32 @@
+- generic [ref=f12e1]:
+  - main [ref=f12e2]:
+    - generic [ref=f12e217]:
+      - generic [ref=f12e219]:
+        - generic [ref=f12e220]:
+          - heading "Type the Meaning" [level=1] [ref=f12e221]
+          - paragraph [ref=f12e222]: Question 1 of 4
+        - button "Skip" [ref=f12e223] [cursor=pointer]
+      - generic [ref=f12e225]:
+        - generic [ref=f12e226]:
+          - paragraph [ref=f12e227]: ephemeral
+          - paragraph [ref=f12e228]: Type the English meaning
+        - generic [ref=f12e229]:
+          - textbox "Your answer..." [active] [ref=f12e230]
+          - button "Next" [disabled] [ref=f12e231] [cursor=pointer]
+        - generic [ref=f12e232]:
+          - button "Quit" [ref=f12e233] [cursor=pointer]
+          - button "Finish" [disabled] [ref=f12e234] [cursor=pointer]
+  - navigation [ref=f12e11]:
+    - generic [ref=f12e12]:
+      - link "Home" [ref=f12e13] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f12e18] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f12e22] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f12e27] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f12e33] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f12e43] [cursor=pointer]
+  - alert [ref=f12e47]

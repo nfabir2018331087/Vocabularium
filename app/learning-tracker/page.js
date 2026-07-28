@@ -272,118 +272,123 @@ export default function LearningTrackerPage() {
   }, [tagStates, words]);
 
   return (
-    <div className="flex flex-col gap-6 pb-8">
+    <div className="flex flex-col gap-6 pb-8 -mx-4 -mt-6">
       {/* Header */}
-      <div>
-        <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-primary transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-          Back
-        </button>
-        <h1 className="text-2xl font-bold mt-3">Learning Tracker</h1>
-        <p className="text-sm text-text-secondary mt-0.5">Track your learning progress by letter or tag</p>
-      </div>
-
-      {/* Tab toggler */}
-      <div className="flex gap-2 p-1 rounded-2xl bg-surface-alt border border-border">
-        {[
-          { id: "letters", label: "By Letters" },
-          { id: "tags", label: "By Tags" },
-        ].map((t) => (
+      <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
+        <div className="flex items-center gap-3">
           <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all ${
-              tab === t.id
-                ? "bg-primary text-white shadow-sm"
-                : "text-text-secondary hover:text-text"
-            }`}
+            onClick={() => router.back()}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0"
           >
-            {t.label}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
           </button>
-        ))}
+          <div>
+            <h1 className="text-2xl font-bold text-white">Learning Tracker</h1>
+            <p className="text-sm text-white/75 mt-0.5">Track your learning progress by letter or tag</p>
+          </div>
+        </div>
       </div>
 
-      {loading ? (
-        <div className="flex flex-col gap-3">
-          <div className="flex gap-2">
-            {[1, 2, 3].map((i) => <div key={i} className="h-8 w-24 bg-surface-alt rounded-full skeleton" />)}
-          </div>
-          <div className="grid grid-cols-7 gap-1.5">
-            {LETTERS.map((l) => <div key={l} className="aspect-square bg-surface-alt rounded-lg skeleton" />)}
-          </div>
+      <div className="px-4 flex flex-col gap-6">
+        {/* Tab toggler */}
+        <div className="flex gap-2 p-1 rounded-2xl bg-surface-alt border border-border">
+          {[
+            { id: "letters", label: "By Letters" },
+            { id: "tags", label: "By Tags" },
+          ].map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all ${
+                tab === t.id
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-text-secondary hover:text-text"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
-      ) : tab === "letters" ? (
-        <div className="flex flex-col gap-4">
-          <StatsRow {...letterCounts} />
-          {availableLetters.size === 0 ? (
-            <p className="text-sm text-text-secondary py-4 text-center">Add some words to start tracking by letter.</p>
-          ) : (
-            <div className="grid grid-cols-7 gap-1.5">
-              {LETTERS.map((letter) => {
-                const available = availableLetters.has(letter);
-                const state = letterStates[letter]?.state ?? null;
-                return (
-                  <button
-                    key={letter}
-                    onClick={() => toggleLetter(letter)}
-                    disabled={!available}
-                    className={`aspect-square flex items-center justify-center rounded-xl text-sm font-bold transition-all ${letterButtonClass(state, available)}`}
-                  >
-                    {letter}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          <StatsRow {...tagCounts} />
-          {allTags.length === 0 ? (
-            <p className="text-sm text-text-secondary py-4 text-center">No tags found. Add tags to your words first.</p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {allTags.map((tag) => {
-                const state = tagStates[tag]?.state ?? null;
-                return (
-                  <button
-                    key={tag}
-                    onClick={() => toggleTag(tag)}
-                    className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all ${tagButtonClass(state)}`}
-                  >
-                    {tag}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
 
-      {/* Instructions */}
-      <div className="mt-2 p-4 rounded-2xl bg-surface-alt border border-border flex flex-col gap-3">
-        <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide">How it works</p>
-        <div className="flex flex-col gap-2.5">
-          <div className="flex items-center gap-3 text-sm text-text-secondary">
-            <span className="w-7 h-7 shrink-0 rounded-lg bg-surface border border-border flex items-center justify-center text-xs font-bold text-text">A</span>
-            <span><span className="font-medium text-text">Gray</span> — not started yet</span>
+        {loading ? (
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              {[1, 2, 3].map((i) => <div key={i} className="h-8 w-24 bg-surface-alt rounded-full skeleton" />)}
+            </div>
+            <div className="grid grid-cols-7 gap-1.5">
+              {LETTERS.map((l) => <div key={l} className="aspect-square bg-surface-alt rounded-lg skeleton" />)}
+            </div>
           </div>
-          <div className="flex items-center gap-3 text-sm text-text-secondary">
-            <span className="w-7 h-7 shrink-0 rounded-lg border-2 border-primary flex items-center justify-center text-xs font-bold text-primary">A</span>
-            <span><span className="font-medium text-primary">Outlined</span> — currently learning</span>
+        ) : tab === "letters" ? (
+          <div className="flex flex-col gap-4">
+            <StatsRow {...letterCounts} />
+            {availableLetters.size === 0 ? (
+              <p className="text-sm text-text-secondary py-4 text-center">Add some words to start tracking by letter.</p>
+            ) : (
+              <div className="grid grid-cols-7 gap-1.5">
+                {LETTERS.map((letter) => {
+                  const available = availableLetters.has(letter);
+                  const state = letterStates[letter]?.state ?? null;
+                  return (
+                    <button
+                      key={letter}
+                      onClick={() => toggleLetter(letter)}
+                      disabled={!available}
+                      className={`aspect-square flex items-center justify-center rounded-xl text-sm font-bold transition-all ${letterButtonClass(state, available)}`}
+                    >
+                      {letter}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-3 text-sm text-text-secondary">
-            <span className="w-7 h-7 shrink-0 rounded-lg bg-primary flex items-center justify-center text-xs font-bold text-white">A</span>
-            <span><span className="font-medium text-primary">Filled</span> — fully learned</span>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <StatsRow {...tagCounts} />
+            {allTags.length === 0 ? (
+              <p className="text-sm text-text-secondary py-4 text-center">No tags found. Add tags to your words first.</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {allTags.map((tag) => {
+                  const state = tagStates[tag]?.state ?? null;
+                  return (
+                    <button
+                      key={tag}
+                      onClick={() => toggleTag(tag)}
+                      className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all ${tagButtonClass(state)}`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
-          <p className="text-xs text-text-secondary pt-1 border-t border-border">
-            Tap any {tab === "letters" ? "letter" : "tag"} to cycle through states. If new words are added to a {tab === "letters" ? "letter" : "tag"}, it resets automatically.
-          </p>
+        )}
+
+        {/* Instructions */}
+        <div className="p-4 rounded-2xl bg-surface-alt border border-border flex flex-col gap-3">
+          <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide">How it works</p>
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-center gap-3 text-sm text-text-secondary">
+              <span className="w-7 h-7 shrink-0 rounded-lg bg-surface border border-border flex items-center justify-center text-xs font-bold text-text">A</span>
+              <span><span className="font-medium text-text">Gray</span> — not started yet</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-text-secondary">
+              <span className="w-7 h-7 shrink-0 rounded-lg border-2 border-primary flex items-center justify-center text-xs font-bold text-primary">A</span>
+              <span><span className="font-medium text-primary">Outlined</span> — currently learning</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-text-secondary">
+              <span className="w-7 h-7 shrink-0 rounded-lg bg-primary flex items-center justify-center text-xs font-bold text-white">A</span>
+              <span><span className="font-medium text-primary">Filled</span> — fully learned</span>
+            </div>
+            <p className="text-xs text-text-secondary pt-1 border-t border-border">
+              Tap any {tab === "letters" ? "letter" : "tag"} to cycle through states. If new words are added to a {tab === "letters" ? "letter" : "tag"}, it resets automatically.
+            </p>
+          </div>
         </div>
       </div>
     </div>

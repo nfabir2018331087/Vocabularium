@@ -1,0 +1,55 @@
+- generic [active] [ref=f11e1]:
+  - main [ref=f11e2]:
+    - generic [ref=f11e143]:
+      - generic [ref=f11e144]:
+        - heading "Results" [level=1] [ref=f11e145]
+        - paragraph [ref=f11e146]: 0% • Keep practicing!
+      - generic [ref=f11e147]:
+        - generic [ref=f11e148]:
+          - paragraph [ref=f11e149]: 0%
+          - paragraph [ref=f11e150]: Keep practicing!
+          - generic [ref=f11e151]:
+            - generic [ref=f11e152]: 0 / 4 correct
+            - generic [ref=f11e154]: 35s
+        - generic [ref=f11e155]:
+          - heading "Words to review" [level=2] [ref=f11e156]
+          - generic [ref=f11e157]:
+            - link [ref=f11e158] [cursor=pointer]:
+              - /url: /words/local_fa04995f-5e0e-4d35-8d21-c917736e628b
+              - generic [ref=f11e159]:
+                - text: gregarious
+                - paragraph [ref=f11e160]: fond of company; sociable
+            - link [ref=f11e163] [cursor=pointer]:
+              - /url: /words/local_77402a33-b56a-49cd-bed1-9d57f5a35a9c
+              - generic [ref=f11e164]:
+                - text: quixotic
+                - paragraph [ref=f11e165]: extremely idealistic and unrealistic
+            - link [ref=f11e168] [cursor=pointer]:
+              - /url: /words/local_7e959480-b989-4921-a0f7-f7d35b055702
+              - generic [ref=f11e169]:
+                - text: ephemeral
+                - paragraph [ref=f11e170]: lasting for a very short time
+            - link [ref=f11e173] [cursor=pointer]:
+              - /url: /words/local_0a7c8077-2647-498c-9299-113e549ee395
+              - generic [ref=f11e174]:
+                - text: serendipity
+                - paragraph [ref=f11e175]: the occurrence of events by chance in a happy way
+        - generic [ref=f11e178]:
+          - button "Try Again" [ref=f11e179] [cursor=pointer]
+          - button "All Modes" [ref=f11e180] [cursor=pointer]
+        - link "View Progress" [ref=f11e181] [cursor=pointer]:
+          - /url: /progress
+  - navigation [ref=f11e11]:
+    - generic [ref=f11e12]:
+      - link "Home" [ref=f11e13] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f11e18] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f11e22] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f11e27] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f11e33] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f11e43] [cursor=pointer]
+  - alert [ref=f11e47]

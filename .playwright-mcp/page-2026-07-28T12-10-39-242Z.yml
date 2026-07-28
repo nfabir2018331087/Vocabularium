@@ -1,0 +1,40 @@
+- generic [ref=f13e1]:
+  - main [ref=f13e2]:
+    - generic [ref=f13e3]:
+      - generic [ref=f13e5]:
+        - heading "Guest User" [level=1] [ref=f13e53]
+        - paragraph [ref=f13e54]: Browsing as guest
+      - generic [ref=f13e9]:
+        - link "Learning Tracker" [ref=f13e55] [cursor=pointer]:
+          - /url: /learning-tracker
+        - link "User Manual" [ref=f13e60] [cursor=pointer]:
+          - /url: /profile/manual
+        - generic [ref=f13e69]:
+          - paragraph [ref=f13e73]: Guest limitations
+          - generic [ref=f13e74]:
+            - generic [ref=f13e75]: Local storage only
+            - generic [ref=f13e79]: No AI Assist
+            - generic [ref=f13e83]: No word sharing
+            - generic [ref=f13e87]: No friends
+        - generic [ref=f13e91]:
+          - link "Sign Up" [ref=f13e92] [cursor=pointer]:
+            - /url: /auth/signup
+          - link "Log In" [ref=f13e93] [cursor=pointer]:
+            - /url: /auth/login
+        - button "Theme Dark" [active] [ref=f13e108] [cursor=pointer]:
+          - generic [ref=f13e96]: Theme
+          - generic [ref=f13e101]: Dark
+  - navigation [ref=f13e13]:
+    - generic [ref=f13e14]:
+      - link "Home" [ref=f13e15] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f13e20] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f13e24] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f13e29] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f13e34] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f13e45] [cursor=pointer]
+  - alert [ref=f13e49]

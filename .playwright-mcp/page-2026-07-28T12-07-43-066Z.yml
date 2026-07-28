@@ -1,0 +1,55 @@
+- generic [ref=f11e1]:
+  - main [ref=f11e2]:
+    - generic [ref=f11e48]:
+      - generic [ref=f11e50]:
+        - generic [ref=f11e51]:
+          - heading "Quiz" [level=1] [ref=f11e52]
+          - paragraph [ref=f11e53]: 4 words available
+        - link "Progress" [ref=f11e54] [cursor=pointer]:
+          - /url: /progress
+      - generic [ref=f11e58]:
+        - button "Flashcard Flip cards to reveal meanings" [active] [ref=f11e59] [cursor=pointer]:
+          - generic [ref=f11e65]: Flashcard
+          - generic [ref=f11e66]: Flip cards to reveal meanings
+        - button "Multiple Choice Pick the correct meaning" [ref=f11e67] [cursor=pointer]:
+          - generic [ref=f11e71]: Multiple Choice
+          - generic [ref=f11e72]: Pick the correct meaning
+        - button "Type Answer Type the English meaning" [ref=f11e73] [cursor=pointer]:
+          - generic [ref=f11e78]: Type Answer
+          - generic [ref=f11e79]: Type the English meaning
+        - button "Match Pairs Connect words with meanings" [ref=f11e80] [cursor=pointer]:
+          - generic [ref=f11e88]: Match Pairs
+          - generic [ref=f11e89]: Connect words with meanings
+      - generic [ref=f11e91]:
+        - generic [ref=f11e94]:
+          - heading "Flashcard" [level=2] [ref=f11e95]
+          - button [ref=f11e96] [cursor=pointer]
+        - generic [ref=f11e101]:
+          - paragraph [ref=f11e102]: Word Pool
+          - generic [ref=f11e103]:
+            - generic [ref=f11e107] [cursor=pointer]:
+              - paragraph [ref=f11e108]: Random
+              - paragraph [ref=f11e109]: Weighted by your progress
+            - generic [ref=f11e112] [cursor=pointer]:
+              - paragraph [ref=f11e113]: By Tags
+              - paragraph [ref=f11e114]: Choose specific tags
+            - generic [ref=f11e117] [cursor=pointer]:
+              - paragraph [ref=f11e118]: By Letters
+              - paragraph [ref=f11e119]: Filter by starting letter
+        - generic [ref=f11e120]:
+          - button "Cancel" [ref=f11e121] [cursor=pointer]
+          - button "Start Quiz" [ref=f11e122] [cursor=pointer]
+  - navigation [ref=f11e11]:
+    - generic [ref=f11e12]:
+      - link "Home" [ref=f11e13] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f11e18] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f11e22] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f11e27] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f11e33] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f11e43] [cursor=pointer]
+  - alert [ref=f11e47]

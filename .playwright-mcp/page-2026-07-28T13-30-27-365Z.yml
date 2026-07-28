@@ -1,0 +1,141 @@
+- generic [ref=f1e1]:
+  - main [ref=f1e2]:
+    - generic [ref=f1e49]:
+      - generic [ref=f1e50]:
+        - generic [ref=f1e51]:
+          - heading "My Words" [level=1] [ref=f1e52]
+          - link "Add" [ref=f1e53] [cursor=pointer]:
+            - /url: /add
+        - paragraph [ref=f1e55]: Search, sort, and manage your vocabulary
+        - textbox "Search words, meanings, or tags..." [ref=f1e60]
+      - generic [ref=f1e61]:
+        - generic [ref=f1e62]:
+          - button "Sort" [ref=f1e64] [cursor=pointer]
+          - button "Filter" [ref=f1e68] [cursor=pointer]
+        - generic [ref=f1e71]:
+          - paragraph [ref=f1e72]: 26 words
+          - button "Export" [ref=f1e74] [cursor=pointer]
+        - generic [ref=f1e81]:
+          - link [ref=f1e82] [cursor=pointer]:
+            - /url: /words/local_seed_0
+            - generic [ref=f1e84]:
+              - heading "Aback" [level=3] [ref=f1e86]
+              - paragraph [ref=f1e87]: meaning of Aback
+          - link [ref=f1e90] [cursor=pointer]:
+            - /url: /words/local_seed_1
+            - generic [ref=f1e92]:
+              - heading "Abaft" [level=3] [ref=f1e94]
+              - paragraph [ref=f1e95]: meaning of Abaft
+          - link [ref=f1e98] [cursor=pointer]:
+            - /url: /words/local_seed_2
+            - generic [ref=f1e100]:
+              - heading "Abase" [level=3] [ref=f1e102]
+              - paragraph [ref=f1e103]: meaning of Abase
+          - link [ref=f1e106] [cursor=pointer]:
+            - /url: /words/local_seed_3
+            - generic [ref=f1e108]:
+              - heading "Abate" [level=3] [ref=f1e110]
+              - paragraph [ref=f1e111]: meaning of Abate
+          - link [ref=f1e114] [cursor=pointer]:
+            - /url: /words/local_seed_4
+            - generic [ref=f1e116]:
+              - heading "Abhor" [level=3] [ref=f1e118]
+              - paragraph [ref=f1e119]: meaning of Abhor
+          - link [ref=f1e131] [cursor=pointer]:
+            - /url: /words/local_seed_5
+            - generic [ref=f1e133]:
+              - heading "Abide" [level=3] [ref=f1e135]
+              - paragraph [ref=f1e136]: meaning of Abide
+          - link [ref=f1e139] [cursor=pointer]:
+            - /url: /words/local_seed_6
+            - generic [ref=f1e141]:
+              - heading "Abjure" [level=3] [ref=f1e143]
+              - paragraph [ref=f1e144]: meaning of Abjure
+          - link [ref=f1e147] [cursor=pointer]:
+            - /url: /words/local_seed_7
+            - generic [ref=f1e149]:
+              - heading "Banal" [level=3] [ref=f1e151]
+              - paragraph [ref=f1e152]: meaning of Banal
+          - link [ref=f1e155] [cursor=pointer]:
+            - /url: /words/local_seed_8
+            - generic [ref=f1e157]:
+              - heading "Cogent" [level=3] [ref=f1e159]
+              - paragraph [ref=f1e160]: meaning of Cogent
+          - link [ref=f1e163] [cursor=pointer]:
+            - /url: /words/local_seed_9
+            - generic [ref=f1e165]:
+              - heading "Docile" [level=3] [ref=f1e167]
+              - paragraph [ref=f1e168]: meaning of Docile
+          - link [ref=f1e171] [cursor=pointer]:
+            - /url: /words/local_seed_10
+            - generic [ref=f1e173]:
+              - heading "Effuse" [level=3] [ref=f1e175]
+              - paragraph [ref=f1e176]: meaning of Effuse
+          - link [ref=f1e179] [cursor=pointer]:
+            - /url: /words/local_seed_11
+            - generic [ref=f1e181]:
+              - heading "Furtive" [level=3] [ref=f1e183]
+              - paragraph [ref=f1e184]: meaning of Furtive
+          - link [ref=f1e187] [cursor=pointer]:
+            - /url: /words/local_seed_12
+            - generic [ref=f1e189]:
+              - heading "Glib" [level=3] [ref=f1e191]
+              - paragraph [ref=f1e192]: meaning of Glib
+          - link [ref=f1e195] [cursor=pointer]:
+            - /url: /words/local_seed_13
+            - generic [ref=f1e197]:
+              - heading "Halcyon" [level=3] [ref=f1e199]
+              - paragraph [ref=f1e200]: meaning of Halcyon
+          - link [ref=f1e203] [cursor=pointer]:
+            - /url: /words/local_seed_14
+            - generic [ref=f1e205]:
+              - heading "Ignoble" [level=3] [ref=f1e207]
+              - paragraph [ref=f1e208]: meaning of Ignoble
+          - link [ref=f1e211] [cursor=pointer]:
+            - /url: /words/local_seed_15
+            - generic [ref=f1e213]:
+              - heading "Jocund" [level=3] [ref=f1e215]
+              - paragraph [ref=f1e216]: meaning of Jocund
+          - link [ref=f1e219] [cursor=pointer]:
+            - /url: /words/local_seed_16
+            - generic [ref=f1e221]:
+              - heading "Keen" [level=3] [ref=f1e223]
+              - paragraph [ref=f1e224]: meaning of Keen
+          - link [ref=f1e227] [cursor=pointer]:
+            - /url: /words/local_seed_17
+            - generic [ref=f1e229]:
+              - heading "Languid" [level=3] [ref=f1e231]
+              - paragraph [ref=f1e232]: meaning of Languid
+          - link [ref=f1e235] [cursor=pointer]:
+            - /url: /words/local_seed_18
+            - generic [ref=f1e237]:
+              - heading "Morose" [level=3] [ref=f1e239]
+              - paragraph [ref=f1e240]: meaning of Morose
+          - link [ref=f1e243] [cursor=pointer]:
+            - /url: /words/local_seed_19
+            - generic [ref=f1e245]:
+              - heading "Nadir" [level=3] [ref=f1e247]
+              - paragraph [ref=f1e248]: meaning of Nadir
+        - generic [ref=f1e122]:
+          - generic [ref=f1e123]:
+            - button "5" [ref=f1e124] [cursor=pointer]
+            - button "10" [ref=f1e125] [cursor=pointer]
+            - button "20" [active] [ref=f1e126] [cursor=pointer]
+          - generic [ref=f1e127]: Page 1 of 2
+          - generic [ref=f1e128]:
+            - button "Prev" [disabled] [ref=f1e129] [cursor=pointer]
+            - button "Next" [ref=f1e130] [cursor=pointer]
+  - navigation [ref=f1e12]:
+    - generic [ref=f1e13]:
+      - link "Home" [ref=f1e14] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f1e19] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f1e23] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f1e29] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f1e34] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f1e44] [cursor=pointer]
+  - alert [ref=f1e48]

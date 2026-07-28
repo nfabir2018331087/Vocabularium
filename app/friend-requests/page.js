@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "../components/AuthProvider";
 import { getFriendData, acceptFriendRequest, rejectFriendRequest } from "../actions/friends";
 import Toast from "../components/Toast";
+import { getCachedFriends, setCachedFriends, isFriendsFresh } from "../../lib/client-cache";
 
 function Avatar({ user }) {
   const initials = (user.name || user.email || "?").slice(0, 2).toUpperCase();
@@ -37,6 +38,7 @@ export default function FriendRequestsPage() {
   const { user, loading: authLoading, isGuest } = useAuth();
   const router = useRouter();
   const [requests, setRequests] = useState([]);
+  const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState(null);
   const [actionType, setActionType] = useState(null);
@@ -46,13 +48,28 @@ export default function FriendRequestsPage() {
     if (!authLoading && !user) router.replace("/profile");
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (!user) return;
-    getFriendData().then((data) => {
-      setRequests(data.requests || []);
+  async function load(force = false) {
+    const userId = user?.id;
+    const cached = getCachedFriends(userId);
+    const fresh = cached && isFriendsFresh(userId, 2 * 60 * 1000);
+
+    if (cached) {
+      setRequests(cached.requests || []);
+      setFriends(cached.friends || []);
       setLoading(false);
-    });
-  }, [user]);
+    }
+
+    if (!fresh || force) {
+      if (!cached) setLoading(true);
+      const data = await getFriendData();
+      setRequests(data.requests || []);
+      setFriends(data.friends || []);
+      setCachedFriends(userId, data);
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { if (user) load(); }, [user]);
 
   function showToast(msg, type = "success") {
     setToast({ message: msg, type });
@@ -63,6 +80,7 @@ export default function FriendRequestsPage() {
     setActionType("accept");
     await acceptFriendRequest(id);
     setRequests((prev) => prev.filter((r) => r.id !== id));
+    await load(true);
     setActionId(null);
     setActionType(null);
     showToast("Friend request accepted!");
@@ -72,7 +90,11 @@ export default function FriendRequestsPage() {
     setActionId(id);
     setActionType("reject");
     await rejectFriendRequest(id);
-    setRequests((prev) => prev.filter((r) => r.id !== id));
+    setRequests((prev) => {
+      const next = prev.filter((r) => r.id !== id);
+      setCachedFriends(user?.id, { requests: next, friends });
+      return next;
+    });
     setActionId(null);
     setActionType(null);
   }

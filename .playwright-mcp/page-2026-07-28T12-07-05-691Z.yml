@@ -1,0 +1,62 @@
+- generic [active] [ref=f9e1]:
+  - main [ref=f9e2]:
+    - generic [ref=f9e3]:
+      - generic [ref=f9e4]:
+        - heading "Add New Word" [level=1] [ref=f9e5]
+        - paragraph [ref=f9e6]: Save a word with meaning, examples & tags
+      - generic [ref=f9e7]:
+        - generic [ref=f9e74]: Word added successfully!
+        - generic [ref=f9e8]:
+          - generic [ref=f9e9]:
+            - generic [ref=f9e10]: Word *
+            - textbox "Word *" [ref=f9e13]:
+              - /placeholder: Enter the word
+              - text: quixotic
+          - generic [ref=f9e16]:
+            - generic [ref=f9e17]: Part of Speech (optional)
+            - combobox "Part of Speech (optional)" [ref=f9e18] [cursor=pointer]:
+              - option "Select part of speech" [disabled] [selected]
+              - option "Noun"
+              - option "Verb"
+              - option "Adjective"
+              - option "Adverb"
+              - option "Pronoun"
+              - option "Preposition"
+              - option "Conjunction"
+              - option "Interjection"
+          - generic [ref=f9e19]:
+            - generic [ref=f9e20]: Meaning (English) *
+            - textbox "Meaning (English) *" [ref=f9e21]:
+              - /placeholder: English meaning
+              - text: extremely idealistic and unrealistic
+          - generic [ref=f9e22]:
+            - generic [ref=f9e23]: অর্থ (বাংলা) (optional)
+            - textbox "অর্থ (বাংলা) (optional)" [ref=f9e24]:
+              - /placeholder: বাংলায় অর্থ লিখুন
+          - generic [ref=f9e25]:
+            - generic [ref=f9e26]: Explanation (optional)
+            - textbox "Explanation (optional)" [ref=f9e27]:
+              - /placeholder: Add context, notes, or a detailed explanation
+          - generic [ref=f9e28]:
+            - generic [ref=f9e29]: Examples (optional)
+            - textbox "Example 1" [ref=f9e31]
+            - button "+ Add another example" [ref=f9e32] [cursor=pointer]
+          - generic [ref=f9e33]:
+            - generic [ref=f9e34]: Tags (comma separated)
+            - textbox "Tags (comma separated)" [ref=f9e35]:
+              - /placeholder: e.g. "novel, The Great Gatsby, formal"
+          - button "Save Word" [ref=f9e36] [cursor=pointer]
+  - navigation [ref=f9e37]:
+    - generic [ref=f9e38]:
+      - link "Home" [ref=f9e39] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f9e44] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f9e49] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f9e54] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f9e59] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f9e69] [cursor=pointer]
+  - alert [ref=f9e73]
