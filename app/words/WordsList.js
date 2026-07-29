@@ -91,6 +91,8 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
     return s;
   }, [words]);
 
+  const activeSortLabel = SORT_OPTIONS.find((o) => o.value === sort)?.label;
+
   const filterActive = filterType !== "all";
   const filterCount = filterType === "tags" ? selectedTags.length : filterType === "letters" ? selectedLetters.length : 0;
 
@@ -196,14 +198,14 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
                 : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
             }`}
           >
-            Sort
+            Sort{activeSortLabel ? `: ${activeSortLabel}` : ""}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={`w-3 h-3 transition-transform duration-150 ${openDropdown === "sort" ? "rotate-180" : ""}`}>
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
 
           {openDropdown === "sort" && (
-            <div className="absolute left-0 top-full mt-1.5 w-40 bg-surface border border-border rounded-xl shadow-lg z-20 overflow-hidden py-1">
+            <div className="absolute left-0 top-full mt-1.5 w-44 bg-surface border border-border rounded-xl shadow-lg z-20 overflow-hidden py-1">
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}

@@ -1,0 +1,73 @@
+- generic [active] [ref=f9e1]:
+  - main [ref=f9e2]:
+    - generic [ref=f9e3]:
+      - generic [ref=f9e4]:
+        - 'button "Theme: system" [ref=f9e5] [cursor=pointer]'
+        - heading "Vocabularium" [level=1] [ref=f9e8]
+        - paragraph [ref=f9e9]: Your personal vault for newly found words
+        - generic [ref=f9e10]:
+          - generic [ref=f9e11]:
+            - paragraph [ref=f9e12]: "17"
+            - paragraph [ref=f9e13]: Words stored
+          - generic [ref=f9e14]:
+            - paragraph [ref=f9e15]: "5"
+            - paragraph [ref=f9e16]: Words tested
+          - generic [ref=f9e17]:
+            - paragraph [ref=f9e18]: 67%
+            - paragraph [ref=f9e19]: Accuracy
+      - generic [ref=f9e20]:
+        - link "Add Word" [ref=f9e21] [cursor=pointer]:
+          - /url: /add
+        - link "My Words" [ref=f9e25] [cursor=pointer]:
+          - /url: /words
+        - link "Quiz" [ref=f9e30] [cursor=pointer]:
+          - /url: /quiz
+        - link "Progress" [ref=f9e35] [cursor=pointer]:
+          - /url: /progress
+      - generic [ref=f9e40]:
+        - generic [ref=f9e41]: "1"
+        - generic [ref=f9e42]:
+          - generic [ref=f9e43]:
+            - heading "Inbox" [level=2] [ref=f9e44]
+            - paragraph [ref=f9e45]: Shared words from others
+          - link "View all" [ref=f9e46] [cursor=pointer]:
+            - /url: /inbox
+        - generic [ref=f9e49]: No shared words yet.
+      - generic [ref=f9e50]:
+        - generic [ref=f9e51]:
+          - heading "Recently Added" [level=2] [ref=f9e52]
+          - link "View all" [ref=f9e53] [cursor=pointer]:
+            - /url: /words
+        - generic [ref=f9e56]:
+          - link "sonder-test-qa2 the realization each passerby has a life as vivid as your own" [ref=f9e57] [cursor=pointer]:
+            - /url: /words/cms60rr41000ghmighhi5yn4t
+            - generic [ref=f9e58]:
+              - generic [ref=f9e59]: sonder-test-qa2
+              - paragraph [ref=f9e61]: the realization each passerby has a life as vivid as your own
+          - link "hello Interjection Greeting, Introduction, Salutation" [ref=f9e64] [cursor=pointer]:
+            - /url: /words/cms60p54v000ehmig8asp2rfb
+            - generic [ref=f9e65]:
+              - generic [ref=f9e66]:
+                - generic [ref=f9e67]: hello
+                - generic [ref=f9e68]: Interjection
+              - paragraph [ref=f9e69]: Greeting, Introduction, Salutation
+          - link "gregarious fond of company; sociable" [ref=f9e72] [cursor=pointer]:
+            - /url: /words/cms60j64q000ahmigwdqvnvfc
+            - generic [ref=f9e73]:
+              - generic [ref=f9e74]: gregarious
+              - paragraph [ref=f9e76]: fond of company; sociable
+      - paragraph [ref=f9e80]: Store, organize, and practice your vocabulary
+  - navigation [ref=f9e81]:
+    - generic [ref=f9e82]:
+      - link "Home" [ref=f9e83] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f9e89] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f9e93] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f9e98] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f9e103] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f9e110] [cursor=pointer]
+  - alert [ref=f9e114]

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState, useRef, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 function getAccuracy(wordId, progress) {
@@ -46,6 +46,19 @@ export default function ProgressPageContent({ words, progress }) {
   const setPage = (fn) => updateParams({ page: typeof fn === "function" ? fn(page) : fn });
   const setPageSize = (v) => updateParams({ size: v, page: 1 });
   const setSort = (v) => updateParams({ sort: v, page: 1 });
+
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef(null);
+
+  useEffect(() => {
+    function handleOutside(e) {
+      if (sortRef.current && !sortRef.current.contains(e.target)) setSortOpen(false);
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
+
+  const activeSortLabel = SORT_OPTIONS.find((o) => o.value === sort)?.label;
 
   const wordsWithAccuracy = words.map((w) => ({
     ...w,
@@ -128,22 +141,45 @@ export default function ProgressPageContent({ words, progress }) {
           </div>
         )}
 
-        {/* Sort chips — only shown when there are tested words */}
+        {/* Sort dropdown — only shown when there are tested words */}
         {tested.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-            {SORT_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => setSort(opt.value)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                  sort === opt.value
-                    ? "bg-primary text-white shadow-sm shadow-primary/25"
-                    : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
+          <div className="relative" ref={sortRef}>
+            <button
+              onClick={() => setSortOpen((v) => !v)}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                sort !== "accuracy-asc"
+                  ? "bg-primary text-white shadow-sm shadow-primary/25"
+                  : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
+              }`}
+            >
+              Sort{activeSortLabel ? `: ${activeSortLabel}` : ""}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={`w-3 h-3 transition-transform duration-150 ${sortOpen ? "rotate-180" : ""}`}>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {sortOpen && (
+              <div className="absolute left-0 top-full mt-1.5 w-44 bg-surface border border-border rounded-xl shadow-lg z-20 overflow-hidden py-1">
+                {SORT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => { setSort(opt.value); setSortOpen(false); }}
+                    className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 text-sm transition-colors ${
+                      sort === opt.value
+                        ? "text-primary font-medium bg-primary/5"
+                        : "text-text-secondary hover:text-text hover:bg-surface-alt"
+                    }`}
+                  >
+                    {opt.label}
+                    {sort === opt.value && (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

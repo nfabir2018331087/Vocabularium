@@ -49,7 +49,7 @@ export async function addWord(formData) {
 
     revalidatePath("/");
     revalidatePath("/words");
-    return { success: true, id: created.id };
+    return { success: true, id: created.id, word: created };
   } catch (err) {
     console.error("Failed to add word:", err);
     return { error: "Failed to save word. Please try again." };
@@ -134,7 +134,7 @@ export async function updateWord(id, formData) {
     revalidatePath("/");
     revalidatePath("/words");
     revalidatePath(`/words/${id}`);
-    return { success: true, id: updated.id };
+    return { success: true, id: updated.id, word: updated };
   } catch (err) {
     console.error("Failed to update word:", err);
     return { error: "Failed to update word. Please try again." };

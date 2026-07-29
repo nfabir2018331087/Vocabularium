@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "./AuthProvider";
 import Toast from "./Toast";
 import { getWords } from "../actions/words";
-import { setCachedWords } from "../../lib/client-cache";
+import { setCachedWords, setCachedWord } from "../../lib/client-cache";
 
 const PARTS_OF_SPEECH = [
   "Noun",
@@ -128,11 +128,12 @@ const WordForm = forwardRef(function WordForm(
     showToast(successMessage);
     setLoading(false);
     if (!isGuest && user?.id) {
+      if (result.word) setCachedWord(result.id, result.word);
       getWords().then(({ words }) => {
         if (words) setCachedWords(user.id, words);
       }).catch(() => {});
     }
-    setTimeout(() => router.replace(`/words/${result.id}`), 1000);
+    router.replace(`/words/${result.id}`);
   }
 
   return (
@@ -164,6 +165,7 @@ const WordForm = forwardRef(function WordForm(
                 name="word"
                 type="text"
                 required
+                autoFocus={!initialData}
                 value={word}
                 onChange={(e) => {
                   setWord(e.target.value);

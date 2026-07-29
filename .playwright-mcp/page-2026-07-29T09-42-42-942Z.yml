@@ -1,0 +1,57 @@
+- generic [ref=f1e1]:
+  - main [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - generic [ref=f1e4]:
+        - heading "Add New Word" [level=1] [ref=f1e5]
+        - paragraph [ref=f1e6]: Save a word with meaning, examples & tags
+      - generic [ref=f1e8]:
+        - generic [ref=f1e9]:
+          - generic [ref=f1e10]: Word *
+          - textbox "Word *" [active] [ref=f1e13]:
+            - /placeholder: Enter the word
+        - generic [ref=f1e16]:
+          - generic [ref=f1e17]: Part of Speech (optional)
+          - combobox "Part of Speech (optional)" [ref=f1e18] [cursor=pointer]:
+            - option "Select part of speech" [disabled] [selected]
+            - option "Noun"
+            - option "Verb"
+            - option "Adjective"
+            - option "Adverb"
+            - option "Pronoun"
+            - option "Preposition"
+            - option "Conjunction"
+            - option "Interjection"
+        - generic [ref=f1e19]:
+          - generic [ref=f1e20]: Meaning (English) *
+          - textbox "Meaning (English) *" [ref=f1e21]:
+            - /placeholder: English meaning
+        - generic [ref=f1e22]:
+          - generic [ref=f1e23]: অর্থ (বাংলা) (optional)
+          - textbox "অর্থ (বাংলা) (optional)" [ref=f1e24]:
+            - /placeholder: বাংলায় অর্থ লিখুন
+        - generic [ref=f1e25]:
+          - generic [ref=f1e26]: Explanation (optional)
+          - textbox "Explanation (optional)" [ref=f1e27]:
+            - /placeholder: Add context, notes, or a detailed explanation
+        - generic [ref=f1e28]:
+          - generic [ref=f1e29]: Examples (optional)
+          - textbox "Example 1" [ref=f1e31]
+          - button "+ Add another example" [ref=f1e32] [cursor=pointer]
+        - generic [ref=f1e33]:
+          - generic [ref=f1e34]: Tags (comma separated)
+          - textbox "Tags (comma separated)" [ref=f1e35]:
+            - /placeholder: e.g. "novel, The Great Gatsby, formal"
+        - button "Save Word" [ref=f1e36] [cursor=pointer]
+  - navigation [ref=f1e37]:
+    - generic [ref=f1e38]:
+      - link "Home" [ref=f1e39] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f1e44] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f1e49] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f1e54] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f1e59] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f1e69] [cursor=pointer]

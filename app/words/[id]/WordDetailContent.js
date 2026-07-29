@@ -35,7 +35,7 @@ export default function WordDetailContent({ word, showShare = true }) {
               )}
             </div>
           </div>
-          <div className="flex gap-2 mt-1">
+          <div className="flex items-center gap-2 mt-3">
             {showShare && <ShareWordButton wordId={word.id} />}
             <Link
               href={`/words/${word.id}/edit`}

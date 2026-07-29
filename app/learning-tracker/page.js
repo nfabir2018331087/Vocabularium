@@ -30,15 +30,19 @@ function saveToStorage(key, data) {
   } catch {}
 }
 
-// Reset any letter/tag whose stored word count no longer matches current count
+// Keep stored word counts in sync. A "learned" letter/tag demotes to
+// "learning" when its word count changes; a "learning" one just gets its
+// count updated so it isn't treated as stale on every load.
 function reconcile(stored, wordCounts) {
   let changed = false;
   const next = { ...stored };
   for (const key of Object.keys(next)) {
     const entry = next[key];
+    if (!entry) continue;
     const currentCount = wordCounts[key] || 0;
-    if (!entry || entry.count !== currentCount) {
-      delete next[key];
+    if (entry.count !== currentCount) {
+      const state = entry.state === "learned" ? "learning" : entry.state;
+      next[key] = { state, count: currentCount };
       changed = true;
     }
   }
@@ -386,7 +390,7 @@ export default function LearningTrackerPage() {
               <span><span className="font-medium text-primary">Filled</span> — fully learned</span>
             </div>
             <p className="text-xs text-text-secondary pt-1 border-t border-border">
-              Tap any {tab === "letters" ? "letter" : "tag"} to cycle through states. If new words are added to a {tab === "letters" ? "letter" : "tag"}, it resets automatically.
+              Tap any {tab === "letters" ? "letter" : "tag"} to cycle through states. Adding a new word to a fully learned {tab === "letters" ? "letter" : "tag"} moves it back to learning.
             </p>
           </div>
         </div>
