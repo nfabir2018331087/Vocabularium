@@ -10,7 +10,6 @@ const SORT_OPTIONS = [
   { value: "oldest", label: "Oldest" },
   { value: "a-z", label: "A → Z" },
   { value: "z-a", label: "Z → A" },
-  { value: "tags", label: "By Tag" },
 ];
 
 const FILTER_OPTIONS = [
@@ -18,6 +17,8 @@ const FILTER_OPTIONS = [
   { value: "tags", label: "By Tags", desc: "Filter by specific tags" },
   { value: "letters", label: "By Letters", desc: "Filter by starting letter" },
 ];
+
+const FILTER_SHORT_LABELS = { all: "All", tags: "By Tags", letters: "By Letters" };
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -79,6 +80,16 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
+  // Close the dropdown on scroll so it can't float over the sticky hero
+  useEffect(() => {
+    if (!openDropdown) return;
+    function handleScroll() {
+      setOpenDropdown(null);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [openDropdown]);
+
   const allTags = useMemo(() => {
     const s = new Set();
     words.forEach((w) => (w.tags ?? []).forEach((t) => { if (t) s.add(t); }));
@@ -127,8 +138,6 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
         return list.sort((a, b) => a.word.localeCompare(b.word));
       case "z-a":
         return list.sort((a, b) => b.word.localeCompare(a.word));
-      case "tags":
-        return list; // handled separately below
       default:
         return list;
     }
@@ -142,27 +151,11 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);
 
-  const listForPaging = sort === "tags" ? filtered : sorted;
-  const totalPages = Math.max(1, Math.ceil(listForPaging.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const safePage = Math.min(page, totalPages);
   const startIndex = (safePage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const pagedList = listForPaging.slice(startIndex, endIndex);
-
-  const pagedGroupedByTag = useMemo(() => {
-    if (sort !== "tags") return null;
-    const groups = {};
-    pagedList.forEach((w) => {
-      if (w.tags.length === 0) {
-        (groups["Untagged"] ??= []).push(w);
-      } else {
-        w.tags.forEach((t) => {
-          (groups[t] ??= []).push(w);
-        });
-      }
-    });
-    return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
-  }, [pagedList, sort]);
+  const pagedList = sorted.slice(startIndex, endIndex);
 
   return (
     <>
@@ -188,46 +181,6 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
 
       {/* Sort & Filter */}
       <div className="flex gap-2">
-        {/* Sort dropdown */}
-        <div className="relative" ref={sortRef}>
-          <button
-            onClick={() => setOpenDropdown((d) => (d === "sort" ? null : "sort"))}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-              sort !== "newest"
-                ? "bg-primary text-white shadow-sm shadow-primary/25"
-                : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
-            }`}
-          >
-            Sort{activeSortLabel ? `: ${activeSortLabel}` : ""}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={`w-3 h-3 transition-transform duration-150 ${openDropdown === "sort" ? "rotate-180" : ""}`}>
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
-
-          {openDropdown === "sort" && (
-            <div className="absolute left-0 top-full mt-1.5 w-44 bg-surface border border-border rounded-xl shadow-lg z-20 overflow-hidden py-1">
-              {SORT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => { setSort(opt.value); setOpenDropdown(null); }}
-                  className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 text-sm transition-colors ${
-                    sort === opt.value
-                      ? "text-primary font-medium bg-primary/5"
-                      : "text-text-secondary hover:text-text hover:bg-surface-alt"
-                  }`}
-                >
-                  {opt.label}
-                  {sort === opt.value && (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Filter dropdown */}
         <div className="relative" ref={filterRef}>
           <button
@@ -238,14 +191,14 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
                 : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
             }`}
           >
-            Filter{filterCount > 0 ? ` (${filterCount})` : ""}
+            Filter: {FILTER_SHORT_LABELS[filterType]}{filterCount > 0 ? ` (${filterCount})` : ""}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={`w-3 h-3 transition-transform duration-150 ${openDropdown === "filter" ? "rotate-180" : ""}`}>
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
 
           {openDropdown === "filter" && (
-            <div className="absolute left-0 top-full mt-1.5 w-72 max-w-[85vw] max-h-96 overflow-y-auto bg-surface border border-border rounded-xl shadow-lg z-20 p-3 flex flex-col gap-3">
+            <div className="absolute left-0 top-full mt-1.5 w-72 max-w-[calc(100vw-2rem)] max-h-96 overflow-y-auto bg-surface border border-border rounded-xl shadow-lg z-20 p-3 flex flex-col gap-3">
               {/* Word Pool */}
               <div className="flex flex-col gap-1.5">
                 {FILTER_OPTIONS.map((opt) => (
@@ -371,6 +324,46 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
             </div>
           )}
         </div>
+
+        {/* Sort dropdown */}
+        <div className="relative" ref={sortRef}>
+          <button
+            onClick={() => setOpenDropdown((d) => (d === "sort" ? null : "sort"))}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+              sort !== "newest"
+                ? "bg-primary text-white shadow-sm shadow-primary/25"
+                : "bg-surface-alt border border-border text-text-secondary hover:text-text hover:border-text-secondary"
+            }`}
+          >
+            Sort{activeSortLabel ? `: ${activeSortLabel}` : ""}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={`w-3 h-3 transition-transform duration-150 ${openDropdown === "sort" ? "rotate-180" : ""}`}>
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+
+          {openDropdown === "sort" && (
+            <div className="absolute right-0 top-full mt-1.5 w-44 max-w-[calc(100vw-2rem)] bg-surface border border-border rounded-xl shadow-lg z-20 overflow-hidden py-1">
+              {SORT_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => { setSort(opt.value); setOpenDropdown(null); }}
+                  className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 text-sm transition-colors ${
+                    sort === opt.value
+                      ? "text-primary font-medium bg-primary/5"
+                      : "text-text-secondary hover:text-text hover:bg-surface-alt"
+                  }`}
+                >
+                  {opt.label}
+                  {sort === opt.value && (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Count + Export */}
@@ -383,30 +376,11 @@ export default function WordsList({ words, searchInHero, searchValue = "", onSea
       </div>
 
       {/* Word Cards */}
-      {sort === "tags" && pagedGroupedByTag ? (
-        <div className="flex flex-col gap-6">
-          {pagedGroupedByTag.map(([tag, tagWords]) => (
-            <div key={tag}>
-              <h2 className="text-sm font-semibold text-primary mb-2 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-primary inline-block" />
-                {tag}
-                <span className="text-text-secondary font-normal">({tagWords.length})</span>
-              </h2>
-              <div className="flex flex-col gap-2">
-                {tagWords.map((w) => (
-                  <WordCard key={`${tag}-${w.id}`} word={w} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {pagedList.map((w) => (
-            <WordCard key={w.id} word={w} />
-          ))}
-        </div>
-      )}
+      <div className="flex flex-col gap-2">
+        {pagedList.map((w) => (
+          <WordCard key={w.id} word={w} />
+        ))}
+      </div>
 
       {filtered.length === 0 && (
         <p className="text-center text-text-secondary text-sm py-8">

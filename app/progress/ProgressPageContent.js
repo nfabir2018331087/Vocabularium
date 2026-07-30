@@ -58,6 +58,16 @@ export default function ProgressPageContent({ words, progress }) {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
+  // Close the dropdown on scroll so it can't float over the sticky hero
+  useEffect(() => {
+    if (!sortOpen) return;
+    function handleScroll() {
+      setSortOpen(false);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [sortOpen]);
+
   const activeSortLabel = SORT_OPTIONS.find((o) => o.value === sort)?.label;
 
   const wordsWithAccuracy = words.map((w) => ({

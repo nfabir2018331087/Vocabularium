@@ -1,0 +1,120 @@
+- generic [ref=f1e1]:
+  - main [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - generic [ref=f1e4]:
+        - generic [ref=f1e5]:
+          - button [ref=f1e6] [cursor=pointer]
+          - generic [ref=f1e9]:
+            - heading "Progress" [level=1] [ref=f1e10]
+            - paragraph [ref=f1e11]: 17 words · 5 tested
+        - generic [ref=f1e12]:
+          - paragraph [ref=f1e13]: 67%
+          - generic [ref=f1e14]:
+            - paragraph [ref=f1e15]: Overall accuracy
+            - paragraph [ref=f1e16]: 4 / 6 correct across all quizzes
+      - generic [ref=f1e17]:
+        - generic [ref=f1e18]:
+          - 'button "Sort: Accuracy ↑" [active] [ref=f1e19] [cursor=pointer]'
+          - generic [ref=f1e156]:
+            - button "Accuracy ↑" [ref=f1e157] [cursor=pointer]
+            - button "Accuracy ↓" [ref=f1e160] [cursor=pointer]
+            - button "Frequency ↑" [ref=f1e161] [cursor=pointer]
+            - button "Frequency ↓" [ref=f1e162] [cursor=pointer]
+        - generic [ref=f1e22]:
+          - heading "Tested words" [level=2] [ref=f1e23]
+          - link "0% Dearth Noun 0/1" [ref=f1e24] [cursor=pointer]:
+            - /url: /words/cmp5fpu9d000jhmlcd4rpntot
+            - generic [ref=f1e25]: 0%
+            - generic [ref=f1e27]:
+              - generic [ref=f1e28]:
+                - generic [ref=f1e29]: Dearth
+                - generic [ref=f1e30]: Noun
+              - generic [ref=f1e31]: 0/1
+          - link "0% Placate Verb 0/1" [ref=f1e34] [cursor=pointer]:
+            - /url: /words/cmp5f8b7p000fhmlc4qcwvow0
+            - generic [ref=f1e35]: 0%
+            - generic [ref=f1e37]:
+              - generic [ref=f1e38]:
+                - generic [ref=f1e39]: Placate
+                - generic [ref=f1e40]: Verb
+              - generic [ref=f1e41]: 0/1
+          - link "100% Malevolent Adjective 2/2" [ref=f1e44] [cursor=pointer]:
+            - /url: /words/cmp5fa3ga000hhmlc2rk7cs4h
+            - generic [ref=f1e45]: 100%
+            - generic [ref=f1e47]:
+              - generic [ref=f1e48]:
+                - generic [ref=f1e49]: Malevolent
+                - generic [ref=f1e50]: Adjective
+              - generic [ref=f1e51]: 2/2
+          - link "100% Quam Adverb 1/1" [ref=f1e55] [cursor=pointer]:
+            - /url: /words/cmor4t5a20001hm8wbtsgucqi
+            - generic [ref=f1e56]: 100%
+            - generic [ref=f1e58]:
+              - generic [ref=f1e59]:
+                - generic [ref=f1e60]: Quam
+                - generic [ref=f1e61]: Adverb
+              - generic [ref=f1e62]: 1/1
+          - link "100% Nuisance Noun 1/1" [ref=f1e66] [cursor=pointer]:
+            - /url: /words/cmoldlb5b000fhmj8ap80bpcg
+            - generic [ref=f1e67]: 100%
+            - generic [ref=f1e69]:
+              - generic [ref=f1e70]:
+                - generic [ref=f1e71]: Nuisance
+                - generic [ref=f1e72]: Noun
+              - generic [ref=f1e73]: 1/1
+          - heading "Not yet tested" [level=2] [ref=f1e77]
+          - link "-- sonder-test-qa2 the realization each passerby has a life as vivid as your own" [ref=f1e78] [cursor=pointer]:
+            - /url: /words/cms60rr41000ghmighhi5yn4t
+            - generic [ref=f1e79]: "--"
+            - generic [ref=f1e81]:
+              - generic [ref=f1e82]: sonder-test-qa2
+              - paragraph [ref=f1e84]: the realization each passerby has a life as vivid as your own
+          - link "-- hello Interjection Greeting, Introduction, Salutation" [ref=f1e85] [cursor=pointer]:
+            - /url: /words/cms60p54v000ehmig8asp2rfb
+            - generic [ref=f1e86]: "--"
+            - generic [ref=f1e88]:
+              - generic [ref=f1e89]:
+                - generic [ref=f1e90]: hello
+                - generic [ref=f1e91]: Interjection
+              - paragraph [ref=f1e92]: Greeting, Introduction, Salutation
+          - link "-- gregarious fond of company; sociable" [ref=f1e93] [cursor=pointer]:
+            - /url: /words/cms60j64q000ahmigwdqvnvfc
+            - generic [ref=f1e94]: "--"
+            - generic [ref=f1e96]:
+              - generic [ref=f1e97]: gregarious
+              - paragraph [ref=f1e99]: fond of company; sociable
+          - link "-- quixotic extremely idealistic and unrealistic" [ref=f1e100] [cursor=pointer]:
+            - /url: /words/cms60j64q0009hmigtdi9ke6i
+            - generic [ref=f1e101]: "--"
+            - generic [ref=f1e103]:
+              - generic [ref=f1e104]: quixotic
+              - paragraph [ref=f1e106]: extremely idealistic and unrealistic
+          - link "-- ephemeral lasting for a very short time" [ref=f1e107] [cursor=pointer]:
+            - /url: /words/cms60j64q0008hmigi5nkaai7
+            - generic [ref=f1e108]: "--"
+            - generic [ref=f1e110]:
+              - generic [ref=f1e111]: ephemeral
+              - paragraph [ref=f1e113]: lasting for a very short time
+        - generic [ref=f1e114]:
+          - generic [ref=f1e115]:
+            - button "5" [ref=f1e116] [cursor=pointer]
+            - button "10" [ref=f1e117] [cursor=pointer]
+            - button "20" [ref=f1e118] [cursor=pointer]
+          - generic [ref=f1e119]: Page 1 of 2
+          - generic [ref=f1e120]:
+            - button "Prev" [disabled] [ref=f1e121] [cursor=pointer]
+            - button "Next" [ref=f1e122] [cursor=pointer]
+  - navigation [ref=f1e123]:
+    - generic [ref=f1e124]:
+      - link "Home" [ref=f1e125] [cursor=pointer]:
+        - /url: /
+      - link "Add" [ref=f1e130] [cursor=pointer]:
+        - /url: /add
+      - link "Words" [ref=f1e134] [cursor=pointer]:
+        - /url: /words
+      - link "Quiz" [ref=f1e139] [cursor=pointer]:
+        - /url: /quiz
+      - link "Profile" [ref=f1e144] [cursor=pointer]:
+        - /url: /profile
+  - button "Open Next.js Dev Tools" [ref=f1e151] [cursor=pointer]
+  - alert [ref=f1e155]
