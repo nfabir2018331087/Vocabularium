@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getWord } from "../../actions/words";
-import { getCachedWord, setCachedWord } from "../../../lib/client-cache";
+import { useAuth } from "../../components/AuthProvider";
+import { getWord, getWords } from "../../actions/words";
+import { getCachedWord, setCachedWord, setCachedWords } from "../../../lib/client-cache";
 import WordDetailContent from "./WordDetailContent";
 
 export default function WordDetailLoader({ id }) {
+  const { user } = useAuth();
   const [word, setWord] = useState(null);
   const [error, setError] = useState(null);
   const [loaded, setLoaded] = useState(false);
@@ -30,13 +32,22 @@ export default function WordDetailLoader({ id }) {
           setCachedWord(id, result.word);
         }
         setLoaded(true);
+      }).then(() => {
+        // A cache miss here usually means the word list cache predates this
+        // word (e.g. it was just created/edited via a server-side redirect,
+        // which can't touch localStorage) — refresh it in the background.
+        if (user?.id) {
+          getWords().then(({ words }) => {
+            if (words) setCachedWords(user.id, words);
+          }).catch(() => {});
+        }
       });
     });
 
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, user?.id]);
 
   if (!loaded) {
     return (

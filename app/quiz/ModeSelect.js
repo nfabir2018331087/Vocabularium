@@ -45,6 +45,36 @@ const modeColors = {
   match_pairs: "text-rose-400",
 };
 
+function AiSparkle() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 3l1.6 3.3L17 8l-3.4 1.7L12 13l-1.6-3.3L7 8l3.4-1.7L12 3z" />
+      <path d="M5 14l.9 1.8L8 17l-2.1 1.2L5 20l-.9-1.8L2 17l2.1-1.2L5 14z" />
+      <path d="M18.5 14.5l1.1 2.2L22 18l-2.4 1.3-1.1 2.2-1.1-2.2L15 18l2.4-1.3 1.1-2.2z" />
+    </svg>
+  );
+}
+
+function StoryIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      <line x1="9" y1="7" x2="15" y2="7" />
+      <line x1="9" y1="11" x2="15" y2="11" />
+    </svg>
+  );
+}
+
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 function QuizConfigModal({ mode, words, onStart, onClose }) {
@@ -449,20 +479,7 @@ export default function ModeSelect({ words, onSelect, isGuest }) {
                     }`}
                     title="AI assisted"
                   >
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M12 3l1.6 3.3L17 8l-3.4 1.7L12 13l-1.6-3.3L7 8l3.4-1.7L12 3z" />
-                      <path d="M5 14l.9 1.8L8 17l-2.1 1.2L5 20l-.9-1.8L2 17l2.1-1.2L5 14z" />
-                      <path d="M18.5 14.5l1.1 2.2L22 18l-2.4 1.3-1.1 2.2-1.1-2.2L15 18l2.4-1.3 1.1-2.2z" />
-                    </svg>
+                    <AiSparkle />
                   </span>
                 )}
                 <div className="relative">
@@ -478,6 +495,36 @@ export default function ModeSelect({ words, onSelect, isGuest }) {
               </button>
             );
           })}
+        </div>
+
+        <div className="mt-6">
+          {isGuest ? (
+            <div className="relative w-full flex flex-col items-center gap-2 p-5 rounded-2xl border text-center bg-surface-alt border-border opacity-40 cursor-not-allowed">
+              <span className="absolute top-2 right-2 text-text-secondary/60" title="AI assisted">
+                <AiSparkle />
+              </span>
+              <span className="text-text-secondary">
+                <StoryIcon />
+              </span>
+              <span className="text-sm font-semibold">Story Generator</span>
+              <span className="text-xs text-text-secondary">Turn your words into an AI story</span>
+              <span className="text-[10px] text-red-400">Sign in to use AI</span>
+            </div>
+          ) : (
+            <Link
+              href="/story-generator"
+              className="relative w-full flex flex-col items-center gap-2 p-5 rounded-2xl border text-center bg-surface-alt border-border card-hover hover:border-primary transition-all"
+            >
+              <span className="absolute top-2 right-2 text-violet-300" title="AI assisted">
+                <AiSparkle />
+              </span>
+              <span className="text-violet-300">
+                <StoryIcon />
+              </span>
+              <span className="text-sm font-semibold">Story Generator</span>
+              <span className="text-xs text-text-secondary">Turn your words into an AI story</span>
+            </Link>
+          )}
         </div>
       </div>
 

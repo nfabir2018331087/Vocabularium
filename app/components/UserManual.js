@@ -130,6 +130,7 @@ const sections = [
     limits: [
       "Words stored only on this device",
       "No AI Assist",
+      "No AI Story Generator",
       "No Word Sharing",
       "No cross-device sync",
     ],
@@ -263,6 +264,27 @@ const sections = [
           { name: "Type Answer", min: "1+ word", desc: "AI-graded — synonyms accepted." },
           { name: "Match Pairs", min: "4+ words", desc: "Drag or tap to match words to meanings." },
         ],
+      },
+      {
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            <line x1="9" y1="7" x2="15" y2="7" />
+            <line x1="9" y1="11" x2="15" y2="11" />
+          </svg>
+        ),
+        title: "AI Story Generator",
+        color: "red",
+        steps: [
+          'Tap Quiz in the bottom nav, then tap the Story Generator tile.',
+          'Choose how many words to use — 10, 20, 50, or 100.',
+          'Fill your selection using Search, Random, Letters, or Tags — you can mix and match until you hit your target.',
+          'Tap Generate Story. The AI writes a short story that naturally uses every selected word, bolded in the text.',
+          'Tap View all next to a story\'s word count to see its full word list in a scrollable grid.',
+          'Tap the trash icon on a story to delete it.',
+        ],
+        note: "Powered by Groq. Great for seeing your vocabulary used in context — stories aren't graded and don't affect your quiz progress.",
       },
       {
         icon: (

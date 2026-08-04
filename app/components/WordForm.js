@@ -4,8 +4,6 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } fro
 import { useRouter } from "next/navigation";
 import { useAuth } from "./AuthProvider";
 import Toast from "./Toast";
-import { getWords } from "../actions/words";
-import { setCachedWords, setCachedWord } from "../../lib/client-cache";
 
 const PARTS_OF_SPEECH = [
   "Noun",
@@ -18,10 +16,82 @@ const PARTS_OF_SPEECH = [
   "Interjection",
 ];
 
+function mergeText(prev, next, sep = ", ") {
+  const prevTrimmed = (prev || "").trim();
+  const nextTrimmed = (next || "").trim();
+  if (!nextTrimmed) return prevTrimmed;
+  if (!prevTrimmed) return nextTrimmed;
+  if (prevTrimmed.toLowerCase().includes(nextTrimmed.toLowerCase())) return prevTrimmed;
+  return `${prevTrimmed}${sep}${nextTrimmed}`;
+}
+
+function mergeArray(prevArr, nextArr, max) {
+  const result = [...prevArr];
+  const seen = new Set(result.map((item) => item.toLowerCase()));
+  for (const item of nextArr) {
+    const trimmed = (item || "").trim();
+    if (!trimmed || seen.has(trimmed.toLowerCase())) continue;
+    seen.add(trimmed.toLowerCase());
+    result.push(trimmed);
+    if (result.length >= max) break;
+  }
+  return result;
+}
+
+function AiSparkle() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 3l1.6 3.3L17 8l-3.4 1.7L12 13l-1.6-3.3L7 8l3.4-1.7L12 3z" />
+      <path d="M5 14l.9 1.8L8 17l-2.1 1.2L5 20l-.9-1.8L2 17l2.1-1.2L5 14z" />
+      <path d="M18.5 14.5l1.1 2.2L22 18l-2.4 1.3-1.1 2.2-1.1-2.2L15 18l2.4-1.3 1.1-2.2z" />
+    </svg>
+  );
+}
+
+function DictionaryIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      <line x1="9" y1="7" x2="15" y2="7" />
+      <line x1="9" y1="11" x2="15" y2="11" />
+    </svg>
+  );
+}
+
 const WordForm = forwardRef(function WordForm(
-  { initialData, onSubmit, submitLabel = "Save Word", successMessage = "Word saved!", onWordChange, assistLoading = false, wordAccessory },
+  {
+    initialData,
+    onSubmit,
+    submitLabel = "Save Word",
+    successMessage = "Word saved!",
+    onWordChange,
+    onDictionaryFill,
+    onAiFill,
+    dictionaryLoading = false,
+    aiLoading = false,
+  },
   ref
 ) {
+  const assistLoading = dictionaryLoading || aiLoading;
   const router = useRouter();
   const [word, setWord] = useState(initialData?.word || "");
   const [meaningEn, setMeaningEn] = useState(initialData?.meaningEn || "");
@@ -32,7 +102,7 @@ const WordForm = forwardRef(function WordForm(
   const [tags, setTags] = useState(initialData?.tags?.join(", ") || "");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
-  const { isGuest, user } = useAuth();
+  const { isGuest } = useAuth();
 
   const isDirty = !initialData ||
     word !== (initialData.word || "") ||
@@ -60,23 +130,36 @@ const WordForm = forwardRef(function WordForm(
 
   useImperativeHandle(ref, () => ({
     getWord: () => word,
-    applyAssist: (data) => {
-      const nextWord = typeof data?.word === "string" ? data.word.trim() : "";
-      const nextMeaningEn = typeof data?.meaningEn === "string" ? data.meaningEn : "";
-      const nextMeaningBn = typeof data?.meaningBn === "string" ? data.meaningBn : "";
-      const nextPartOfSpeech = typeof data?.partOfSpeech === "string" ? data.partOfSpeech : "";
-      const nextExplanation = typeof data?.explanation === "string" ? data.explanation : "";
-      const nextExamples = Array.isArray(data?.examples) ? data.examples.filter((e) => typeof e === "string") : [];
-      const nextTags = Array.isArray(data?.tags) ? data.tags.filter((t) => typeof t === "string") : [];
+    mergeFill: (data, source) => {
+      if (source === "ai") {
+        const nextWord = typeof data?.word === "string" ? data.word.trim() : "";
+        if (nextWord) {
+          setWord(nextWord);
+          if (onWordChange) onWordChange(nextWord);
+        }
+      }
 
-      setWord(nextWord);
-      if (onWordChange) onWordChange(nextWord);
-      setMeaningEn(nextMeaningEn);
-      setMeaningBn(nextMeaningBn);
-      setPartOfSpeech(nextPartOfSpeech);
-      setExplanation(nextExplanation);
-      setExamples(nextExamples.length > 0 ? nextExamples : [""]);
-      setTags(nextTags.join(", "));
+      if (typeof data?.meaningEn === "string" && data.meaningEn.trim()) {
+        setMeaningEn((prev) => mergeText(prev, data.meaningEn));
+      }
+      if (typeof data?.meaningBn === "string" && data.meaningBn.trim()) {
+        setMeaningBn((prev) => mergeText(prev, data.meaningBn));
+      }
+      if (typeof data?.partOfSpeech === "string" && data.partOfSpeech.trim()) {
+        setPartOfSpeech((prev) => (source === "dictionary" ? data.partOfSpeech : prev || data.partOfSpeech));
+      }
+      if (typeof data?.explanation === "string" && data.explanation.trim()) {
+        setExplanation((prev) => mergeText(prev, data.explanation, "\n\n"));
+      }
+      if (Array.isArray(data?.examples) && data.examples.length > 0) {
+        setExamples((prev) => mergeArray(prev.filter(Boolean), data.examples, 5));
+      }
+      if (Array.isArray(data?.tags) && data.tags.length > 0) {
+        setTags((prev) => {
+          const prevTags = prev ? prev.split(",").map((t) => t.trim()).filter(Boolean) : [];
+          return mergeArray(prevTags, data.tags, 6).join(", ");
+        });
+      }
     },
     clearFields: () => {
       setWord(word);
@@ -117,6 +200,8 @@ const WordForm = forwardRef(function WordForm(
     examples.forEach((ex) => formData.append("examples", ex));
     formData.set("tags", tags);
 
+    // Authenticated add/edit redirects server-side on success (see app/actions/words.js) —
+    // this only returns normally for guest (local) submissions, or on error.
     const result = await onSubmit(formData);
 
     if (result.error) {
@@ -127,12 +212,6 @@ const WordForm = forwardRef(function WordForm(
 
     showToast(successMessage);
     setLoading(false);
-    if (!isGuest && user?.id) {
-      if (result.word) setCachedWord(result.id, result.word);
-      getWords().then(({ words }) => {
-        if (words) setCachedWords(user.id, words);
-      }).catch(() => {});
-    }
     router.replace(`/words/${result.id}`);
   }
 
@@ -150,7 +229,7 @@ const WordForm = forwardRef(function WordForm(
         {assistLoading && (
           <div className="flex items-center gap-2 text-xs text-text-secondary">
             <span className="inline-flex h-3 w-3 rounded-full border-2 border-primary/40 border-t-primary animate-spin" />
-            Filling fields with AI...
+            {dictionaryLoading ? "Looking up the dictionary..." : "Filling fields with AI..."}
           </div>
         )}
         {/* Word */}
@@ -158,31 +237,70 @@ const WordForm = forwardRef(function WordForm(
           <label htmlFor="word" className="text-sm font-medium">
             Word <span className="text-red-400">*</span>
           </label>
-          <div className="flex items-end gap-3">
-            <div className="flex-[2] min-w-0">
-              <input
-                id="word"
-                name="word"
-                type="text"
-                required
-                autoFocus={!initialData}
-                value={word}
-                onChange={(e) => {
-                  setWord(e.target.value);
-                  if (onWordChange) onWordChange(e.target.value);
-                }}
-                placeholder="Enter the word"
-                disabled={assistLoading}
-                className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
-              />
-            </div>
-            {wordAccessory ? (
-              <div className="flex-[1] flex items-end justify-end">
-                {wordAccessory}
-              </div>
-            ) : null}
-          </div>
+          <input
+            id="word"
+            name="word"
+            type="text"
+            required
+            autoFocus={!initialData}
+            value={word}
+            onChange={(e) => {
+              setWord(e.target.value);
+              if (onWordChange) onWordChange(e.target.value);
+            }}
+            placeholder="Enter the word"
+            disabled={assistLoading}
+            className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text placeholder:text-text-secondary/50"
+          />
         </div>
+
+        {(onDictionaryFill || onAiFill) && !isGuest && (
+          <>
+            <div className="relative my-1">
+              <div className="h-px bg-border" />
+              <span className="text-center absolute left-1/5 right-1/5 min-[428px]:left-1/4 min-[428px]:right-1/4 -top-2.5 px-3 text-[10px] uppercase tracking-wider text-text-secondary bg-surface">
+                Auto Fill
+              </span>
+            </div>
+
+            <div className="flex items-center justify-around gap-3">
+              <button
+                type="button"
+                onClick={onDictionaryFill}
+                disabled={!word.trim() || assistLoading}
+                className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border transition-all bg-surface-alt border-border enabled:hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="text-text-secondary">
+                  {dictionaryLoading ? (
+                    <span className="inline-flex h-4 w-4 rounded-full border-2 border-primary/40 border-t-primary animate-spin" />
+                  ) : (
+                    <DictionaryIcon />
+                  )}
+                </span>
+                <span className="text-sm font-semibold">Dictionary</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onAiFill}
+                disabled={!word.trim() || assistLoading}
+                className="relative flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border border-transparent transition-all bg-gradient-to-br from-violet-400 via-violet-600 to-indigo-400 text-white enabled:hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {aiLoading && (
+                  <span className="absolute -inset-1 rounded-lg blur-md bg-gradient-to-br from-violet-400 via-violet-600 to-indigo-400 opacity-70" />
+                )}
+                <span className="relative">
+                  {aiLoading ? (
+                    <span className="inline-flex h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                  ) : (
+                    <AiSparkle />
+                  )}
+                </span>
+                <span className="relative text-sm font-semibold">AI Assist</span>
+              </button>
+            </div>
+          </>
+        )}
 
         <div className="relative my-1">
           <div className="h-px bg-border" />
@@ -198,19 +316,33 @@ const WordForm = forwardRef(function WordForm(
           <label htmlFor="partOfSpeech" className="text-sm font-medium">
             Part of Speech <span className="text-text-secondary text-xs">(optional)</span>
           </label>
-          <select
-            id="partOfSpeech"
-            name="partOfSpeech"
-            value={partOfSpeech}
-            onChange={(e) => setPartOfSpeech(e.target.value)}
-            disabled={assistLoading}
-            className="w-full px-4 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text"
-          >
-            <option value="" disabled>Select part of speech</option>
-            {PARTS_OF_SPEECH.map((pos) => (
-              <option key={pos} value={pos}>{pos}</option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id="partOfSpeech"
+              name="partOfSpeech"
+              value={partOfSpeech}
+              onChange={(e) => setPartOfSpeech(e.target.value)}
+              disabled={assistLoading}
+              className="w-full appearance-none pl-4 pr-10 py-3 rounded-xl bg-surface-alt border border-border focus:border-primary focus:outline-none transition-colors text-text"
+            >
+              <option value="" disabled>Select part of speech</option>
+              {PARTS_OF_SPEECH.map((pos) => (
+                <option key={pos} value={pos}>{pos}</option>
+              ))}
+            </select>
+            <svg
+              viewBox="0 0 24 24"
+              className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
         </div>
 
         {/* English Meaning */}

@@ -5,11 +5,13 @@ A personal vocabulary learning app for storing English words with meanings, exam
 ## Features
 
 - **Add Words** — Save words with English meaning, Bengali meaning, part of speech, explanation, examples, and tags; duplicate words are automatically rejected
-- **AI Assist** — Auto-fill word details with one click using Groq AI
+- **Dictionary Lookup** — Auto-fill English meaning, part of speech, explanation, and examples instantly from free dictionary APIs (freedictionaryapi.com, with dictionaryapi.dev as fallback); no AI involved
+- **AI Assist** — Auto-fill word details with one click using Groq AI; can be combined with Dictionary Lookup — results merge instead of overwriting, with Dictionary Lookup's part of speech taking priority
 - **Browse & Search** — View all words with sorting and full-text search
 - **Edit & Delete** — Manage your vocabulary from the word detail page
 - **4 Quiz Modes** — Flashcard, Multiple Choice, Type Answer (AI-graded), Match Pairs; word pool can be filtered by tag or starting letter before each session
 - **Weighted Quiz Randomization** — Words are selected based on quiz history; untested and frequently missed words are prioritized
+- **AI Story Generator** — Pick 10/20/50/100 words (via search, random, letters, or tags) and generate a short AI-crafted story using them, with a paginated, deletable history
 - **Progress Tracking** — Quiz history and per-word miss statistics
 - **Word Pronunciation** — Tap the speaker icon next to any word title to hear it spoken aloud (Web Speech API, en-US)
 - **Export Words** — Export your vocabulary as CSV or PDF from the word list; filter by all words, tags, or starting letters; always sorted A–Z
@@ -58,3 +60,5 @@ npm run dev
 - [x] Export words as CSV/PDF with dynamic range (All / By Tags / By Letters) [WordListPage]
 - [x] Learning tracker by Letters and Tags with auto-reconciliation. [ProfilePage → /learning-tracker]
 - [x] Friends — add by email, requests page, share words from friend card, remove friend. [ProfilePage → /friends]
+- [x] AI Story Generator — generate short stories from selected vocabulary words with a paginated, deletable history. [QuizPage → /story-generator]
+- [x] Dictionary Lookup — free-dictionary-API auto-fill button alongside AI Assist under Auto Fill; results merge instead of overwriting. [AddWordPage]

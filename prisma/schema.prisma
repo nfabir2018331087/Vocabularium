@@ -18,6 +18,7 @@ model User {
   trackerData Json?
   words       Word[]
   quizResults QuizResult[]
+  stories     Story[]
   sharedSent    SharedWord[] @relation("SharedWordSender")
   sharedReceived SharedWord[] @relation("SharedWordRecipient")
   friendshipsSent     Friendship[] @relation("FriendshipSender")
@@ -71,6 +72,21 @@ model QuizResult {
 
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Story {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  wordCount Int
+  wordsUsed String[]
+  wordIds   String[]
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }

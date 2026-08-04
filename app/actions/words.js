@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import prisma from "../../lib/prisma";
 import { claimOrphanWords, getAuthenticatedUserId, getAuthenticatedUserIdWithSync } from "../../lib/auth-helpers";
 
@@ -33,8 +34,9 @@ export async function addWord(formData) {
     ? tagsRaw.split(",").map((t) => t.trim()).filter((t) => t.length > 0)
     : [];
 
+  let created;
   try {
-    const created = await prisma.word.create({
+    created = await prisma.word.create({
       data: {
         word,
         meaningEn,
@@ -46,14 +48,14 @@ export async function addWord(formData) {
         userId,
       },
     });
-
-    revalidatePath("/");
-    revalidatePath("/words");
-    return { success: true, id: created.id, word: created };
   } catch (err) {
     console.error("Failed to add word:", err);
     return { error: "Failed to save word. Please try again." };
   }
+
+  revalidatePath("/");
+  revalidatePath("/words");
+  redirect(`/words/${created.id}`);
 }
 
 export async function getWords() {
@@ -122,23 +124,24 @@ export async function updateWord(id, formData) {
     ? tagsRaw.split(",").map((t) => t.trim()).filter((t) => t.length > 0)
     : [];
 
-  try {
-    // Verify ownership before updating
-    const existing = await prisma.word.findFirst({ where: { id, userId } });
-    if (!existing) return { error: "Word not found" };
+  // Verify ownership before updating
+  const existing = await prisma.word.findFirst({ where: { id, userId } });
+  if (!existing) return { error: "Word not found" };
 
-    const updated = await prisma.word.update({
+  try {
+    await prisma.word.update({
       where: { id },
       data: { word, meaningEn, meaningBn, partOfSpeech, explanation, examples, tags },
     });
-    revalidatePath("/");
-    revalidatePath("/words");
-    revalidatePath(`/words/${id}`);
-    return { success: true, id: updated.id, word: updated };
   } catch (err) {
     console.error("Failed to update word:", err);
     return { error: "Failed to update word. Please try again." };
   }
+
+  revalidatePath("/");
+  revalidatePath("/words");
+  revalidatePath(`/words/${id}`);
+  redirect(`/words/${id}`);
 }
 
 export async function deleteWord(id) {
