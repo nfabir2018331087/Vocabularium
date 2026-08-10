@@ -8,34 +8,51 @@ import PronounceButton from "./PronounceButton";
 
 export default function WordDetailContent({ word, showShare = true }) {
   const router = useRouter();
+  const isLongWord = word.word.length > 12;
 
   return (
     <div className="flex flex-col gap-5 pb-8 -mx-4 -mt-6">
       {/* Header */}
       <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <button
               onClick={() => router.back()}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0 mt-1"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors shrink-0"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold text-white">{word.word}</h1>
-                <PronounceButton word={word.word} />
-              </div>
-              {word.partOfSpeech && (
-                <span className="inline-block mt-1 text-xs font-medium text-white bg-white/20 px-2.5 py-0.5 rounded-full">
-                  {word.partOfSpeech}
-                </span>
+            <div className="min-w-0">
+              {isLongWord ? (
+                <>
+                  <h1 className="text-3xl font-bold text-white break-words min-w-0">{word.word}</h1>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    {word.partOfSpeech && (
+                      <span className="inline-block text-xs font-medium text-white bg-white/20 px-2.5 py-0.5 rounded-full">
+                        {word.partOfSpeech}
+                      </span>
+                    )}
+                    <PronounceButton word={word.word} compact />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <h1 className="text-3xl font-bold text-white break-words min-w-0">{word.word}</h1>
+                    <PronounceButton word={word.word} />
+                  </div>
+                  {word.partOfSpeech && (
+                    <span className="inline-block mt-1 text-xs font-medium text-white bg-white/20 px-2.5 py-0.5 rounded-full">
+                      {word.partOfSpeech}
+                    </span>
+                  )}
+                </>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2 mt-3">
+          <div className="flex items-center gap-2 shrink-0">
             {showShare && <ShareWordButton wordId={word.id} />}
             <Link
               href={`/words/${word.id}/edit`}

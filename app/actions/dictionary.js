@@ -24,6 +24,10 @@ function capitalize(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+function stripTrailingPeriod(text) {
+  return (text || "").trim().replace(/\.+\s*$/, "");
+}
+
 function normalizePartOfSpeech(pos) {
   if (!pos) return "";
   const match = VALID_PARTS_OF_SPEECH.find(
@@ -104,7 +108,7 @@ function parseDictionaryApiDev(json, word) {
 function toWordData(parsed) {
   const meaningEn = parsed.definitions
     .slice(0, 3)
-    .map(capitalize)
+    .map((d) => capitalize(stripTrailingPeriod(d)))
     .join(", ");
 
   const remaining = parsed.definitions.slice(3, 5).map(capitalize);

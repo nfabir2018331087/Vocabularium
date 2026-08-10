@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./AuthProvider";
 import Toast from "./Toast";
@@ -17,11 +17,12 @@ const PARTS_OF_SPEECH = [
 ];
 
 function mergeText(prev, next, sep = ", ") {
-  const prevTrimmed = (prev || "").trim();
+  let prevTrimmed = (prev || "").trim();
   const nextTrimmed = (next || "").trim();
   if (!nextTrimmed) return prevTrimmed;
   if (!prevTrimmed) return nextTrimmed;
   if (prevTrimmed.toLowerCase().includes(nextTrimmed.toLowerCase())) return prevTrimmed;
+  if (sep === ", ") prevTrimmed = prevTrimmed.replace(/\.+\s*$/, "");
   return `${prevTrimmed}${sep}${nextTrimmed}`;
 }
 
@@ -103,6 +104,7 @@ const WordForm = forwardRef(function WordForm(
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
   const { isGuest } = useAuth();
+  const lastFilledWordRef = useRef(initialData?.word ? initialData.word.trim().toLowerCase() : null);
 
   const isDirty = !initialData ||
     word !== (initialData.word || "") ||
@@ -131,34 +133,53 @@ const WordForm = forwardRef(function WordForm(
   useImperativeHandle(ref, () => ({
     getWord: () => word,
     mergeFill: (data, source) => {
+      const currentWord = word.trim().toLowerCase();
+      const isNewWord = currentWord !== lastFilledWordRef.current;
+      lastFilledWordRef.current = currentWord;
+
       if (source === "ai") {
         const nextWord = typeof data?.word === "string" ? data.word.trim() : "";
         if (nextWord) {
           setWord(nextWord);
           if (onWordChange) onWordChange(nextWord);
+          lastFilledWordRef.current = nextWord.trim().toLowerCase();
         }
       }
 
       if (typeof data?.meaningEn === "string" && data.meaningEn.trim()) {
-        setMeaningEn((prev) => mergeText(prev, data.meaningEn));
+        setMeaningEn((prev) => mergeText(isNewWord ? "" : prev, data.meaningEn));
       }
       if (typeof data?.meaningBn === "string" && data.meaningBn.trim()) {
-        setMeaningBn((prev) => mergeText(prev, data.meaningBn));
+        setMeaningBn((prev) => mergeText(isNewWord ? "" : prev, data.meaningBn));
       }
       if (typeof data?.partOfSpeech === "string" && data.partOfSpeech.trim()) {
-        setPartOfSpeech((prev) => (source === "dictionary" ? data.partOfSpeech : prev || data.partOfSpeech));
+        setPartOfSpeech((prev) => {
+          const effectivePrev = isNewWord ? "" : prev;
+          return source === "dictionary" ? data.partOfSpeech : effectivePrev || data.partOfSpeech;
+        });
       }
       if (typeof data?.explanation === "string" && data.explanation.trim()) {
-        setExplanation((prev) => mergeText(prev, data.explanation, "\n\n"));
+        setExplanation((prev) => mergeText(isNewWord ? "" : prev, data.explanation, "\n\n"));
       }
       if (Array.isArray(data?.examples) && data.examples.length > 0) {
-        setExamples((prev) => mergeArray(prev.filter(Boolean), data.examples, 5));
+        setExamples((prev) => mergeArray((isNewWord ? [] : prev).filter(Boolean), data.examples, 5));
       }
       if (Array.isArray(data?.tags) && data.tags.length > 0) {
         setTags((prev) => {
-          const prevTags = prev ? prev.split(",").map((t) => t.trim()).filter(Boolean) : [];
+          const effectivePrev = isNewWord ? "" : prev;
+          const prevTags = effectivePrev ? effectivePrev.split(",").map((t) => t.trim()).filter(Boolean) : [];
           return mergeArray(prevTags, data.tags, 6).join(", ");
         });
+      }
+
+      // Fields not returned by this source (e.g. Dictionary never returns meaningBn/tags)
+      // still need clearing on a word change so leftovers from the previous word don't linger.
+      if (isNewWord) {
+        if (!(typeof data?.meaningBn === "string" && data.meaningBn.trim())) setMeaningBn("");
+        if (!(typeof data?.partOfSpeech === "string" && data.partOfSpeech.trim())) setPartOfSpeech("");
+        if (!(typeof data?.explanation === "string" && data.explanation.trim())) setExplanation("");
+        if (!(Array.isArray(data?.examples) && data.examples.length > 0)) setExamples([""]);
+        if (!(Array.isArray(data?.tags) && data.tags.length > 0)) setTags("");
       }
     },
     clearFields: () => {
