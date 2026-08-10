@@ -8,7 +8,7 @@ import PronounceButton from "./PronounceButton";
 
 export default function WordDetailContent({ word, showShare = true }) {
   const router = useRouter();
-  const isLongWord = word.word.length > 12;
+  const isLongWord = word.word.length > 8;
 
   return (
     <div className="flex flex-col gap-5 pb-8 -mx-4 -mt-6">
