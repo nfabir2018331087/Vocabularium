@@ -90,7 +90,7 @@ function ProfilePageContent() {
         setMigrationResult({
           success: true,
           migrated: result.migrated,
-          claimed: result.claimed,
+          skipped: result.skipped,
         });
       } else {
         setMigrationResult({ error: result.error });
@@ -377,9 +377,9 @@ function ProfilePageContent() {
               <div>
                 <p className="text-sm font-medium text-emerald-500">Migration complete</p>
                 <p className="text-xs text-text-secondary mt-0.5">
-                  {migrationResult.migrated > 0 && `${migrationResult.migrated} local word${migrationResult.migrated > 1 ? "s" : ""} moved to your account. `}
-                  {migrationResult.claimed > 0 && `${migrationResult.claimed} existing word${migrationResult.claimed > 1 ? "s" : ""} claimed.`}
-                  {migrationResult.migrated === 0 && migrationResult.claimed === 0 && "No words to migrate."}
+                  {migrationResult.migrated > 0 && `${migrationResult.migrated} word${migrationResult.migrated > 1 ? "s" : ""} moved to your account. `}
+                  {migrationResult.skipped > 0 && `${migrationResult.skipped} already in your account, so ${migrationResult.skipped > 1 ? "they were" : "it was"} skipped.`}
+                  {migrationResult.migrated === 0 && migrationResult.skipped === 0 && "No words to migrate."}
                 </p>
               </div>
             </div>

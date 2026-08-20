@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import prisma from "../../lib/prisma";
 import { getAuthenticatedUserId, getAuthenticatedUserIdWithSync } from "../../lib/auth-helpers";
 
+const MAX_INBOX = 200;
+
 export async function shareWord({ wordId, recipientEmail }) {
   const userId = await getAuthenticatedUserIdWithSync();
   if (!userId) return { error: "Not authenticated" };
@@ -56,6 +58,7 @@ export async function getInbox() {
     const inbox = await prisma.sharedWord.findMany({
       where: { recipientId: userId },
       orderBy: { createdAt: "desc" },
+      take: MAX_INBOX,
       select: {
         id: true,
         word: true,

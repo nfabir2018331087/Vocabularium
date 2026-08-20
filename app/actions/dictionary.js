@@ -1,5 +1,9 @@
 "use server";
 
+import { getAuthenticatedUserId } from "../../lib/auth-helpers";
+import { str } from "../../lib/validate";
+
+const MAX_WORD_LEN = 80;
 const FREE_DICTIONARY_URL = "https://freedictionaryapi.com/api/v1/entries/en";
 const DICTIONARY_API_DEV_URL = "https://api.dictionaryapi.dev/api/v2/entries/en";
 const TIMEOUT_MS = 4000;
@@ -123,7 +127,13 @@ function toWordData(parsed) {
 }
 
 export async function lookupDictionary(rawWord) {
-  const word = (rawWord || "").trim();
+  // Public endpoint like every server action. Unauthenticated callers would
+  // proxy traffic to the third-party dictionary APIs under our IP and get
+  // it rate-limited for real users.
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { error: "Sign in to use Dictionary Lookup." };
+
+  const word = str(rawWord, MAX_WORD_LEN);
   if (!word) return { error: "Enter a word first." };
 
   const encoded = encodeURIComponent(normalizeWord(word));

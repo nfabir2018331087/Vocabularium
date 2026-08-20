@@ -3,19 +3,22 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "../../lib/prisma";
-import { claimOrphanWords, getAuthenticatedUserId, getAuthenticatedUserIdWithSync } from "../../lib/auth-helpers";
+import { getAuthenticatedUserId, getAuthenticatedUserIdWithSync } from "../../lib/auth-helpers";
+import { sanitizeWord, str, strArray, strList, WORD_LIMITS } from "../../lib/validate";
+
+const MAX_MIGRATE_WORDS = 2000;
 
 export async function addWord(formData) {
   const userId = await getAuthenticatedUserIdWithSync();
   if (!userId) return { error: "Not authenticated" };
 
-  const word = formData.get("word")?.trim();
-  const meaningEn = formData.get("meaningEn")?.trim();
-  const meaningBn = formData.get("meaningBn")?.trim() || null;
-  const partOfSpeech = formData.get("partOfSpeech")?.trim() || null;
-  const explanation = formData.get("explanation")?.trim() || null;
+  const word = str(formData.get("word"), WORD_LIMITS.word);
+  const meaningEn = str(formData.get("meaningEn"), WORD_LIMITS.meaningEn);
+  const meaningBn = str(formData.get("meaningBn"), WORD_LIMITS.meaningBn) || null;
+  const partOfSpeech = str(formData.get("partOfSpeech"), WORD_LIMITS.partOfSpeech) || null;
+  const explanation = str(formData.get("explanation"), WORD_LIMITS.explanation) || null;
   const examplesRaw = formData.getAll("examples");
-  const tagsRaw = formData.get("tags")?.trim();
+  const tagsRaw = formData.get("tags");
 
   if (!word) return { error: "Word is required" };
   if (!meaningEn) return { error: "English meaning is required" };
@@ -26,13 +29,15 @@ export async function addWord(formData) {
   });
   if (duplicate) return { error: `"${word}" is already in your vocabulary` };
 
-  const examples = examplesRaw
-    .map((e) => e.trim())
-    .filter((e) => e.length > 0);
+  const examples = strList(examplesRaw, {
+    maxItems: WORD_LIMITS.examples,
+    maxLen: WORD_LIMITS.example,
+  });
 
-  const tags = tagsRaw
-    ? tagsRaw.split(",").map((t) => t.trim()).filter((t) => t.length > 0)
-    : [];
+  const tags = strArray(
+    typeof tagsRaw === "string" ? tagsRaw.split(",") : [],
+    { maxItems: WORD_LIMITS.tags, maxLen: WORD_LIMITS.tag }
+  );
 
   let created;
   try {
@@ -105,24 +110,26 @@ export async function updateWord(id, formData) {
   const userId = await getAuthenticatedUserIdWithSync();
   if (!userId) return { error: "Not authenticated" };
 
-  const word = formData.get("word")?.trim();
-  const meaningEn = formData.get("meaningEn")?.trim();
-  const meaningBn = formData.get("meaningBn")?.trim() || null;
-  const partOfSpeech = formData.get("partOfSpeech")?.trim() || null;
-  const explanation = formData.get("explanation")?.trim() || null;
+  const word = str(formData.get("word"), WORD_LIMITS.word);
+  const meaningEn = str(formData.get("meaningEn"), WORD_LIMITS.meaningEn);
+  const meaningBn = str(formData.get("meaningBn"), WORD_LIMITS.meaningBn) || null;
+  const partOfSpeech = str(formData.get("partOfSpeech"), WORD_LIMITS.partOfSpeech) || null;
+  const explanation = str(formData.get("explanation"), WORD_LIMITS.explanation) || null;
   const examplesRaw = formData.getAll("examples");
-  const tagsRaw = formData.get("tags")?.trim();
+  const tagsRaw = formData.get("tags");
 
   if (!word) return { error: "Word is required" };
   if (!meaningEn) return { error: "English meaning is required" };
 
-  const examples = examplesRaw
-    .map((e) => e.trim())
-    .filter((e) => e.length > 0);
+  const examples = strList(examplesRaw, {
+    maxItems: WORD_LIMITS.examples,
+    maxLen: WORD_LIMITS.example,
+  });
 
-  const tags = tagsRaw
-    ? tagsRaw.split(",").map((t) => t.trim()).filter((t) => t.length > 0)
-    : [];
+  const tags = strArray(
+    typeof tagsRaw === "string" ? tagsRaw.split(",") : [],
+    { maxItems: WORD_LIMITS.tags, maxLen: WORD_LIMITS.tag }
+  );
 
   // Verify ownership before updating
   const existing = await prisma.word.findFirst({ where: { id, userId } });
@@ -167,30 +174,47 @@ export async function migrateLocalWords(localWords) {
   const userId = await getAuthenticatedUserIdWithSync();
   if (!userId) return { error: "Not authenticated" };
 
-  // First, claim any orphan words (existing DB words without userId)
-  const claimed = await claimOrphanWords(userId);
-
-  if (!localWords || localWords.length === 0) {
-    return { success: true, migrated: 0, claimed };
+  const incoming = Array.isArray(localWords) ? localWords.slice(0, MAX_MIGRATE_WORDS) : [];
+  if (incoming.length === 0) {
+    return { success: true, migrated: 0, skipped: 0 };
   }
 
   try {
-    const data = localWords.map((w) => ({
-      word: w.word,
-      meaningEn: w.meaningEn,
-      meaningBn: w.meaningBn || null,
-      partOfSpeech: w.partOfSpeech || null,
-      explanation: w.explanation || null,
-      examples: w.examples || [],
-      tags: w.tags || [],
-      userId,
-    }));
+    // Sanitize first, then drop anything the account already has. createMany
+    // does not run the duplicate check addWord does, so without this a word
+    // held both in guest storage and in the account lands twice.
+    const sanitized = [];
+    const seen = new Set();
+    for (const raw of incoming) {
+      const clean = sanitizeWord(raw);
+      if (!clean) continue;
+      const key = clean.word.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      sanitized.push(clean);
+    }
 
-    await prisma.word.createMany({ data });
+    const existing = await prisma.word.findMany({
+      where: { userId },
+      select: { word: true },
+    });
+    const owned = new Set(existing.map((w) => w.word.toLowerCase()));
 
-    revalidatePath("/");
-    revalidatePath("/words");
-    return { success: true, migrated: localWords.length, claimed };
+    const data = sanitized
+      .filter((w) => !owned.has(w.word.toLowerCase()))
+      .map((w) => ({ ...w, userId }));
+
+    if (data.length > 0) {
+      await prisma.word.createMany({ data });
+      revalidatePath("/");
+      revalidatePath("/words");
+    }
+
+    return {
+      success: true,
+      migrated: data.length,
+      skipped: sanitized.length - data.length,
+    };
   } catch (err) {
     console.error("Migration failed:", err);
     return { error: "Failed to migrate words" };

@@ -1,13 +1,23 @@
 "use server";
 
 import { chatJSON } from "../../lib/llm";
+import { getAuthenticatedUserId } from "../../lib/auth-helpers";
+import { str } from "../../lib/validate";
+
+const MAX_WORD_LEN = 80;
 
 function normalizeWord(value) {
   return (value || "").trim().toLowerCase();
 }
 
 export async function assistWord(rawWord) {
-  const word = (rawWord || "").trim();
+  // Server actions are public endpoints — the UI hides this button from
+  // guests, but that does not stop a direct POST. Without this check the
+  // app's AI quota is spendable by anyone.
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { error: "Sign in to use AI Assist." };
+
+  const word = str(rawWord, MAX_WORD_LEN);
   if (!word) return { error: "Enter a word first." };
 
   if (!process.env.GEMINI_API_KEY && !process.env.GROQ_API_KEY) {

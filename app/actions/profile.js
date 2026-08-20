@@ -3,6 +3,11 @@
 import prisma from "../../lib/prisma";
 import { getSupabaseServer, getSupabaseUser } from "../../lib/supabase/server";
 
+// Kept under Next's 1 MB server action body limit, with headroom for the
+// multipart envelope.
+const MAX_AVATAR_BYTES = 900 * 1024;
+const ALLOWED_AVATAR_EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif" };
+
 async function getAuthenticatedUser() {
   return getSupabaseUser();
 }
@@ -15,15 +20,19 @@ export async function uploadAvatar(formData) {
   if (!file || file.size === 0) return { error: "No file selected" };
 
   // Validate file
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-  if (!allowedTypes.includes(file.type)) {
+  if (!ALLOWED_AVATAR_EXT[file.type]) {
     return { error: "Only JPEG, PNG, WebP, and GIF images are allowed" };
   }
-  if (file.size > 2 * 1024 * 1024) {
-    return { error: "Image must be under 2MB" };
+  // Next.js rejects server action bodies over 1 MB before this code runs, so a
+  // 2 MB ceiling here produced an unhandled 413 rather than this message.
+  if (file.size > MAX_AVATAR_BYTES) {
+    return { error: "Image must be under 900KB. Try a smaller photo." };
   }
 
-  const ext = file.name.split(".").pop();
+  // Derive the extension from the validated content type — the client-supplied
+  // filename could contain anything, and varying it orphaned the previous
+  // upload because upsert only matches an identical path.
+  const ext = ALLOWED_AVATAR_EXT[file.type];
   const filePath = `${user.id}/avatar.${ext}`;
 
   const supabase = await getSupabaseServer();
