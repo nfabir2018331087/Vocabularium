@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../components/AuthProvider";
-import { deleteWord, getWords } from "../../actions/words";
+import { deleteWord } from "../../actions/words";
+import { getWords } from "../../../lib/data-client";
 import { deleteLocalWord } from "../../../lib/local-words";
 import { setCachedWords } from "../../../lib/client-cache";
 

@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getWords } from "./actions/words";
-import { getInbox } from "./actions/share";
-import { getWordProgress } from "./actions/quiz";
+import { getWords, getInbox, getWordProgress } from "../lib/data-client";
 import HomeContent from "./components/HomeContent";
 import GuestHomeContent from "./components/GuestHomeContent";
 import { useAuth } from "./components/AuthProvider";

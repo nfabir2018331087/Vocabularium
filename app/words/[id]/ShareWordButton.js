@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import Toast from "../../components/Toast";
 import { shareWord } from "../../actions/share";
-import { getFriendData } from "../../actions/friends";
+import { getFriendData } from "../../../lib/data-client";
 
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);

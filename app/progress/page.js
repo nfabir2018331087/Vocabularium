@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { getWords } from "../actions/words";
-import { getWordProgress } from "../actions/quiz";
+import { getWords, getWordProgress } from "../../lib/data-client";
 import ProgressPageContent from "./ProgressPageContent";
 import GuestProgressPage from "./GuestProgressPage";
 import { useAuth } from "../components/AuthProvider";

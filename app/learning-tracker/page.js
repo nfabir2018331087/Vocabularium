@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { getWords } from "../actions/words";
-import { getTrackerData, saveTrackerData } from "../actions/tracker";
+import { saveTrackerData } from "../actions/tracker";
+import { getWords, getTrackerData } from "../../lib/data-client";
 import { useAuth } from "../components/AuthProvider";
 import { getCachedWords, setCachedWords, getCachedTracker, setCachedTracker } from "../../lib/client-cache";
 

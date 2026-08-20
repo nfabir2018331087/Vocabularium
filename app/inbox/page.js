@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../components/AuthProvider";
-import { acceptSharedWord, getInbox, markSharedWordSeen, removeSharedWord } from "../actions/share";
+import { acceptSharedWord, markSharedWordSeen, removeSharedWord } from "../actions/share";
+import { getInbox } from "../../lib/data-client";
 import { getCachedInbox, isInboxFresh, setCachedInbox, setCachedWords } from "../../lib/client-cache";
-import { getWords } from "../actions/words";
+import { getWords } from "../../lib/data-client";
 
 const INBOX_TTL_MS = 2 * 60 * 1000;
 

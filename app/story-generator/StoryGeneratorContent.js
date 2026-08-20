@@ -3,7 +3,8 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { generateStory, getStories, deleteStory } from "../actions/story";
+import { generateStory, deleteStory } from "../actions/story";
+import { getStories } from "../../lib/data-client";
 import { shuffle } from "../../lib/quiz-utils";
 import Toast from "../components/Toast";
 import { getCachedStories, setCachedStories, isStoriesFresh } from "../../lib/client-cache";

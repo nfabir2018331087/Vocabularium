@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../components/AuthProvider";
-import { getFriendData, acceptFriendRequest, rejectFriendRequest } from "../actions/friends";
+import { acceptFriendRequest, rejectFriendRequest } from "../actions/friends";
+import { getFriendData } from "../../lib/data-client";
 import Toast from "../components/Toast";
 import { getCachedFriends, setCachedFriends, isFriendsFresh } from "../../lib/client-cache";
 

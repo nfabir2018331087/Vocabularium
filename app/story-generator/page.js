@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getWords } from "../actions/words";
+import { getWords } from "../../lib/data-client";
 import StoryGeneratorContent from "./StoryGeneratorContent";
 import { useAuth } from "../components/AuthProvider";
 import { getCachedWords, isWordsFresh, setCachedWords } from "../../lib/client-cache";

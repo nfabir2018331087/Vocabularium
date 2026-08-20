@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { getSupabaseBrowser } from "../../lib/supabase/client";
 import { clearAllCache } from "../../lib/client-cache";
+import { resetInflight } from "../../lib/data-client";
 
 const AuthContext = createContext({
   user: null,
@@ -86,6 +87,7 @@ export default function AuthProvider({ children, initialUser }) {
       const nextUserId = nextUser?.id || null;
       if (prevUserId !== nextUserId) {
         clearAllCache();
+        resetInflight();
         prevUserIdRef.current = nextUserId;
       }
       setUser(nextUser);
@@ -102,6 +104,7 @@ export default function AuthProvider({ children, initialUser }) {
     setUser(null);
     writeCachedUser(null);
     clearAllCache();
+    resetInflight();
   }
 
   return (

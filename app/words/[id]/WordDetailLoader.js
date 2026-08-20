@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../components/AuthProvider";
-import { getWord, getWords } from "../../actions/words";
+import { getWord } from "../../actions/words";
+import { getWords } from "../../../lib/data-client";
 import { getCachedWord, setCachedWord, setCachedWords } from "../../../lib/client-cache";
 import WordDetailContent from "./WordDetailContent";
 

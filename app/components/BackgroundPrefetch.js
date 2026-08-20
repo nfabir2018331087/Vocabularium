@@ -2,12 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { useAuth } from "./AuthProvider";
-import { getWords } from "../actions/words";
-import { getWordProgress } from "../actions/quiz";
-import { getInbox } from "../actions/share";
-import { getFriendData } from "../actions/friends";
-import { getTrackerData } from "../actions/tracker";
-import { getStories } from "../actions/story";
+import {
+  getWords, getWordProgress, getInbox,
+  getFriendData, getTrackerData, getStories,
+} from "../../lib/data-client";
 import {
   getCachedInbox, getCachedProgress, getCachedWords,
   getCachedFriends, getCachedTracker, getCachedStories,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { getWords } from "../actions/words";
+import { getWords } from "../../lib/data-client";
 import WordsPageContent from "./WordsPageContent";
 import GuestWordsPage from "./GuestWordsPage";
 import { useAuth } from "../components/AuthProvider";

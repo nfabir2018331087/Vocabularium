@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getWords } from "../actions/words";
+import { getWords } from "../../lib/data-client";
 import { acceptSharedWord, markSharedWordSeen, removeSharedWord } from "../actions/share";
 import { useAuth } from "./AuthProvider";
 import { setCachedInbox, setCachedWords } from "../../lib/client-cache";
