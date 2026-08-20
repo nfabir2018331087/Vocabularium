@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { shuffle, generateOptions } from "../../../lib/quiz-utils";
+import { shuffle, generateOptions, truncateMeaning } from "../../../lib/quiz-utils";
 
 export default function MultipleChoiceQuiz({ words, allWords, onFinish, onQuit }) {
   const quizWords = words;
@@ -103,7 +103,7 @@ export default function MultipleChoiceQuiz({ words, allWords, onFinish, onQuit }
       <div className="px-4 flex flex-col gap-5">
       {/* Word */}
       <div className="flex flex-col items-center gap-2 py-8">
-        <p className="text-3xl font-bold text-center">{current.word}</p>
+        <p className="text-3xl font-bold text-center break-words w-full min-w-0">{current.word}</p>
         {current.partOfSpeech && (
           <span className="text-xs text-text-secondary italic px-2 py-0.5 rounded-full bg-surface-alt border border-border">
             {current.partOfSpeech}
@@ -132,7 +132,7 @@ export default function MultipleChoiceQuiz({ words, allWords, onFinish, onQuit }
               disabled={selected !== null}
               className={`w-full text-left px-4 py-3.5 rounded-xl border text-sm font-medium transition-all ${style}`}
             >
-              {option}
+              {truncateMeaning(option, 70)}
             </button>
           );
         })}

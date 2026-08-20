@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { truncateMeaning } from "../../lib/quiz-utils";
 
 export default function QuizResults({ result, words, onRestart, onRetry, isGuest }) {
   const { score, total, missed, duration } = result;
@@ -83,7 +84,7 @@ export default function QuizResults({ result, words, onRestart, onRetry, isGuest
                 className="flex items-center justify-between p-3 rounded-xl bg-surface-alt border border-border hover:border-primary transition-colors"
               >
                 <div className="min-w-0 flex-1">
-                  <span className="font-semibold text-sm">{w.word}</span>
+                  <span className="font-semibold text-sm break-words">{w.word}</span>
                   <p className="text-xs text-text-secondary mt-0.5 truncate">{w.meaningEn}</p>
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-text-secondary shrink-0 ml-2">
@@ -113,9 +114,9 @@ export default function QuizResults({ result, words, onRestart, onRetry, isGuest
               }
               return (
                 <div key={g.id} className={`flex flex-col gap-1.5 p-3 rounded-xl border ${border}`}>
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-sm text-text">{g.word}</span>
-                    <span className="text-[10px] uppercase tracking-wide">{label}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-sm text-text break-words min-w-0">{g.word}</span>
+                    <span className="text-[10px] uppercase tracking-wide shrink-0">{label}</span>
                   </div>
                   <div className="flex flex-col gap-1 text-xs text-text-secondary">
                     <div className="flex items-center gap-2">
@@ -135,7 +136,7 @@ export default function QuizResults({ result, words, onRestart, onRetry, isGuest
                     </div>
                     <div>
                       <span>Stored answer:</span>{" "}
-                      <span className="text-text font-medium">{g.meaningEn}</span>
+                      <span className="text-text font-medium">{truncateMeaning(g.meaningEn, 100)}</span>
                     </div>
                   </div>
                   {g.status === "pos_mismatch" && (

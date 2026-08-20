@@ -198,7 +198,7 @@ export default function TypeAnswerQuiz({ words, onFinish, onQuit, isGuest }) {
       <div className="px-4 flex flex-col gap-5">
       {/* Word */}
       <div className="flex flex-col items-center gap-2 py-8">
-        <p className="text-3xl font-bold text-center">{current.word}</p>
+        <p className="text-3xl font-bold text-center break-words w-full min-w-0">{current.word}</p>
         {current.partOfSpeech && (
           <span className="text-xs text-text-secondary italic px-2 py-0.5 rounded-full bg-surface-alt border border-border">
             {current.partOfSpeech}

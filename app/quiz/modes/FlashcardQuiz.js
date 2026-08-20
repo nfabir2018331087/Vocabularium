@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { truncateMeaning } from "../../../lib/quiz-utils";
 
 export default function FlashcardQuiz({ words, onFinish, onQuit }) {
   const [index, setIndex] = useState(0);
@@ -107,7 +108,7 @@ export default function FlashcardQuiz({ words, onFinish, onQuit }) {
         >
           {/* Front */}
           <div className="absolute inset-0 [backface-visibility:hidden] flex flex-col items-center justify-center p-6 rounded-2xl bg-surface-alt">
-            <p className="text-3xl font-bold text-center">{current.word}</p>
+            <p className="text-3xl font-bold text-center break-words w-full min-w-0">{current.word}</p>
             {current.partOfSpeech && (
               <span className="text-xs text-text-secondary italic mt-2 px-2 py-0.5 rounded-full bg-surface border border-border">
                 {current.partOfSpeech}
@@ -117,11 +118,11 @@ export default function FlashcardQuiz({ words, onFinish, onQuit }) {
           </div>
 
           {/* Back */}
-          <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col items-center justify-center p-6 rounded-2xl bg-primary/5 border border-primary/20">
-            <p className="text-xl font-semibold text-center">{current.meaningEn}</p>
+          <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col items-center justify-center p-6 rounded-2xl bg-primary/5 border border-primary/20 overflow-y-auto">
+            <p className="text-xl font-semibold text-center">{truncateMeaning(current.meaningEn, 140)}</p>
             {current.explanation && (
               <p className="text-sm text-text-secondary text-center mt-3 max-w-xs">
-                {current.explanation}
+                {truncateMeaning(current.explanation, 100)}
               </p>
             )}
           </div>

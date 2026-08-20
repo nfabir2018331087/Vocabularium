@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { generateMatchPairs } from "../../../lib/quiz-utils";
+import { generateMatchPairs, truncateMeaning } from "../../../lib/quiz-utils";
 
 const PAIR_COUNT = 5;
 
@@ -115,7 +115,7 @@ export default function MatchPairsQuiz({ words, onFinish, onQuit }) {
                 key={w.id}
                 onClick={() => handleWordClick(w.id)}
                 disabled={isMatched}
-                className={`px-3 py-3 rounded-xl border text-sm font-medium text-center transition-all ${style} ${isMatched ? "opacity-60" : ""}`}
+                className={`px-3 py-3 rounded-xl border text-sm font-medium text-center transition-all break-words min-w-0 ${style} ${isMatched ? "opacity-60" : ""}`}
               >
                 {w.text}
               </button>
@@ -142,7 +142,7 @@ export default function MatchPairsQuiz({ words, onFinish, onQuit }) {
                 disabled={isMatched}
                 className={`px-3 py-3 rounded-xl border text-sm text-center transition-all ${style} ${isMatched ? "opacity-60" : ""}`}
               >
-                {m.text}
+                {truncateMeaning(m.text, 45)}
               </button>
             );
           })}
