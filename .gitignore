@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma (generated client is in node_modules via prisma-client-js)
+
+# internal planning doc, not meant to be pushed
+/FLUTTER_MIGRATION_PROMPT.md

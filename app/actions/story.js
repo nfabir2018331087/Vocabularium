@@ -3,24 +3,9 @@
 import { revalidatePath } from "next/cache";
 import prisma from "../../lib/prisma";
 import { getAuthenticatedUserId, getAuthenticatedUserIdWithSync } from "../../lib/auth-helpers";
-
-const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const DEFAULT_MODEL = "llama-3.1-8b-instant";
+import { chatJSON } from "../../lib/llm";
 
 const MAX_WORDS = 100;
-
-function extractJson(text) {
-  if (!text) return null;
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (start === -1 || end === -1 || end <= start) return null;
-  const slice = text.slice(start, end + 1);
-  try {
-    return JSON.parse(slice);
-  } catch {
-    return null;
-  }
-}
 
 export async function generateStory({ wordIds }) {
   const userId = await getAuthenticatedUserIdWithSync();
@@ -29,10 +14,9 @@ export async function generateStory({ wordIds }) {
   const safeIds = Array.isArray(wordIds) ? [...new Set(wordIds)].slice(0, MAX_WORDS) : [];
   if (safeIds.length === 0) return { error: "Select at least one word first." };
 
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) return { error: "Missing GROQ_API_KEY on the server." };
-
-  const model = process.env.GROQ_MODEL || DEFAULT_MODEL;
+  if (!process.env.GEMINI_API_KEY && !process.env.GROQ_API_KEY) {
+    return { error: "Missing GEMINI_API_KEY / GROQ_API_KEY on the server." };
+  }
 
   const words = await prisma.word.findMany({
     where: { id: { in: safeIds }, userId },
@@ -60,29 +44,11 @@ export async function generateStory({ wordIds }) {
   ].join("\n");
 
   try {
-    const response = await fetch(GROQ_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.8,
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-      }),
-    });
+    const { parsed, raw } = await chatJSON({ system, user, temperature: 0.8 });
 
-    if (!response.ok) {
+    if (!raw) {
       return { error: "AI service failed. Please try again." };
     }
-
-    const data = await response.json();
-    const content = data?.choices?.[0]?.message?.content || "";
-    const parsed = extractJson(content);
 
     if (!parsed) {
       return { error: "AI response was invalid. Please try again." };

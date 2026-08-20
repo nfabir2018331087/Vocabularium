@@ -6,7 +6,7 @@ A personal vocabulary learning app for storing English words with meanings, exam
 
 - **Add Words** — Save words with English meaning, Bengali meaning, part of speech, explanation, examples, and tags; duplicate words are automatically rejected
 - **Dictionary Lookup** — Auto-fill English meaning, part of speech, explanation, and examples instantly from free dictionary APIs (freedictionaryapi.com, with dictionaryapi.dev as fallback); no AI involved
-- **AI Assist** — Auto-fill word details with one click using Groq AI; can be combined with Dictionary Lookup — results merge instead of overwriting, with Dictionary Lookup's part of speech taking priority
+- **AI Assist** — Auto-fill word details with one click using Google Gemini (Groq as automatic fallback); can be combined with Dictionary Lookup — results merge instead of overwriting, with Dictionary Lookup's part of speech taking priority
 - **Browse & Search** — View all words with sorting and full-text search
 - **Edit & Delete** — Manage your vocabulary from the word detail page
 - **4 Quiz Modes** — Flashcard, Multiple Choice, Type Answer (AI-graded), Match Pairs; word pool can be filtered by tag or starting letter before each session
@@ -28,7 +28,8 @@ A personal vocabulary learning app for storing English words with meanings, exam
 - **TailwindCSS 4**
 - **Prisma 6** + **PostgreSQL** (Supabase)
 - **Supabase Auth** (email/password + Google OAuth)
-- **Groq API** (`llama-3.3-70b-versatile`) for AI assist and quiz grading
+- **Google Gemini API** (`gemini-3.5-flash`) — primary AI provider for AI Assist, quiz grading, and the Story Generator
+- **Groq API** (`openai/gpt-oss-120b`) — automatic fallback if Gemini errors or is unavailable
 - **Vercel** (deployment)
 
 ## Setup
@@ -44,7 +45,10 @@ DATABASE_URL=postgresql://...pooler...supabase.com:6543/postgres?pgbouncer=true
 DIRECT_URL=postgresql://...supabase.com:5432/postgres
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+GEMINI_API_KEY=your-gemini-api-key
+GEMINI_MODEL=gemini-3.5-flash
 GROQ_API_KEY=your-groq-api-key
+GROQ_MODEL=openai/gpt-oss-120b
 ```
 
 Run migrations and start:
@@ -62,3 +66,4 @@ npm run dev
 - [x] Friends — add by email, requests page, share words from friend card, remove friend. [ProfilePage → /friends]
 - [x] AI Story Generator — generate short stories from selected vocabulary words with a paginated, deletable history. [QuizPage → /story-generator]
 - [x] Dictionary Lookup — free-dictionary-API auto-fill button alongside AI Assist under Auto Fill; results merge instead of overwriting. [AddWordPage]
+- [x] Switched primary AI provider to Google Gemini (`gemini-3.5-flash`) with Groq (`openai/gpt-oss-120b`) as an automatic fallback — Groq deprecated the previously used models. [assist.js, quiz.js, story.js]

@@ -156,7 +156,7 @@ const sections = [
           'The AI auto-fills: English meaning, Bengali meaning, part of speech, explanation, example sentences, and tags.',
           'Review and edit anything before saving.',
         ],
-        note: "Powered by Groq (llama-3.1-8b-instant). Results are fast and usually accurate.",
+        note: "Powered by Google Gemini, with Groq as an automatic backup if Gemini is unavailable. Results are fast and usually accurate.",
       },
       {
         icon: (
@@ -284,7 +284,7 @@ const sections = [
           'Tap View all next to a story\'s word count to see its full word list in a scrollable grid.',
           'Tap the trash icon on a story to delete it.',
         ],
-        note: "Powered by Groq. Great for seeing your vocabulary used in context — stories aren't graded and don't affect your quiz progress.",
+        note: "Powered by Google Gemini, with Groq as a backup. Great for seeing your vocabulary used in context — stories aren't graded and don't affect your quiz progress.",
       },
       {
         icon: (
