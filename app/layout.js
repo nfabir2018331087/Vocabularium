@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Noto_Sans_Bengali } from "next/font/google";
+import { Geist, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
 import BottomNav from "./components/BottomNav";
 import ThemeProvider from "./components/ThemeProvider";
@@ -7,11 +7,6 @@ import BackgroundPrefetch from "./components/BackgroundPrefetch";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -30,7 +25,6 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#6366f1",
 };
 
@@ -52,7 +46,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${notoBangla.variable} antialiased`} suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${notoBangla.variable} antialiased`} suppressHydrationWarning>
         <ThemeProvider>
           <AuthProvider initialUser={null}>
             <main className="max-w-lg mx-auto px-4 py-6 animate-fade-in">
