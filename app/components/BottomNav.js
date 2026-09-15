@@ -38,12 +38,15 @@ const navItems = [
   },
   {
     href: "/quiz",
-    label: "Quiz",
+    label: "Play",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
+        <rect x="3" y="3" width="18" height="18" rx="4" ry="4" />
+        <circle cx="8" cy="8" r="1" fill="currentColor" stroke="none" />
+        <circle cx="16" cy="8" r="1" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+        <circle cx="8" cy="16" r="1" fill="currentColor" stroke="none" />
+        <circle cx="16" cy="16" r="1" fill="currentColor" stroke="none" />
       </svg>
     ),
   },
@@ -64,14 +67,14 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass border-t border-border/50 z-50">
-      <div className="max-w-lg mx-auto flex justify-around items-center h-16">
+      <div className="max-w-lg mx-auto flex items-center h-16">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`relative flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors ${
+              className={`relative flex-1 flex flex-col items-center gap-0.5 py-1 rounded-lg transition-colors ${
                 isActive
                   ? "text-primary"
                   : "text-text-secondary hover:text-text"
@@ -87,7 +90,7 @@ export default function BottomNav() {
         })}
         <Link
           href="/profile"
-          className={`relative flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors ${
+          className={`relative flex-1 flex flex-col items-center gap-0.5 py-1 rounded-lg transition-colors ${
             isProfileActive
               ? "text-primary"
               : "text-text-secondary hover:text-text"

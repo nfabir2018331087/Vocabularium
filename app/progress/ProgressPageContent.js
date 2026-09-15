@@ -147,7 +147,7 @@ export default function ProgressPageContent({ words, progress }) {
         {words.length > 0 && tested.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-8 text-center">
             <p className="text-sm text-text-secondary">Take a quiz to start tracking your progress</p>
-            <Link href="/quiz" className="text-sm text-primary font-medium">Start a quiz</Link>
+            <Link href="/quiz" className="text-sm text-primary font-medium">Go to Playground</Link>
           </div>
         )}
 

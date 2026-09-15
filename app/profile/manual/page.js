@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../components/AuthProvider";
 
 const sections = [
   {
@@ -22,7 +23,26 @@ const sections = [
           'Fill in the word, English meaning, and optionally: Bengali meaning, part of speech, explanation, example sentences, and tags.',
           'Tap Save. The word is stored on your device.',
         ],
-        note: "AI Assist is not available in guest mode. You fill in everything manually. The app will warn you if you try to save a word that already exists in your library.",
+        note: "AI Assist is not available in guest mode — use Dictionary Lookup to auto-fill what it can, or fill in everything manually. The app will warn you if you try to save a word that already exists in your library.",
+      },
+      {
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            <line x1="9" y1="7" x2="15" y2="7" />
+            <line x1="9" y1="11" x2="15" y2="11" />
+          </svg>
+        ),
+        title: "Dictionary Lookup",
+        color: "teal",
+        steps: [
+          'Tap the + button, then type a word.',
+          'Tap the Dictionary button — it sits alone under Auto Fill since AI Assist isn\'t available in guest mode.',
+          'English meaning, part of speech, explanation, and example sentences are fetched instantly and filled in.',
+          'Review and edit anything before saving.',
+        ],
+        note: "Runs entirely in your browser against a free, open dictionary source — no account or AI involved, so it's instant. Only works for real English words; slang, names, and typos won't return a result.",
       },
       {
         icon: (
@@ -85,7 +105,7 @@ const sections = [
         title: "Quiz Yourself",
         color: "green",
         steps: [
-          'Tap Quiz in the bottom nav.',
+          'Tap Playground in the bottom nav.',
           'Tap a mode card to open the quiz configuration panel.',
           'Choose your Word Pool: Random (default), By Tags, or By Letters.',
           'By Tags: select one or more tags — only words with those tags are included.',
@@ -152,7 +172,7 @@ const sections = [
     ],
     limits: [
       "Words stored only on this device — lost if you clear browser data",
-      "No Dictionary Lookup or AI Assist for auto-filling word details",
+      "No AI Assist for auto-filling word details",
       "No AI Story Generator",
       "No Word Sharing with other users",
       "No cross-device sync",
@@ -365,7 +385,7 @@ const sections = [
         title: "AI Story Generator",
         color: "red",
         steps: [
-          'Tap Quiz in the bottom nav, then tap the Story Generator tile.',
+          'Tap Playground in the bottom nav, then tap the Story Generator tile.',
           'Choose how many words to use — 10, 20, 50, or 100.',
           'Fill your selection using Search, Random, Letters, or Tags — mix and match until you hit your target.',
           'Tap Generate Story. The AI writes a short story that naturally uses every selected word, bolded in the text.',
@@ -469,8 +489,9 @@ function FeatureCard({ feature }) {
 
 export default function UserManualPage() {
   const router = useRouter();
+  const { isGuest } = useAuth();
   const [tab, setTab] = useState("guest");
-  const active = sections.find((s) => s.id === tab);
+  const active = sections.find((s) => s.id === (isGuest ? "guest" : tab));
 
   return (
     <div className="flex flex-col gap-6 pb-8 -mx-4 -mt-6">
@@ -495,19 +516,26 @@ export default function UserManualPage() {
       <div className="px-4 flex flex-col gap-6">
         {/* Tabs */}
         <div className="flex gap-2 p-1 rounded-2xl bg-surface-alt border border-border">
-          {sections.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setTab(s.id)}
-              className={`flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all ${
-                tab === s.id
-                  ? "bg-primary text-white shadow-sm"
-                  : "text-text-secondary hover:text-text"
-              }`}
-            >
-              {s.label}
-            </button>
-          ))}
+          {sections.map((s) => {
+            const locked = isGuest && s.id !== "guest";
+            return (
+              <button
+                key={s.id}
+                onClick={() => !locked && setTab(s.id)}
+                disabled={locked}
+                title={locked ? "Sign in to view the Account manual" : undefined}
+                className={`flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all ${
+                  locked
+                    ? "text-text-secondary/40 cursor-not-allowed"
+                    : (isGuest ? "guest" : tab) === s.id
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-text-secondary hover:text-text"
+                }`}
+              >
+                {s.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Intro */}

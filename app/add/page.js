@@ -5,6 +5,7 @@ import { useAuth } from "../components/AuthProvider";
 import { addWord } from "../actions/words";
 import { assistWord } from "../actions/assist";
 import { lookupDictionary } from "../actions/dictionary";
+import { lookupDictionaryClient } from "../../lib/dictionary-client";
 import { addLocalWord, getLocalWords } from "../../lib/local-words";
 import WordForm from "../components/WordForm";
 
@@ -63,7 +64,7 @@ export default function AddWord() {
       return;
     }
     setDictionaryLoading(true);
-    const result = await lookupDictionary(word);
+    const result = isGuest ? await lookupDictionaryClient(word) : await lookupDictionary(word);
     if (result.error) {
       formRef.current?.showToast(result.error, "error");
       setDictionaryLoading(false);
@@ -108,7 +109,7 @@ export default function AddWord() {
           onSubmit={isGuest ? handleLocalAdd : addWord}
           submitLabel="Save Word"
           successMessage="Word added successfully!"
-          onDictionaryFill={!isGuest ? handleDictionaryFill : undefined}
+          onDictionaryFill={handleDictionaryFill}
           onAiFill={!isGuest ? handleAiFill : undefined}
           dictionaryLoading={dictionaryLoading}
           aiLoading={aiLoading}

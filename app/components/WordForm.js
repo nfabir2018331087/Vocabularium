@@ -2,7 +2,6 @@
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "./AuthProvider";
 import Toast from "./Toast";
 
 const PARTS_OF_SPEECH = [
@@ -103,7 +102,6 @@ const WordForm = forwardRef(function WordForm(
   const [tags, setTags] = useState(initialData?.tags?.join(", ") || "");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
-  const { isGuest } = useAuth();
   const lastFilledWordRef = useRef(initialData?.word ? initialData.word.trim().toLowerCase() : null);
 
   const isDirty = !initialData ||
@@ -137,14 +135,9 @@ const WordForm = forwardRef(function WordForm(
       const isNewWord = currentWord !== lastFilledWordRef.current;
       lastFilledWordRef.current = currentWord;
 
-      if (source === "ai") {
-        const nextWord = typeof data?.word === "string" ? data.word.trim() : "";
-        if (nextWord) {
-          setWord(nextWord);
-          if (onWordChange) onWordChange(nextWord);
-          lastFilledWordRef.current = nextWord.trim().toLowerCase();
-        }
-      }
+      // The word field always keeps exactly what the user typed — AI/Dictionary
+      // results only fill the other fields, never the word itself (data.word is
+      // used server-side only, to validate the AI didn't answer a different word).
 
       if (typeof data?.meaningEn === "string" && data.meaningEn.trim()) {
         setMeaningEn((prev) => mergeText(isNewWord ? "" : prev, data.meaningEn));
@@ -275,7 +268,7 @@ const WordForm = forwardRef(function WordForm(
           />
         </div>
 
-        {(onDictionaryFill || onAiFill) && !isGuest && (
+        {(onDictionaryFill || onAiFill) && (
           <>
             <div className="relative my-1">
               <div className="h-px bg-border" />
@@ -284,48 +277,52 @@ const WordForm = forwardRef(function WordForm(
               </span>
             </div>
 
-            <div className="flex items-center justify-around gap-3">
-              <button
-                type="button"
-                onClick={onDictionaryFill}
-                disabled={!word.trim() || assistLoading}
-                className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border transition-all bg-surface-alt border-border enabled:hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span className="text-text-secondary">
-                  {dictionaryLoading ? (
-                    <span className="inline-flex h-4 w-4 rounded-full border-2 border-primary/40 border-t-primary animate-spin" />
-                  ) : (
-                    <DictionaryIcon />
-                  )}
-                </span>
-                <span className="text-sm font-semibold">Dictionary</span>
-              </button>
+            <div className={`flex items-center gap-3 ${onAiFill ? "justify-around" : "justify-center"}`}>
+              {onDictionaryFill && (
+                <button
+                  type="button"
+                  onClick={onDictionaryFill}
+                  disabled={!word.trim() || assistLoading}
+                  className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border transition-all bg-surface-alt border-border enabled:hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="text-text-secondary">
+                    {dictionaryLoading ? (
+                      <span className="inline-flex h-4 w-4 rounded-full border-2 border-primary/40 border-t-primary animate-spin" />
+                    ) : (
+                      <DictionaryIcon />
+                    )}
+                  </span>
+                  <span className="text-sm font-semibold">Dictionary</span>
+                </button>
+              )}
 
-              <button
-                type="button"
-                onClick={onAiFill}
-                disabled={!word.trim() || assistLoading}
-                className="relative flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border border-transparent transition-all bg-gradient-to-br from-violet-400 via-violet-600 to-indigo-400 text-white enabled:hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {aiLoading && (
-                  <span className="absolute -inset-1 rounded-lg blur-md bg-gradient-to-br from-violet-400 via-violet-600 to-indigo-400 opacity-70" />
-                )}
-                <span className="relative">
-                  {aiLoading ? (
-                    <span className="inline-flex h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                  ) : (
-                    <AiSparkle />
+              {onAiFill && (
+                <button
+                  type="button"
+                  onClick={onAiFill}
+                  disabled={!word.trim() || assistLoading}
+                  className="relative flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border border-transparent transition-all bg-gradient-to-br from-violet-400 via-violet-600 to-indigo-400 text-white enabled:hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {aiLoading && (
+                    <span className="absolute -inset-1 rounded-lg blur-md bg-gradient-to-br from-violet-400 via-violet-600 to-indigo-400 opacity-70" />
                   )}
-                </span>
-                <span className="relative text-sm font-semibold">AI Assist</span>
-              </button>
+                  <span className="relative">
+                    {aiLoading ? (
+                      <span className="inline-flex h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                    ) : (
+                      <AiSparkle />
+                    )}
+                  </span>
+                  <span className="relative text-sm font-semibold">AI Assist</span>
+                </button>
+              )}
             </div>
           </>
         )}
 
         <div className="relative my-1">
           <div className="h-px bg-border" />
-          {!isGuest && (
+          {(onDictionaryFill || onAiFill) && (
             <span className="text-center absolute left-1/5 right-1/5 min-[428px]:left-1/4 min-[428px]:right-1/4 -top-2.5 px-3 text-[10px] uppercase tracking-wider text-text-secondary bg-surface">
               Or fill everything yourself
             </span>

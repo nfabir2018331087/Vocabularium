@@ -16,10 +16,36 @@ const notoBangla = Noto_Sans_Bengali({
   weight: ["400", "500", "600", "700"],
 });
 
+const SITE_URL = "https://vocabularium.vercel.app";
+const SITE_DESCRIPTION =
+  "Build your personal vocabulary with AI-assisted word entries, practice with quizzes, and turn your words into AI-generated stories.";
+
 export const metadata = {
-  title: "Vocabularium",
-  description: "Your personal vocabulary builder",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Vocabularium — Personal Vocabulary Builder",
+    template: "%s — Vocabularium",
+  },
+  description: SITE_DESCRIPTION,
+  keywords: ["vocabulary builder", "vocabulary app", "word quiz", "flashcards", "learn english words", "vocabulary trainer"],
   manifest: "/manifest.json",
+  verification: {
+    google: "Xo6VjNApbrRt4IkOyDt-UCY7pheqNVldM6w_2tV-ids",
+  },
+  openGraph: {
+    title: "Vocabularium",
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: "Vocabularium",
+    images: [{ url: "/icon-512.png" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Vocabularium",
+    description: SITE_DESCRIPTION,
+    images: ["/icon-512.png"],
+  },
 };
 
 export const viewport = {

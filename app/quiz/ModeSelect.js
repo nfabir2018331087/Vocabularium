@@ -415,16 +415,19 @@ export default function ModeSelect({ words, onSelect, isGuest }) {
     return (
       <div className="flex flex-col gap-4 -mx-4 -mt-6 pb-8">
         <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
-          <h1 className="text-2xl font-bold text-white">Quiz</h1>
+          <h1 className="text-2xl font-bold text-white">Playground</h1>
           <p className="text-sm text-white/75 mt-0.5">Practice your words with quick modes</p>
         </div>
         <div className="px-4">
           <div className="text-center py-16 flex flex-col items-center gap-3">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-primary">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
+                <rect x="3" y="3" width="18" height="18" rx="4" ry="4" />
+                <circle cx="8" cy="8" r="1" fill="currentColor" stroke="none" />
+                <circle cx="16" cy="8" r="1" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+                <circle cx="8" cy="16" r="1" fill="currentColor" stroke="none" />
+                <circle cx="16" cy="16" r="1" fill="currentColor" stroke="none" />
               </svg>
             </div>
             <p className="text-text-secondary text-sm">Add some words first to start a quiz</p>
@@ -442,7 +445,7 @@ export default function ModeSelect({ words, onSelect, isGuest }) {
       <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Quiz</h1>
+            <h1 className="text-2xl font-bold text-white">Playground</h1>
             <p className="text-sm text-white/75 mt-0.5">{wordCount} word{wordCount !== 1 ? "s" : ""} available</p>
           </div>
           <Link

@@ -56,7 +56,7 @@ function GuestLocked() {
           </div>
           <p className="text-text-secondary text-sm">Sign in to use the AI Story Generator</p>
           <Link href="/quiz" className="text-primary font-medium text-sm">
-            Back to Quiz
+            Back to Playground
           </Link>
         </div>
       </div>
