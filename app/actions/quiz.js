@@ -131,6 +131,9 @@ export async function gradeTypeAnswers({ items }) {
     "Mark wrong if the answer is semantically unrelated or incorrect.",
     "If the answer is misspelled or not a real English word, mark wrong with verdict 'Not a word'.",
     "If the answer exactly matches the word being defined (case-insensitive), mark wrong with verdict 'Same as the word'.",
+    "If the answer is an explanation, evaluate that to understand the meaning, if related mark related and correct. If not related then mark unrelated and wrong. Do not treat explanation as not a word and wrong without evaluating actual meaning.",
+    "For verdicts like synonym, meaning, and related answer status should be correct. For antonym, unrelated, not a word, and same as the word answer status should be wrong.",
+    "A related answer can be pos_mismatch, in this case pos_mismatch should prevail",
     "Keep notes short (max 8 words).",
   ].join(" ");
 
