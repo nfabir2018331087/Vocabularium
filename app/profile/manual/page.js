@@ -490,7 +490,11 @@ function FeatureCard({ feature }) {
 export default function UserManualPage() {
   const router = useRouter();
   const { isGuest } = useAuth();
-  const [tab, setTab] = useState("guest");
+  // null = no manual tab choice yet, so the default follows auth state:
+  // account users land on Account, guests land on Guest. Once someone
+  // clicks a tab, that pick sticks regardless of auth state.
+  const [pickedTab, setPickedTab] = useState(null);
+  const tab = pickedTab ?? (isGuest ? "guest" : "auth");
   const active = sections.find((s) => s.id === (isGuest ? "guest" : tab));
 
   return (
@@ -521,7 +525,7 @@ export default function UserManualPage() {
             return (
               <button
                 key={s.id}
-                onClick={() => !locked && setTab(s.id)}
+                onClick={() => !locked && setPickedTab(s.id)}
                 disabled={locked}
                 title={locked ? "Sign in to view the Account manual" : undefined}
                 className={`flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all ${
