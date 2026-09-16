@@ -4,6 +4,8 @@ import BottomNav from "./components/BottomNav";
 import ThemeProvider from "./components/ThemeProvider";
 import AuthProvider from "./components/AuthProvider";
 import BackgroundPrefetch from "./components/BackgroundPrefetch";
+import OfflineIndicator from "./components/OfflineIndicator";
+import { SerwistProvider } from "@serwist/next/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,15 +75,18 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${geistSans.variable} ${notoBangla.variable} antialiased`} suppressHydrationWarning>
-        <ThemeProvider>
-          <AuthProvider initialUser={null}>
-            <main className="max-w-lg mx-auto px-4 py-6 animate-fade-in">
-              {children}
-            </main>
-            <BackgroundPrefetch />
-            <BottomNav />
-          </AuthProvider>
-        </ThemeProvider>
+        <SerwistProvider swUrl="/sw.js" reloadOnOnline={false}>
+          <ThemeProvider>
+            <AuthProvider initialUser={null}>
+              <OfflineIndicator />
+              <main className="max-w-lg mx-auto px-4 py-6 animate-fade-in">
+                {children}
+              </main>
+              <BackgroundPrefetch />
+              <BottomNav />
+            </AuthProvider>
+          </ThemeProvider>
+        </SerwistProvider>
       </body>
     </html>
   );

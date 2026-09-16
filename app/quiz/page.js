@@ -56,6 +56,8 @@ export default function QuizPage() {
           setWords(nextWords);
           setCachedWords(userId, nextWords);
           setLoadingWords(false);
+        }).catch(() => {
+          if (alive) setLoadingWords(false);
         })
       );
     } else {
@@ -69,7 +71,7 @@ export default function QuizPage() {
           const nextProgress = p || {};
           setProgress(nextProgress);
           setCachedProgress(userId, nextProgress);
-        })
+        }).catch(() => {})
       );
     }
 

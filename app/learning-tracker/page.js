@@ -122,9 +122,14 @@ export default function LearningTrackerPage() {
           setLoading(false); // show content immediately from cache
         }
         // Always fetch fresh words to ensure reconciliation accuracy
-        const { words: w } = await getWords();
-        loadedWords = w || [];
-        setCachedWords(userId, loadedWords);
+        try {
+          const { words: w } = await getWords();
+          loadedWords = w || [];
+          setCachedWords(userId, loadedWords);
+        } catch {
+          // offline / fetch failed — fall back to whatever's cached
+          loadedWords = cached || [];
+        }
       }
       setWords(loadedWords);
 
@@ -150,10 +155,14 @@ export default function LearningTrackerPage() {
           rawLetters = cachedTracker.letters || {};
           rawTags = cachedTracker.tags || {};
         } else {
-          const { data } = await getTrackerData();
-          rawLetters = data?.letters || {};
-          rawTags = data?.tags || {};
-          setCachedTracker(userId, { letters: rawLetters, tags: rawTags });
+          try {
+            const { data } = await getTrackerData();
+            rawLetters = data?.letters || {};
+            rawTags = data?.tags || {};
+            setCachedTracker(userId, { letters: rawLetters, tags: rawTags });
+          } catch {
+            // offline / fetch failed — nothing cached yet, start from empty
+          }
         }
       }
 
