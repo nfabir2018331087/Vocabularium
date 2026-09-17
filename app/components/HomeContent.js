@@ -6,38 +6,8 @@ import { getWords } from "../../lib/data-client";
 import { acceptSharedWord, markSharedWordSeen, removeSharedWord } from "../actions/share";
 import { useAuth } from "./AuthProvider";
 import { setCachedInbox, setCachedWords } from "../../lib/client-cache";
-import { useTheme } from "./ThemeProvider";
-
-const themeIcons = {
-  light: (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-      <circle cx="12" cy="12" r="5" />
-      <line x1="12" y1="1" x2="12" y2="3" />
-      <line x1="12" y1="21" x2="12" y2="23" />
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-      <line x1="1" y1="12" x2="3" y2="12" />
-      <line x1="21" y1="12" x2="23" y2="12" />
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-    </svg>
-  ),
-  dark: (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-    </svg>
-  ),
-  system: (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-      <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-      <line x1="8" y1="21" x2="16" y2="21" />
-      <line x1="12" y1="17" x2="12" y2="21" />
-    </svg>
-  ),
-};
 
 export default function HomeContent({ words, progress = {}, inbox = null, inboxUnread = 0, showInbox = true, onWordsRefresh, loading = false }) {
-  const { theme, cycleTheme } = useTheme();
   const isInitialLoad = loading && (!words || words.length === 0);
   const { user } = useAuth();
   const [inboxItems, setInboxItems] = useState(Array.isArray(inbox) ? inbox : []);
@@ -81,21 +51,21 @@ export default function HomeContent({ words, progress = {}, inbox = null, inboxU
     <div className="flex flex-col gap-6 -mx-4 -mt-6">
       {/* Hero Section */}
       <div className="hero-gradient px-6 pt-10 pb-8 rounded-b-3xl relative">
-        {/* Theme toggle */}
-        <button
-          onClick={cycleTheme}
-          className="absolute top-13 right-7 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white/80 hover:text-white hover:bg-white/30 transition-colors"
-          title={`Theme: ${theme}`}
-        >
-          {themeIcons[theme]}
-        </button>
-
-        <h1 className="text-3xl font-bold tracking-tight text-white">
-          Vocabularium
-        </h1>
-        <p className="text-white/75 mt-1 text-sm">
-          Your personal vault for newly found words
-        </p>
+        <div className="flex items-center gap-3">
+          <img
+            src="/icon-512.png"
+            alt="Vocabularium"
+            className="w-14 h-14 shrink-0 object-contain"
+          />
+          <div className="min-w-0">
+            <h1 className="text-3xl font-bold tracking-tight text-white">
+              Vocabularium
+            </h1>
+            <p className="text-white/75 mt-1 text-sm">
+              Your personal vault for newly found words
+            </p>
+          </div>
+        </div>
 
         {/* Stats */}
         <div className="flex gap-3 mt-6">
