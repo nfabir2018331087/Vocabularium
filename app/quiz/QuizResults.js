@@ -59,9 +59,14 @@ export default function QuizResults({ result, words, onRestart, onRetry, isGuest
         <p className={`text-5xl font-bold ${color}`}>{percentage}%</p>
         <p className={`text-sm font-semibold ${color}`}>{label}</p>
         {aiLabel && (
-          <span className="text-[11px] uppercase tracking-wide text-text-secondary">
-            Graded with AI
-          </span>
+          <>
+            <span className="text-[11px] uppercase tracking-wide text-text-secondary">
+              Graded with AI
+            </span>
+            <p className="text-[10px] text-text-secondary/80 text-center">
+              AI grading can make mistakes sometimes.
+            </p>
+          </>
         )}
         <div className="flex items-center gap-4 mt-2 text-sm text-text-secondary">
           <span>{score} / {total} correct</span>

@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { generateStory, deleteStory } from "../actions/story";
+import { generateStory, deleteStory, getStoryStatus } from "../actions/story";
 import { getStories } from "../../lib/data-client";
 import { shuffle } from "../../lib/quiz-utils";
 import Toast from "../components/Toast";
@@ -34,6 +34,14 @@ function formatDate(value) {
   return new Date(value).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
+function formatRemaining(ms) {
+  const totalMinutes = Math.max(1, Math.ceil(ms / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours === 0) return `${minutes}m`;
+  return `${hours}h ${minutes}m`;
+}
+
 export default function StoryGeneratorContent({ words, userId }) {
   const router = useRouter();
   const wordCount = words.length;
@@ -49,6 +57,9 @@ export default function StoryGeneratorContent({ words, userId }) {
   const [tagSearch, setTagSearch] = useState("");
   const [generating, setGenerating] = useState(false);
   const [toast, setToast] = useState(null);
+  const [status, setStatus] = useState({ count: 0, max: 10, cooldownUntil: null });
+  const [showQuotaNote, setShowQuotaNote] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
 
   const [stories, setStories] = useState([]);
   const [total, setTotal] = useState(0);
@@ -132,6 +143,21 @@ export default function StoryGeneratorContent({ words, userId }) {
     if (userId) setCachedStories(userId, next);
   }, [userId]);
 
+  const fetchStatus = useCallback(async () => {
+    const result = await getStoryStatus();
+    setStatus(result);
+  }, []);
+
+  useEffect(() => {
+    fetchStatus();
+  }, [fetchStatus]);
+
+  useEffect(() => {
+    if (!status.cooldownUntil) return;
+    const interval = setInterval(() => setNow(Date.now()), 60 * 1000);
+    return () => clearInterval(interval);
+  }, [status.cooldownUntil]);
+
   useEffect(() => {
     const cached = userId ? getCachedStories(userId) : null;
     const matches = cached && cached.page === page && cached.pageSize === pageSize;
@@ -164,6 +190,7 @@ export default function StoryGeneratorContent({ words, userId }) {
     setSelectedTags([]);
     setSelectedLetters([]);
     setSearchQuery("");
+    fetchStatus();
     if (page === 1) {
       fetchStories(1, pageSize);
     } else {
@@ -182,6 +209,7 @@ export default function StoryGeneratorContent({ words, userId }) {
       return;
     }
 
+    fetchStatus();
     if (stories.length === 1 && page > 1) {
       setPage(page - 1);
     } else {
@@ -190,6 +218,14 @@ export default function StoryGeneratorContent({ words, userId }) {
   }
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const onCooldown = Boolean(status.cooldownUntil && status.cooldownUntil > now);
+  const limitReached = status.count >= status.max;
+  const generateDisabled = selectedWords.length === 0 || generating || onCooldown || limitReached;
+
+  async function handleExportPdf(story) {
+    const { exportStoryPdf } = await import("../../lib/story-pdf");
+    exportStoryPdf(story);
+  }
 
   return (
     <div className="flex flex-col gap-4 pb-8 -mx-4 -mt-6">
@@ -224,7 +260,22 @@ export default function StoryGeneratorContent({ words, userId }) {
         ) : (
         <div className="bg-surface-alt border border-border rounded-2xl p-5 flex flex-col gap-4">
           <div>
-            <p className="text-xs font-medium text-text-secondary mb-2 uppercase tracking-wide">Story Length</p>
+            <div className="flex items-center gap-1.5 mb-2">
+              <p className="text-xs font-medium text-text-secondary uppercase tracking-wide">Story Length</p>
+              <button
+                type="button"
+                onClick={() => setShowQuotaNote((v) => !v)}
+                title="About AI usage limits"
+                className="w-4 h-4 flex items-center justify-center rounded-full text-[10px] font-bold text-text-secondary border border-border hover:border-amber-500 hover:text-amber-500 transition-colors"
+              >
+                i
+              </button>
+            </div>
+            {showQuotaNote && (
+              <p className="mb-3 px-3 py-2 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-600 text-xs leading-relaxed">
+                Story generation uses the same AI model as AI Assist and answer grading. Generating a lot of stories may temporarily use up limits shared with those features.
+              </p>
+            )}
             <div className="flex gap-1.5">
               {COUNT_OPTIONS.map((c) => {
                 const disabled = c > wordCount;
@@ -444,9 +495,9 @@ export default function StoryGeneratorContent({ words, userId }) {
 
           <button
             onClick={handleGenerate}
-            disabled={selectedWords.length === 0 || generating}
+            disabled={generateDisabled}
             className={`relative py-3 rounded-xl text-sm font-semibold transition-all ${
-              selectedWords.length === 0 || generating
+              generateDisabled
                 ? "bg-surface border border-border text-text-secondary/40 cursor-not-allowed"
                 : "bg-gradient-to-br from-violet-400 via-violet-600 to-indigo-400 text-white hover:opacity-95"
             }`}
@@ -454,7 +505,15 @@ export default function StoryGeneratorContent({ words, userId }) {
             {generating && (
               <span className="absolute -inset-1 rounded-xl blur-md bg-gradient-to-br from-violet-400 via-violet-600 to-indigo-400 opacity-70" />
             )}
-            <span className="relative">{generating ? "Generating story…" : "Generate Story"}</span>
+            <span className="relative">
+              {generating
+                ? "Generating story…"
+                : limitReached
+                  ? "Story limit reached — delete one first"
+                  : onCooldown
+                    ? `Next story in ${formatRemaining(status.cooldownUntil - now)}`
+                    : "Generate Story"}
+            </span>
           </button>
         </div>
         )}
@@ -462,8 +521,13 @@ export default function StoryGeneratorContent({ words, userId }) {
         {/* Story history section */}
         <div className="flex flex-col gap-3">
           <p className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-            Your Stories{total > 0 ? ` · ${total}` : ""}
+            Your Stories · {status.count}/{status.max}
           </p>
+          {limitReached && (
+            <p className="text-xs text-amber-600 -mt-1.5">
+              Story limit reached — delete a story below to generate a new one.
+            </p>
+          )}
 
           {loadingStories ? (
             <div className="flex flex-col gap-2">
@@ -514,16 +578,29 @@ export default function StoryGeneratorContent({ words, userId }) {
                           </button>
                         </div>
                       ) : (
-                        <button
-                          onClick={() => setConfirmingDeleteId(story.id)}
-                          className="p-1.5 rounded-lg text-text-secondary hover:text-red-400 hover:bg-red-400/10 transition-colors flex-shrink-0"
-                          title="Delete"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-                          </svg>
-                        </button>
+                        <div className="flex items-center gap-0.5 flex-shrink-0">
+                          <button
+                            onClick={() => handleExportPdf(story)}
+                            className="p-1.5 rounded-lg text-text-secondary hover:text-primary hover:bg-primary/10 transition-colors"
+                            title="Export as PDF"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                              <polyline points="7 10 12 15 17 10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => setConfirmingDeleteId(story.id)}
+                            className="p-1.5 rounded-lg text-text-secondary hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                            title="Delete"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                            </svg>
+                          </button>
+                        </div>
                       )}
                     </div>
 

@@ -62,14 +62,10 @@ export default function FriendRequestsPage() {
 
     if (!fresh || force) {
       if (!cached) setLoading(true);
-      try {
-        const data = await getFriendData();
-        setRequests(data.requests || []);
-        setFriends(data.friends || []);
-        setCachedFriends(userId, data);
-      } catch {
-        // offline / fetch failed — keep showing cached data if we have it
-      }
+      const data = await getFriendData();
+      setRequests(data.requests || []);
+      setFriends(data.friends || []);
+      setCachedFriends(userId, data);
       setLoading(false);
     }
   }

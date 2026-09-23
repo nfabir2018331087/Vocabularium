@@ -6,6 +6,37 @@ import { getAuthenticatedUserId, getAuthenticatedUserIdWithSync } from "../../li
 import { chatJSON } from "../../lib/llm";
 
 const MAX_WORDS = 100;
+const MAX_STORIES = Number(process.env.MAX_STORIES) || 10;
+const STORY_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
+function formatRemaining(ms) {
+  const totalMinutes = Math.max(1, Math.ceil(ms / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours === 0) return `${minutes}m`;
+  return `${hours}h ${minutes}m`;
+}
+
+export async function getStoryStatus() {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { count: 0, max: MAX_STORIES, cooldownUntil: null };
+
+  const [count, lastStory] = await Promise.all([
+    prisma.story.count({ where: { userId } }),
+    prisma.story.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    }),
+  ]);
+
+  const cooldownUntil = lastStory ? lastStory.createdAt.getTime() + STORY_COOLDOWN_MS : null;
+  return {
+    count,
+    max: MAX_STORIES,
+    cooldownUntil: cooldownUntil && cooldownUntil > Date.now() ? cooldownUntil : null,
+  };
+}
 
 export async function generateStory({ wordIds }) {
   const userId = await getAuthenticatedUserIdWithSync();
@@ -16,6 +47,27 @@ export async function generateStory({ wordIds }) {
 
   if (!process.env.GEMINI_API_KEY && !process.env.GROQ_API_KEY) {
     return { error: "Missing GEMINI_API_KEY / GROQ_API_KEY on the server." };
+  }
+
+  const [existingCount, lastStory] = await Promise.all([
+    prisma.story.count({ where: { userId } }),
+    prisma.story.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    }),
+  ]);
+
+  if (existingCount >= MAX_STORIES) {
+    return { error: `You've reached the limit of ${MAX_STORIES} saved stories. Delete one to generate another.` };
+  }
+
+  if (lastStory) {
+    const cooldownUntil = lastStory.createdAt.getTime() + STORY_COOLDOWN_MS;
+    const remaining = cooldownUntil - Date.now();
+    if (remaining > 0) {
+      return { error: `You can generate one story every 24 hours. Try again in ${formatRemaining(remaining)}.` };
+    }
   }
 
   const words = await prisma.word.findMany({

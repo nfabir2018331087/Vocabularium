@@ -317,6 +317,12 @@ const WordForm = forwardRef(function WordForm(
                 </button>
               )}
             </div>
+
+            {onAiFill && (
+              <p className="text-[11px] text-text-secondary text-center -mt-1">
+                AI Assist can make mistakes — double-check the results. It may occasionally be unavailable if usage limits are reached.
+              </p>
+            )}
           </>
         )}
 

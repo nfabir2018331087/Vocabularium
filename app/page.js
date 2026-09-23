@@ -60,8 +60,6 @@ export default function Home() {
         setWords(nextWords);
         setCachedWords(userId, nextWords);
         setLoadingWords(false);
-      }).catch(() => {
-        if (alive) setLoadingWords(false);
       });
     } else {
       setLoadingWords(false);
@@ -72,7 +70,7 @@ export default function Home() {
         const nextProgress = p || {};
         setProgress(nextProgress);
         setCachedProgress(userId, nextProgress);
-      }).catch(() => {});
+      });
     }
     if (shouldFetchInbox) {
       getInbox().then(({ inbox: items, unread }) => {
@@ -81,7 +79,7 @@ export default function Home() {
         setInbox(nextInbox);
         setInboxUnread(unread || 0);
         setCachedInbox(userId, nextInbox);
-      }).catch(() => {});
+      });
     }
     return () => { alive = false; };
   }, [loading, isGuest, user?.id]);

@@ -48,8 +48,6 @@ export default function Words() {
         setCachedWords(userId, nextWords);
         setError(err || null);
         setLoadingWords(false);
-      }).catch(() => {
-        if (alive) setLoadingWords(false);
       });
     } else {
       setLoadingWords(false);

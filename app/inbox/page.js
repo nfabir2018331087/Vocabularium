@@ -56,8 +56,6 @@ export default function InboxPage() {
         const nextItems = inbox || [];
         updateItems(nextItems);
         setLoadingInbox(false);
-      }).catch(() => {
-        if (alive) setLoadingInbox(false);
       });
     }
     return () => { alive = false; };

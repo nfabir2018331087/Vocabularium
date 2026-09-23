@@ -56,8 +56,6 @@ export default function Progress() {
         setCachedWords(userId, nextWords);
         setCachedProgress(userId, nextProgress);
         setLoadingData(false);
-      }).catch(() => {
-        if (alive) setLoadingData(false);
       });
     } else {
       setLoadingData(false);
